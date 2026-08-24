@@ -189,7 +189,6 @@
             <div id="tabHome">
                 <div class="controls">
                     <h2 style="margin:0;">Memo Database</h2>
-                    <!-- Added a dedicated button for Admin to review pending requests -->
                     <div style="display: flex; gap: 10px;">
                         <button id="adminPendingBtn" class="action-btn hidden" onclick="promptAdminUnlock()" style="background-color: #f59e0b; color: white; padding: 10px 18px; font-weight: bold; border: none;">Review Pending Accounts</button>
                         <button class="action-btn approve-btn" onclick="openMemoModalUser()" style="padding: 10px 18px; font-weight: bold;">+ Create New Memo</button>
@@ -323,8 +322,8 @@
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        // ---- ACTIVITY FEED LOGIC ----
-        function logActivity(actionText) {
+        // ---- ACTIVITY FEED LOGIC (Updated with Google Sheet Sync) ----
+        async function logActivity(actionText) {
             const user = localStorage.getItem('loggedInUser') || 'Unknown User';
             const now = new Date();
             const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -337,6 +336,22 @@
             
             localStorage.setItem('appActivityFeed', JSON.stringify(logs));
             renderActivityFeed();
+
+            // Direct sync request to Google Apps Script ActivityLog sheet
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'log_activity',
+                        user: user,
+                        actionText: actionText
+                    })
+                });
+            } catch (err) {
+                console.error("Failed to log activity to Google Sheet backend:", err);
+            }
         }
 
         function renderActivityFeed() {
@@ -506,14 +521,11 @@
 
         // ---- MEMO SUBMISSION & ADMIN LOGIC ----
         function openMemoModalUser() {
-            // Password prompt removed completely for opening Memo creation. 
-            // Anyone authenticated can create a memo now.
             document.getElementById('memoSubmissionModal').classList.remove('hidden');
         }
 
         function promptAdminUnlock() {
             if (sessionAdminPass === "") {
-                // Prompt for admin password before fetching pending accounts
                 document.getElementById('adminModal').classList.remove('hidden');
                 document.getElementById('adminPassInput').value = "";
                 document.getElementById('adminPassInput').focus();
@@ -544,8 +556,6 @@
             if (data.success) {
                 sessionAdminPass = pass;
                 document.getElementById('adminModal').classList.add('hidden');
-                
-                // Show the Admin table below the Memo Database
                 document.getElementById('adminPendingSection').classList.remove('hidden');
                 renderPendingUsers(data.pending);
             } else {
