@@ -23,7 +23,6 @@
 
         * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
         
-        /* Animated Dark Gradient Background */
         @keyframes gradientAnimation {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -46,57 +45,42 @@
             z-index: 1;
         }
 
-        /* Watermark */
         body::before {
-            content: "";
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            height: 400px;
-            /* Updated path to point to images folder */
+            content: ""; position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); width: 400px; height: 400px;
             background-image: url('images/PNP LOGO.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            opacity: 0.05; 
-            z-index: -1;
-            pointer-events: none;
+            background-size: contain; background-repeat: no-repeat;
+            background-position: center; opacity: 0.05; 
+            z-index: -1; pointer-events: none;
         }
 
         .site-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
-            color: white;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            display: flex; align-items: center; gap: 15px; margin-bottom: 30px;
+            color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); width: 100%; max-width: 1400px; position: relative;
         }
         
         .site-header img { width: 60px; height: 60px; object-fit: contain; }
         .site-header h1 { margin: 0; font-size: 28px; letter-spacing: 1px; }
 
+        #datetime-display {
+            position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+            font-size: 14px; font-weight: 500; color: var(--text-muted);
+        }
+
         .hidden { display: none !important; }
         
-        /* Glassmorphism Classes */
         .glass-panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             border-radius: var(--radius-lg);
         }
 
-        .auth-container { max-width: 420px; width: 100%; padding: 32px; text-align: center; }
+        .auth-container { max-width: 420px; width: 100%; padding: 32px; text-align: center; margin-top: 50px; }
         .auth-container h2 { margin-top: 0; margin-bottom: 20px; font-size: 24px; }
         
         input[type="text"], input[type="password"] { 
-            width: 100%; padding: 12px 16px; margin: 8px 0; 
-            border: 1px solid var(--border-color); 
-            border-radius: var(--radius-md); font-size: 14px; 
-            background-color: rgba(255, 255, 255, 0.1); color: white; 
+            width: 100%; padding: 12px 16px; margin: 8px 0; border: 1px solid var(--border-color); 
+            border-radius: var(--radius-md); font-size: 14px; background-color: rgba(255, 255, 255, 0.1); color: white; 
         }
         input::placeholder { color: #94a3b8; }
         input:focus { outline: none; border-color: var(--primary); background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
@@ -111,44 +95,18 @@
         hr { border: none; height: 1px; background-color: var(--border-color); margin: 24px 0; }
         h2 { font-size: 20px; margin-bottom: 12px; }
 
-        /* App Layout - Sidebar + Main Content */
-        .app-layout {
-            display: flex;
-            width: 100%;
-            max-width: 1200px;
-            gap: 20px;
-            align-items: flex-start;
-        }
+        .app-layout { display: flex; width: 100%; max-width: 1400px; gap: 20px; align-items: flex-start; }
+        
+        /* 3-Column Layout */
+        .sidebar { width: 220px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+        .main-content { flex-grow: 1; padding: 30px; min-height: 500px; }
+        .right-sidebar { width: 280px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; max-height: 80vh; overflow-y: auto; }
 
-        .sidebar {
-            width: 250px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .sidebar-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-muted);
-            text-align: left;
-            padding: 12px 15px;
-            font-size: 15px;
-        }
-        .sidebar-btn:hover, .sidebar-btn.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border-color: var(--border-color);
-        }
-        .sidebar-btn.admin { color: #fca5a5; }
-        .sidebar-btn.admin:hover { color: #fecaca; background: rgba(239, 68, 68, 0.2); }
-
-        .main-content {
-            flex-grow: 1;
-            padding: 30px;
-            min-height: 500px;
-        }
+        .sidebar-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); text-align: left; padding: 12px 15px; font-size: 14px; display: flex; align-items: center; }
+        .sidebar-btn:hover, .sidebar-btn.active { background: rgba(255, 255, 255, 0.1); color: white; border-color: var(--border-color); }
+        
+        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: var(--danger); margin-right: 12px; transition: background-color 0.3s; }
+        .sidebar-btn.active .status-dot { background-color: var(--success); }
 
         .controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
         
@@ -157,6 +115,7 @@
         .delete-btn { background-color: var(--danger); color: white; border: none; }
         .delete-btn:hover { background-color: var(--danger-hover); }
         .approve-btn { background-color: var(--success); color: white; border: none; }
+        .approve-btn:hover { background-color: var(--success-hover); }
         
         .table-wrapper { overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-top: 12px; }
         table { width: 100%; border-collapse: collapse; }
@@ -165,28 +124,24 @@
         tbody tr:hover { background-color: rgba(255,255,255,0.05); }
         input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
 
-        /* Modal Overlays */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(5px);
-            display: flex; align-items: center; justify-content: center;
-            z-index: 100;
-        }
-        .modal-content {
-            width: 350px;
-            padding: 25px;
-            text-align: center;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .modal-content { width: 350px; padding: 25px; text-align: center; max-height: 90vh; overflow-y: auto; }
+        .modal-large { width: 600px; }
+
+        /* Activity Feed Styles */
+        .activity-item { padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 13px; line-height: 1.4; text-align: left; }
+        .activity-item:last-child { border-bottom: none; }
+        .activity-time { display: block; font-size: 11px; color: var(--primary); margin-bottom: 4px; font-weight: bold; }
+        .activity-user { color: white; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <!-- SITE HEADER -->
     <header class="site-header">
-        <!-- Updated path to point to images folder -->
         <img src="images/PRO 1 LOGO.png" alt="PRO 1 Logo" onerror="this.style.display='none'">
         <h1>RHSU MEMO CONTROL</h1>
+        <div id="datetime-display"></div>
     </header>
 
     <!-- LOGIN PAGE -->
@@ -205,44 +160,42 @@
     <div id="registerPage" class="auth-container glass-panel hidden">
         <h2>Create Account</h2>
         <input type="text" id="regName" placeholder="Enter Full Name">
-        
         <div class="auth-type-toggle" style="margin-top: 15px;">
             <label><input type="radio" name="regType" value="pin" checked onchange="toggleInputType('regCredential', 'pin')"> Set PIN</label>
             <label><input type="radio" name="regType" value="password" onchange="toggleInputType('regCredential', 'password')"> Set Password</label>
         </div>
         <input type="password" id="regCredential" placeholder="Create 6-Digit PIN" maxlength="6">
-        
         <button style="width: 100%; margin-top: 8px;" onclick="registerUser()">Register</button>
         <span class="link" onclick="toggleAuthViews('loginPage')">Back to Login</span>
     </div>
 
-    <!-- MAIN APP LAYOUT (Sidebar + Content) -->
+    <!-- MAIN APP LAYOUT (Sidebar + Content + Activity Feed) -->
     <div id="appLayout" class="app-layout hidden">
-        <!-- Sidebar -->
+        
+        <!-- Left Sidebar -->
         <aside class="sidebar glass-panel">
             <div style="margin-bottom: 20px;">
                 <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 16px;"></span>
             </div>
-            <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home')">🏠 Home Page</button>
-            <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile')">👤 My Profile</button>
-            <button class="sidebar-btn admin" id="btnAdmin" onclick="promptAdminModal()">⚙️ Alpha Admin</button>
+            <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home')"><span class="status-dot"></span>Home Page</button>
+            <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile')"><span class="status-dot"></span>My Profile</button>
             <div style="flex-grow: 1;"></div>
-            <button class="sidebar-btn" style="color: var(--danger);" onclick="logoutUser()">🚪 Logout</button>
+            <button class="sidebar-btn" style="color: var(--danger);" onclick="logoutUser()"><span class="status-dot"></span>Logout</button>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Main Center Content -->
         <main class="main-content glass-panel">
-            
             <!-- HOME TAB -->
             <div id="tabHome">
-                <h2>Submit New Memo</h2>
-                <form id="memoForm" style="display: flex; gap: 10px; margin-top: 12px;">
-                    <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0;">
-                    <button type="submit" style="white-space: nowrap;">Submit Data</button>
-                </form>
-                <hr>
                 <div class="controls">
                     <h2 style="margin:0;">Memo Database</h2>
+                    <!-- Added a dedicated button for Admin to review pending requests -->
+                    <div style="display: flex; gap: 10px;">
+                        <button id="adminPendingBtn" class="action-btn hidden" onclick="promptAdminUnlock()" style="background-color: #f59e0b; color: white; padding: 10px 18px; font-weight: bold; border: none;">Review Pending Accounts</button>
+                        <button class="action-btn approve-btn" onclick="openMemoModalUser()" style="padding: 10px 18px; font-weight: bold;">+ Create New Memo</button>
+                    </div>
+                </div>
+                <div class="controls" style="margin-top: 20px;">
                     <div style="display: flex; gap: 10px;">
                         <input type="text" id="searchInput" placeholder="Search memos..." onkeyup="searchTable()" style="margin:0; width: 250px;">
                         <button class="action-btn delete-btn" onclick="batchDelete()">Delete Selected</button>
@@ -264,41 +217,62 @@
                         <tbody id="dataTable"></tbody>
                     </table>
                 </div>
+                
+                <!-- Alpha Admin Account Creation Requests Section -->
+                <div id="adminPendingSection" class="hidden" style="text-align: left; margin-top: 40px;">
+                    <hr style="margin-bottom: 20px;">
+                    <h2 style="color: #fca5a5; margin-bottom: 5px;">Pending Account Approvals</h2>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Review account creation requests below.</p>
+                    <div class="table-wrapper">
+                        <table id="pendingTable">
+                            <thead>
+                                <tr><th>User Name</th><th>Credential</th><th>Actions</th></tr>
+                            </thead>
+                            <tbody id="pendingTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
             </div>
 
             <!-- PROFILE TAB -->
             <div id="tabProfile" class="hidden">
                 <h2>Update Credentials</h2>
                 <p style="color: var(--text-muted); font-size: 14px;">Update your access PIN or Password below.</p>
-                
                 <label style="font-size: 13px; color: var(--text-muted); text-align: left; display: block; margin-top: 20px;">Change PIN / Password:</label>
                 <input type="password" id="newCredential" placeholder="Enter new PIN or Password" style="max-width: 300px;">
                 <br>
                 <button style="margin-top: 15px;" onclick="updateProfile()">Save Changes</button>
             </div>
-
-            <!-- ADMIN TAB -->
-            <div id="tabAdmin" class="hidden">
-                <h2 style="color: #fca5a5;">Pending Account Approvals</h2>
-                <p style="color: var(--text-muted); font-size: 14px;">Authorized Alpha Admin personnel only.</p>
-                <div class="table-wrapper">
-                    <table id="pendingTable">
-                        <thead>
-                            <tr><th>User Name</th><th>Credential</th><th>Actions</th></tr>
-                        </thead>
-                        <tbody id="pendingTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
         </main>
+
+        <!-- Right Sidebar Activity Feed -->
+        <aside class="right-sidebar glass-panel">
+            <h2 style="margin-top: 0; font-size: 18px; text-align: center;">Live Activity Log</h2>
+            <div id="activityFeedList" style="display: flex; flex-direction: column;">
+                <!-- Activities populate here -->
+            </div>
+        </aside>
     </div>
 
-    <!-- ADMIN PASSWORD MODAL -->
+    <!-- MEMO SUBMISSION MODAL -->
+    <div id="memoSubmissionModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel modal-large">
+            <h2 style="margin-top: 0;">Submit New Memo</h2>
+            <form id="memoForm" style="display: flex; gap: 10px; margin-top: 12px; margin-bottom: 20px;">
+                <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0;">
+                <button type="submit" style="white-space: nowrap;">Submit Data</button>
+            </form>
+            
+            <button onclick="closeMemoModal()" style="margin-top: 25px; background: transparent; border: 1px solid var(--border-color); width: 100%;">Close Window</button>
+        </div>
+    </div>
+
+    <!-- ALPHA ADMIN UNLOCK MODAL -->
     <div id="adminModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
-            <h3 style="margin-top:0;">Alpha Admin Access</h3>
-            <p style="font-size: 13px; color: var(--text-muted);">Enter master password to unlock.</p>
+            <h3 style="margin-top:0;">Alpha Admin Validation Required</h3>
+            <p style="font-size: 13px; color: var(--text-muted);">Enter master password to access Alpha-Admin features.</p>
             <input type="password" id="adminPassInput" placeholder="Master Password">
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button style="flex: 1;" onclick="verifyAdmin()">Unlock</button>
@@ -307,7 +281,7 @@
         </div>
     </div>
 
-    <!-- ACTION MODAL FOR EDIT/DELETE PROMPTS -->
+    <!-- STANDARD EDIT/DELETE ACTION MODAL -->
     <div id="actionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
             <h3 id="actionModalTitle" style="margin-top:0;">Admin Validation Required</h3>
@@ -320,13 +294,76 @@
         </div>
     </div>
 
+    <!-- REAL-TIME EDIT REQUEST MODAL (Shown to Admin) -->
+    <div id="editRequestModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel">
+            <h3 style="color: #fca5a5; margin-top: 0;">Real-Time Edit Request</h3>
+            <p style="font-size: 15px;">User <strong id="editRequestUser" style="color:white;"></strong> is requesting to edit Memo: <strong id="editRequestControl" style="color:white;"></strong></p>
+            <input type="password" id="editRequestAdminPass" placeholder="Enter Alpha-Admin Code to allow" style="margin-bottom: 10px;">
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="approve-btn" style="flex: 1;" onclick="respondToEditRequest(true)">Allow Edit</button>
+                <button class="delete-btn" style="flex: 1;" onclick="respondToEditRequest(false)">Deny</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbw2LarfwlIOGe_L5KrlXKHY65ZhsuL87A0DDv4PTRjMOTH9FOhJQbHWJjVL6rpb3EM5/exec";
+        const ALPHA_ADMIN_NAME = "PCpl Gandia"; 
         let sessionAdminPass = ""; 
-        
-        // Variables for action modals
         let pendingAction = null;
         let actionTargetControl = null;
+
+        // ---- DYNAMIC CLOCK ----
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById('datetime-display').innerText = now.toLocaleDateString('en-US', options);
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // ---- ACTIVITY FEED LOGIC ----
+        function logActivity(actionText) {
+            const user = localStorage.getItem('loggedInUser') || 'Unknown User';
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            const logEntry = { user, actionText, timeString, timestamp: now.getTime() };
+            let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
+            
+            logs.unshift(logEntry);
+            if (logs.length > 50) logs = logs.slice(0, 50); // Keep only recent 50
+            
+            localStorage.setItem('appActivityFeed', JSON.stringify(logs));
+            renderActivityFeed();
+        }
+
+        function renderActivityFeed() {
+            const logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
+            const container = document.getElementById('activityFeedList');
+            if(!container) return;
+            
+            container.innerHTML = "";
+            if (logs.length === 0) {
+                container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px; text-align: center;'>No recent activity.</p>";
+                return;
+            }
+            
+            logs.forEach(log => {
+                container.innerHTML += `
+                    <div class="activity-item">
+                        <span class="activity-time">${log.timeString}</span>
+                        <span class="activity-user">${log.user}</span> ${log.actionText}
+                    </div>
+                `;
+            });
+        }
+
+        // Listen for cross-tab activity updates
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'appActivityFeed') renderActivityFeed();
+        });
 
         // ---- UI TOGGLES ----
         function toggleAuthViews(viewId) {
@@ -348,19 +385,12 @@
             input.value = ""; 
         }
 
-        // ---- SIDEBAR TAB LOGIC ----
         function switchTab(tabName) {
-            // Hide all tabs
             document.getElementById('tabHome').classList.add('hidden');
             document.getElementById('tabProfile').classList.add('hidden');
-            document.getElementById('tabAdmin').classList.add('hidden');
-            
-            // Remove active classes
             document.getElementById('btnHome').classList.remove('active');
             document.getElementById('btnProfile').classList.remove('active');
-            document.getElementById('btnAdmin').classList.remove('active');
 
-            // Show selected
             if (tabName === 'home') {
                 document.getElementById('tabHome').classList.remove('hidden');
                 document.getElementById('btnHome').classList.add('active');
@@ -369,13 +399,10 @@
                 document.getElementById('tabProfile').classList.remove('hidden');
                 document.getElementById('btnProfile').classList.add('active');
                 document.getElementById('newCredential').value = "";
-            } else if (tabName === 'admin') {
-                document.getElementById('tabAdmin').classList.remove('hidden');
-                document.getElementById('btnAdmin').classList.add('active');
             }
         }
 
-        // ---- AUTHENTICATION LOGIC ----
+        // ---- AUTHENTICATION ----
         function checkAuth() {
             const user = localStorage.getItem('loggedInUser');
             if (user) {
@@ -383,7 +410,16 @@
                 document.getElementById('loginPage').classList.add('hidden');
                 document.getElementById('registerPage').classList.add('hidden');
                 document.getElementById('appLayout').classList.remove('hidden');
+                
+                // Show Admin Pending button only to Alpha Admin
+                if (user === ALPHA_ADMIN_NAME) {
+                    document.getElementById('adminPendingBtn').classList.remove('hidden');
+                } else {
+                    document.getElementById('adminPendingBtn').classList.add('hidden');
+                }
+
                 switchTab('home');
+                renderActivityFeed(); 
             } else {
                 toggleAuthViews('loginPage');
             }
@@ -401,6 +437,7 @@
                 localStorage.setItem('loggedInUser', data.name);
                 localStorage.setItem('loggedCred', cred);
                 document.getElementById('loginCredential').value = "";
+                logActivity("logged into the system.");
                 checkAuth();
             } else {
                 alert(data.error);
@@ -429,9 +466,11 @@
         }
 
         function logoutUser() {
+            logActivity("logged out of the system.");
             localStorage.removeItem('loggedInUser');
             localStorage.removeItem('loggedCred');
             sessionAdminPass = "";
+            document.getElementById('adminPendingSection').classList.add('hidden');
             checkAuth();
         }
 
@@ -459,21 +498,32 @@
                 localStorage.setItem('loggedCred', newCred);
                 alert("Credentials updated successfully!");
                 document.getElementById('newCredential').value = "";
+                logActivity("updated their security credentials.");
             } catch (err) {
                 alert("Profile update requested, check backend.");
             }
         }
 
-        // ---- ALPHA ADMIN LOGIC ----
-        function promptAdminModal() {
-            if (sessionAdminPass !== "") {
-                // Already unlocked this session
-                fetchAdminData(sessionAdminPass);
-            } else {
+        // ---- MEMO SUBMISSION & ADMIN LOGIC ----
+        function openMemoModalUser() {
+            // Password prompt removed completely for opening Memo creation. 
+            // Anyone authenticated can create a memo now.
+            document.getElementById('memoSubmissionModal').classList.remove('hidden');
+        }
+
+        function promptAdminUnlock() {
+            if (sessionAdminPass === "") {
+                // Prompt for admin password before fetching pending accounts
                 document.getElementById('adminModal').classList.remove('hidden');
                 document.getElementById('adminPassInput').value = "";
                 document.getElementById('adminPassInput').focus();
+            } else {
+                fetchAdminData(sessionAdminPass);
             }
+        }
+
+        function closeMemoModal() {
+            document.getElementById('memoSubmissionModal').classList.add('hidden');
         }
 
         function closeAdminModal() {
@@ -484,7 +534,6 @@
             const pass = document.getElementById('adminPassInput').value;
             if (!pass) return;
             document.getElementById('adminPassInput').value = "Verifying...";
-            
             await fetchAdminData(pass);
         }
 
@@ -494,8 +543,10 @@
             
             if (data.success) {
                 sessionAdminPass = pass;
-                closeAdminModal();
-                switchTab('admin');
+                document.getElementById('adminModal').classList.add('hidden');
+                
+                // Show the Admin table below the Memo Database
+                document.getElementById('adminPendingSection').classList.remove('hidden');
                 renderPendingUsers(data.pending);
             } else {
                 alert(data.error || "Incorrect Admin Password.");
@@ -523,6 +574,7 @@
                 method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass })
             });
+            logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request.");
             setTimeout(() => { fetchAdminData(sessionAdminPass); }, 1500);
         }
 
@@ -543,7 +595,7 @@
                             <td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td>
                             <td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td>
                             <td>
-                                <button class="action-btn" onclick="triggerActionModal('edit', '${row[2]}', '${safeSubject}')">Edit</button>
+                                <button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button>
                                 <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button>
                             </td>
                         </tr>`;
@@ -555,21 +607,98 @@
             e.preventDefault();
             const subject = document.getElementById('memoSubject').value.trim();
             if (!subject) return alert("Please enter a Memo Subject.");
+            
             await fetch(API_URL, {
                 method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'create', memoSubject: subject, userName: localStorage.getItem('loggedInUser') })
             });
+            
+            logActivity(`encoded a new memo: "${subject}"`);
             document.getElementById('memoSubject').value = ""; 
+            closeMemoModal();
             setTimeout(loadData, 1500); 
         });
 
-        // ACTION MODAL FOR EDIT/DELETE
+        // ---- REAL-TIME EDIT LOGIC ----
+        function initiateEdit(controlNum, currentSubject) {
+            const user = localStorage.getItem('loggedInUser');
+            if (user !== ALPHA_ADMIN_NAME) {
+                requestRealTimeApproval(controlNum, currentSubject);
+            } else {
+                triggerActionModal('edit', controlNum, currentSubject);
+            }
+        }
+
+        function requestRealTimeApproval(controlNum, currentSubject) {
+            alert("Edit request sent to Alpha-Admin. Waiting for real-time approval...");
+            const reqId = Date.now().toString();
+            
+            localStorage.setItem('rtEditRequest', JSON.stringify({
+                id: reqId,
+                user: localStorage.getItem('loggedInUser'),
+                controlNum: controlNum,
+                subject: currentSubject
+            }));
+
+            let attempts = 0;
+            const poller = setInterval(() => {
+                attempts++;
+                const response = JSON.parse(localStorage.getItem('rtEditResponse_' + reqId));
+                if (response) {
+                    clearInterval(poller);
+                    localStorage.removeItem('rtEditResponse_' + reqId);
+                    
+                    if (response.approved) {
+                        alert("Alpha-Admin approved your request. You may now edit.");
+                        sessionAdminPass = response.password;
+                        triggerActionModal('edit', controlNum, currentSubject);
+                    } else {
+                        alert("Edit request was denied by Alpha-Admin.");
+                    }
+                }
+                
+                if (attempts > 90) { 
+                    clearInterval(poller);
+                    alert("Edit request timed out. Admin may be unavailable.");
+                }
+            }, 1000);
+        }
+
+        // Alpha-Admin Event Listener for real-time edit requests
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'rtEditRequest' && e.newValue) {
+                if (localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
+                    const req = JSON.parse(e.newValue);
+                    document.getElementById('editRequestUser').innerText = req.user;
+                    document.getElementById('editRequestControl').innerText = req.controlNum;
+                    document.getElementById('editRequestModal').dataset.reqId = req.id;
+                    document.getElementById('editRequestModal').classList.remove('hidden');
+                }
+            }
+        });
+
+        function respondToEditRequest(isApproved) {
+            const reqId = document.getElementById('editRequestModal').dataset.reqId;
+            const pass = document.getElementById('editRequestAdminPass').value;
+            
+            if (isApproved && !pass) return alert("Alpha-Admin code is required to allow edits.");
+
+            localStorage.setItem('rtEditResponse_' + reqId, JSON.stringify({
+                approved: isApproved,
+                password: pass
+            }));
+
+            document.getElementById('editRequestModal').classList.add('hidden');
+            document.getElementById('editRequestAdminPass').value = "";
+        }
+
+        // STANDARD ACTION MODAL
         function triggerActionModal(action, controlNum, currentSubject = "") {
             pendingAction = action;
             actionTargetControl = controlNum;
             
             document.getElementById('actionModal').classList.remove('hidden');
-            document.getElementById('actionAdminPass').value = sessionAdminPass; // auto-fill if session active
+            document.getElementById('actionAdminPass').value = sessionAdminPass; 
             document.getElementById('actionNewSubject').value = currentSubject;
             
             if (action === 'edit') {
@@ -594,10 +723,13 @@
             if (pendingAction === 'edit') {
                 const newSubject = document.getElementById('actionNewSubject').value.trim();
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, password: pass }) });
+                logActivity(`edited memo: ${actionTargetControl}`);
             } else if (pendingAction === 'delete') {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) });
+                logActivity(`deleted memo: ${actionTargetControl}`);
             } else if (pendingAction === 'batch_delete') {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) });
+                logActivity(`deleted multiple memos in a batch.`);
             }
 
             closeActionModal();
@@ -629,7 +761,6 @@
             document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked);
         }
 
-        // Initialize App
         checkAuth();
     </script>
 </body>
