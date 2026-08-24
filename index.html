@@ -91,7 +91,7 @@
         
         .sidebar { width: 220px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
         .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
-        .right-sidebar { width: 280px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; max-height: 80vh; overflow-y: auto; }
+        .right-sidebar { width: 280px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; max-height: 80vh; overflow-y: auto; justify-content: space-between; }
 
         .sidebar-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); text-align: left; padding: 12px 15px; font-size: 14px; display: flex; align-items: center; }
         .sidebar-btn:hover, .sidebar-btn.active { background: rgba(255, 255, 255, 0.1); color: white; border-color: var(--border-color); }
@@ -123,6 +123,35 @@
         .activity-item:last-child { border-bottom: none; }
         .activity-time { display: block; font-size: 11px; color: var(--primary); margin-bottom: 4px; font-weight: bold; }
         .activity-user { color: white; font-weight: bold; }
+
+        /* ACTIVITY FEED PAGINATION CONTROLS */
+        .activity-pagination { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-top: 15px; 
+            padding-top: 12px; 
+            border-top: 1px solid var(--border-color); 
+            font-size: 12px; 
+            color: var(--text-muted); 
+        }
+        .activity-page-btn { 
+            padding: 6px 12px; 
+            font-size: 12px; 
+            background: rgba(255, 255, 255, 0.1); 
+            border: 1px solid var(--border-color); 
+            border-radius: var(--radius-sm); 
+            color: white; 
+            cursor: pointer; 
+        }
+        .activity-page-btn:disabled { 
+            opacity: 0.3; 
+            cursor: not-allowed; 
+            transform: none !important; 
+        }
+        .activity-page-btn:hover:not(:disabled) { 
+            background: rgba(255, 255, 255, 0.2); 
+        }
 
         @media (max-width: 992px) {
             body { padding: 10px; }
@@ -258,9 +287,18 @@
 
         <!-- Right Sidebar Activity Feed -->
         <aside class="right-sidebar glass-panel">
-            <h2 style="margin-top: 0; font-size: 18px; text-align: center;">Live Activity Log</h2>
-            <div id="activityFeedList" style="display: flex; flex-direction: column;">
-                <!-- Activities populate here -->
+            <div>
+                <h2 style="margin-top: 0; font-size: 18px; text-align: center;">Live Activity Log</h2>
+                <div id="activityFeedList" style="display: flex; flex-direction: column;">
+                    <!-- Activities populate here -->
+                </div>
+            </div>
+
+            <!-- Activity Pagination Panel -->
+            <div id="activityPagination" class="activity-pagination hidden">
+                <button id="prevActivityBtn" class="activity-page-btn" onclick="changeActivityPage(-1)">Prev</button>
+                <span id="activityPageInfo">Page 1 of 1</span>
+                <button id="nextActivityBtn" class="activity-page-btn" onclick="changeActivityPage(1)">Next</button>
             </div>
         </aside>
     </div>
@@ -324,11 +362,14 @@
         let pendingAction = null;
         let actionTargetControl = null;
 
+        // ---- ACTIVITY LOG PAGINATION STATE ----
+        let currentActivityPage = 1;
+        const ACTIVITIES_PER_PAGE = 10;
+
         // ---- DYNAMIC CLOCK ----
         function updateDateTime() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            // BUG FIX: Changed from toLocaleDateString to toLocaleString to ensure time is displayed properly.
             document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options);
         }
         setInterval(updateDateTime, 1000);
@@ -344,9 +385,12 @@
             let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
             
             logs.unshift(logEntry);
-            if (logs.length > 50) logs = logs.slice(0, 50); // Keep only recent 50
+            if (logs.length > 50) logs = logs.slice(0, 50); // Keep max 50 logs in history
             
             localStorage.setItem('appActivityFeed', JSON.stringify(logs));
+            
+            // Return to first page so the newly logged item is immediately visible
+            currentActivityPage = 1;
             renderActivityFeed();
 
             try {
@@ -368,15 +412,26 @@
         function renderActivityFeed() {
             const logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
             const container = document.getElementById('activityFeedList');
-            if(!container) return;
+            const paginationContainer = document.getElementById('activityPagination');
+            if (!container) return;
             
             container.innerHTML = "";
             if (logs.length === 0) {
                 container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px; text-align: center;'>No recent activity.</p>";
+                if (paginationContainer) paginationContainer.classList.add('hidden');
                 return;
             }
+
+            // Calculate Pagination
+            const totalPages = Math.ceil(logs.length / ACTIVITIES_PER_PAGE);
+            if (currentActivityPage > totalPages) currentActivityPage = totalPages;
+            if (currentActivityPage < 1) currentActivityPage = 1;
+
+            const startIndex = (currentActivityPage - 1) * ACTIVITIES_PER_PAGE;
+            const endIndex = startIndex + ACTIVITIES_PER_PAGE;
+            const currentLogs = logs.slice(startIndex, endIndex);
             
-            logs.forEach(log => {
+            currentLogs.forEach(log => {
                 container.innerHTML += `
                     <div class="activity-item">
                         <span class="activity-time">${log.timeString}</span>
@@ -384,6 +439,23 @@
                     </div>
                 `;
             });
+
+            // Update Pagination UI
+            if (paginationContainer) {
+                if (logs.length > ACTIVITIES_PER_PAGE) {
+                    paginationContainer.classList.remove('hidden');
+                    document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
+                    document.getElementById('prevActivityBtn').disabled = (currentActivityPage === 1);
+                    document.getElementById('nextActivityBtn').disabled = (currentActivityPage === totalPages);
+                } else {
+                    paginationContainer.classList.add('hidden');
+                }
+            }
+        }
+
+        function changeActivityPage(direction) {
+            currentActivityPage += direction;
+            renderActivityFeed();
         }
 
         // Listen for cross-tab activity updates
@@ -579,7 +651,6 @@
             tbody.innerHTML = "";
             if(users.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>No pending accounts.</td></tr>"; return; }
             users.forEach(u => {
-                // BUG FIX: Escaped PIN to prevent HTML issues if it contains quotes
                 const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 tbody.innerHTML += `<tr>
                     <td>${u.name}</td><td>****</td>
@@ -611,7 +682,6 @@
                 
                 data.reverse();
                 data.forEach(row => {
-                    // BUG FIX: Casted to String to prevent crash on numeric entries and escaped double quotes
                     const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     tableBody.innerHTML += `
                         <tr>
@@ -750,7 +820,6 @@
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) });
                 logActivity(`deleted memo: ${actionTargetControl}`);
             } else if (pendingAction === 'batch_delete') {
-                // BUG FIX: Loop through array items and delete each one to avoid payload format errors
                 for (const controlNum of actionTargetControl) {
                     await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: controlNum, password: pass }) });
                 }
