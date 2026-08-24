@@ -364,7 +364,7 @@
 
         // ---- ACTIVITY LOG PAGINATION STATE ----
         let currentActivityPage = 1;
-        const ACTIVITIES_PER_PAGE = 10;
+        const ACTIVITIES_PER_PAGE = 8; // Displaying exactly 8 activities per page
 
         // ---- DYNAMIC CLOCK ----
         function updateDateTime() {
@@ -384,6 +384,10 @@
             const logEntry = { user, actionText, timeString, timestamp: now.getTime() };
             let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
             
+            // Auto-delete logs older than 7 days (7 * 24 * 60 * 60 * 1000 ms)
+            const ONE_WEEK_MS = 604800000; 
+            logs = logs.filter(log => (now.getTime() - log.timestamp) < ONE_WEEK_MS);
+
             logs.unshift(logEntry);
             if (logs.length > 50) logs = logs.slice(0, 50); // Keep max 50 logs in history
             
@@ -410,9 +414,21 @@
         }
 
         function renderActivityFeed() {
-            const logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
+            let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
             const container = document.getElementById('activityFeedList');
             const paginationContainer = document.getElementById('activityPagination');
+            
+            // Auto-delete logs older than 7 days upon rendering
+            const ONE_WEEK_MS = 604800000;
+            const now = new Date().getTime();
+            const originalLength = logs.length;
+            logs = logs.filter(log => (now - log.timestamp) < ONE_WEEK_MS);
+            
+            // Update local storage if old logs were removed during render check
+            if (logs.length !== originalLength) {
+                localStorage.setItem('appActivityFeed', JSON.stringify(logs));
+            }
+
             if (!container) return;
             
             container.innerHTML = "";
