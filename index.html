@@ -25,7 +25,6 @@
         
         body { 
             font-family: 'Inter', sans-serif; 
-            /* Static gradient instead of animated background */
             background: linear-gradient(135deg, #0f172a, #1e1b4b, #000000);
             color: var(--text-main); 
             min-height: 100vh; 
@@ -90,7 +89,6 @@
 
         .app-layout { display: flex; width: 100%; max-width: 1400px; gap: 20px; align-items: flex-start; }
         
-        /* 3-Column Layout */
         .sidebar { width: 220px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
         .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
         .right-sidebar { width: 280px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; max-height: 80vh; overflow-y: auto; }
@@ -121,40 +119,28 @@
         .modal-content { width: 100%; max-width: 350px; padding: 25px; text-align: center; max-height: 90vh; overflow-y: auto; }
         .modal-large { max-width: 600px; }
 
-        /* Activity Feed Styles */
         .activity-item { padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 13px; line-height: 1.4; text-align: left; }
         .activity-item:last-child { border-bottom: none; }
         .activity-time { display: block; font-size: 11px; color: var(--primary); margin-bottom: 4px; font-weight: bold; }
         .activity-user { color: white; font-weight: bold; }
 
-        /* ================================================= */
-        /* MEDIA QUERIES FOR MOBILE & TABLET OPTIMIZATION */
-        /* ================================================= */
         @media (max-width: 992px) {
             body { padding: 10px; }
-            
             .site-header { flex-direction: column; align-items: flex-start; gap: 5px; text-align: left; }
             #datetime-display { position: relative; right: auto; top: auto; transform: none; padding-top: 5px; }
-
             .app-layout { flex-direction: column; align-items: stretch; }
-            
             .sidebar, .right-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; max-height: none; padding: 15px;}
             .sidebar-btn { flex: 1; justify-content: center; text-align: center; white-space: nowrap; }
-            
             .main-content { padding: 15px; min-height: auto; width: 100%; }
-            
             .controls { flex-direction: column; align-items: stretch; gap: 15px;}
             .controls > div { display: flex; flex-direction: column; width: 100%; gap: 10px; }
-            
             #searchInput { width: 100% !important; }
             .action-btn { width: 100%; padding: 12px; }
-
-            /* Make modal form stack nicely */
             #memoForm { flex-direction: column; }
         }
 
         @media (max-width: 480px) {
-            .sidebar-btn { min-width: 100%; } /* Stack buttons vertically on very small screens */
+            .sidebar-btn { min-width: 100%; } 
             .site-header h1 { font-size: 20px; }
             .auth-type-toggle { flex-direction: column; align-items: center; gap: 8px;}
         }
@@ -331,9 +317,8 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT REMAINS UNCHANGED -->
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbySFBLNfeaZGgOJ-HL1wsiGLeMrmWyqiRGXXiomTuHpAaEe7WFtUsQ6HW_quIe_F62G/exec";
+        const API_URL = "https://script.google.com/macros/library/d/1O7S0TNd7mE5HICfA2R7xMiFdDDs5ihAG5faQBxFeO28gk-0jtLEFIMuV/12";
         const ALPHA_ADMIN_NAME = "PCpl Gandia"; 
         let sessionAdminPass = ""; 
         let pendingAction = null;
@@ -343,12 +328,13 @@
         function updateDateTime() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            document.getElementById('datetime-display').innerText = now.toLocaleDateString('en-US', options);
+            // BUG FIX: Changed from toLocaleDateString to toLocaleString to ensure time is displayed properly.
+            document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options);
         }
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        // ---- ACTIVITY FEED LOGIC (Updated with Google Sheet Sync) ----
+        // ---- ACTIVITY FEED LOGIC ----
         async function logActivity(actionText) {
             const user = localStorage.getItem('loggedInUser') || 'Unknown User';
             const now = new Date();
@@ -363,7 +349,6 @@
             localStorage.setItem('appActivityFeed', JSON.stringify(logs));
             renderActivityFeed();
 
-            // Direct sync request to Google Apps Script ActivityLog sheet
             try {
                 await fetch(API_URL, {
                     method: 'POST',
@@ -452,7 +437,6 @@
                 document.getElementById('registerPage').classList.add('hidden');
                 document.getElementById('appLayout').classList.remove('hidden');
                 
-                // Show Admin Pending button only to Alpha Admin
                 if (user === ALPHA_ADMIN_NAME) {
                     document.getElementById('adminPendingBtn').classList.remove('hidden');
                 } else {
@@ -595,11 +579,13 @@
             tbody.innerHTML = "";
             if(users.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>No pending accounts.</td></tr>"; return; }
             users.forEach(u => {
+                // BUG FIX: Escaped PIN to prevent HTML issues if it contains quotes
+                const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 tbody.innerHTML += `<tr>
                     <td>${u.name}</td><td>****</td>
                     <td>
-                        <button class="action-btn approve-btn" onclick="processApproval('${u.pin}', 'approve_user')">Approve</button>
-                        <button class="action-btn delete-btn" onclick="processApproval('${u.pin}', 'reject_user')">Reject</button>
+                        <button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button>
+                        <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>
                     </td></tr>`;
             });
         }
@@ -625,7 +611,8 @@
                 
                 data.reverse();
                 data.forEach(row => {
-                    const safeSubject = row[1].replace(/'/g, "\\'");
+                    // BUG FIX: Casted to String to prevent crash on numeric entries and escaped double quotes
+                    const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     tableBody.innerHTML += `
                         <tr>
                             <td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td>
@@ -679,7 +666,7 @@
             let attempts = 0;
             const poller = setInterval(() => {
                 attempts++;
-                const response = JSON.parse(localStorage.getItem('rtEditResponse_' + reqId));
+                const response = JSON.parse(localStorage.getItem('rtEditResponse_' + reqId) || "null");
                 if (response) {
                     clearInterval(poller);
                     localStorage.removeItem('rtEditResponse_' + reqId);
@@ -700,7 +687,6 @@
             }, 1000);
         }
 
-        // Alpha-Admin Event Listener for real-time edit requests
         window.addEventListener('storage', (e) => {
             if (e.key === 'rtEditRequest' && e.newValue) {
                 if (localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
@@ -764,7 +750,10 @@
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) });
                 logActivity(`deleted memo: ${actionTargetControl}`);
             } else if (pendingAction === 'batch_delete') {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) });
+                // BUG FIX: Loop through array items and delete each one to avoid payload format errors
+                for (const controlNum of actionTargetControl) {
+                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: controlNum, password: pass }) });
+                }
                 logActivity(`deleted multiple memos in a batch.`);
             }
 
