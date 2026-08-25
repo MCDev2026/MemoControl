@@ -124,7 +124,6 @@
         .activity-time { display: block; font-size: 11px; color: var(--primary); margin-bottom: 4px; font-weight: bold; }
         .activity-user { color: white; font-weight: bold; }
 
-        /* ACTIVITY FEED PAGINATION CONTROLS */
         .activity-pagination { 
             display: flex; 
             align-items: center; 
@@ -144,14 +143,8 @@
             color: white; 
             cursor: pointer; 
         }
-        .activity-page-btn:disabled { 
-            opacity: 0.3; 
-            cursor: not-allowed; 
-            transform: none !important; 
-        }
-        .activity-page-btn:hover:not(:disabled) { 
-            background: rgba(255, 255, 255, 0.2); 
-        }
+        .activity-page-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
+        .activity-page-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
 
         @media (max-width: 992px) {
             body { padding: 10px; }
@@ -307,8 +300,18 @@
     <div id="memoSubmissionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel modal-large">
             <h2 style="margin-top: 0;">Submit New Memo</h2>
+            
             <form id="memoForm" style="display: flex; gap: 10px; margin-top: 12px; margin-bottom: 20px;">
-                <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0;">
+                <!-- Dropdown for Section Classification -->
+                <select id="memoClassification" style="padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.1); color: white; margin: 0;">
+                    <option value="A" style="color: black;">ADMIN</option>
+                    <option value="S" style="color: black;">SUPPLY</option>
+                    <option value="GSS" style="color: black;">General Services Section</option>
+                    <option value="BP" style="color: black;">Base Police</option>
+                    <option value="SSB" style="color: black;">Special Services Band</option>
+                </select>
+                
+                <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0; flex-grow: 1;">
                 <button type="submit" style="white-space: nowrap;">Submit Data</button>
             </form>
             
@@ -342,7 +345,7 @@
         </div>
     </div>
 
-    <!-- REAL-TIME EDIT REQUEST MODAL (Shown to Admin) -->
+    <!-- REAL-TIME EDIT REQUEST MODAL -->
     <div id="editRequestModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
             <h3 style="color: #fca5a5; margin-top: 0;">Real-Time Edit Request</h3>
@@ -364,7 +367,7 @@
 
         // ---- ACTIVITY LOG PAGINATION STATE ----
         let currentActivityPage = 1;
-        const ACTIVITIES_PER_PAGE = 8; // Displaying exactly 8 activities per page
+        const ACTIVITIES_PER_PAGE = 8; 
 
         // ---- DYNAMIC CLOCK ----
         function updateDateTime() {
@@ -384,16 +387,14 @@
             const logEntry = { user, actionText, timeString, timestamp: now.getTime() };
             let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
             
-            // Auto-delete logs older than 7 days (7 * 24 * 60 * 60 * 1000 ms)
             const ONE_WEEK_MS = 604800000; 
             logs = logs.filter(log => (now.getTime() - log.timestamp) < ONE_WEEK_MS);
 
             logs.unshift(logEntry);
-            if (logs.length > 50) logs = logs.slice(0, 50); // Keep max 50 logs in history
+            if (logs.length > 50) logs = logs.slice(0, 50); 
             
             localStorage.setItem('appActivityFeed', JSON.stringify(logs));
             
-            // Return to first page so the newly logged item is immediately visible
             currentActivityPage = 1;
             renderActivityFeed();
 
@@ -418,13 +419,11 @@
             const container = document.getElementById('activityFeedList');
             const paginationContainer = document.getElementById('activityPagination');
             
-            // Auto-delete logs older than 7 days upon rendering
             const ONE_WEEK_MS = 604800000;
             const now = new Date().getTime();
             const originalLength = logs.length;
             logs = logs.filter(log => (now - log.timestamp) < ONE_WEEK_MS);
             
-            // Update local storage if old logs were removed during render check
             if (logs.length !== originalLength) {
                 localStorage.setItem('appActivityFeed', JSON.stringify(logs));
             }
@@ -438,7 +437,6 @@
                 return;
             }
 
-            // Calculate Pagination
             const totalPages = Math.ceil(logs.length / ACTIVITIES_PER_PAGE);
             if (currentActivityPage > totalPages) currentActivityPage = totalPages;
             if (currentActivityPage < 1) currentActivityPage = 1;
@@ -456,7 +454,6 @@
                 `;
             });
 
-            // Update Pagination UI
             if (paginationContainer) {
                 if (logs.length > ACTIVITIES_PER_PAGE) {
                     paginationContainer.classList.remove('hidden');
@@ -474,7 +471,6 @@
             renderActivityFeed();
         }
 
-        // Listen for cross-tab activity updates
         window.addEventListener('storage', (e) => {
             if (e.key === 'appActivityFeed') renderActivityFeed();
         });
@@ -715,11 +711,18 @@
         document.getElementById('memoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const subject = document.getElementById('memoSubject').value.trim();
+            const classification = document.getElementById('memoClassification').value; // NEW
+
             if (!subject) return alert("Please enter a Memo Subject.");
             
             await fetch(API_URL, {
                 method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'create', memoSubject: subject, userName: localStorage.getItem('loggedInUser') })
+                body: JSON.stringify({ 
+                    action: 'create', 
+                    memoSubject: subject, 
+                    classification: classification, // NEW
+                    userName: localStorage.getItem('loggedInUser') 
+                })
             });
             
             logActivity(`encoded a new memo: "${subject}"`);
