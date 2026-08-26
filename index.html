@@ -304,8 +304,8 @@
             <form id="memoForm" style="display: flex; gap: 10px; margin-top: 12px; margin-bottom: 20px;">
                 <!-- Dropdown for Section Classification -->
                 <select id="memoClassification" style="padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.1); color: white; margin: 0;">
-                    <option value="A" style="color: black;">ADMIN</option>
-                    <option value="S" style="color: black;">SUPPLY</option>
+                    <option value="A" style="color: black;">Admin</option>
+                    <option value="S" style="color: black;">Supply</option>
                     <option value="GSS" style="color: black;">General Services Section</option>
                     <option value="BP" style="color: black;">Base Police</option>
                     <option value="SSB" style="color: black;">Special Services Band</option>
@@ -686,7 +686,7 @@
         // ---- DATABASE LOGIC ----
         async function loadData() {
             try {
-                const response = await fetch(API_URL);
+                const response = await fetch(API_URL + "?action=get_memos");;
                 let data = await response.json();
                 const tableBody = document.getElementById('dataTable');
                 tableBody.innerHTML = "";
