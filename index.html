@@ -146,6 +146,63 @@
         .activity-page-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
         .activity-page-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
 
+        /* Notification Container - Bottom Left */
+        #notificationContainer {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none; /* Allows clicking through the empty space */
+        }
+
+        /* Individual Stackable Toast */
+        .notification-toast {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary);
+            color: var(--text-main);
+            padding: 15px 20px;
+            border-radius: var(--radius-md);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            cursor: pointer;
+            pointer-events: auto;
+            animation: slideInLeft 0.3s ease-out forwards;
+            min-width: 250px;
+            max-width: 350px;
+        }
+
+        .notification-toast.fade-out {
+            animation: fadeOutLeft 0.3s ease-in forwards;
+        }
+
+        .notification-title { display: block; font-weight: bold; font-size: 14px; color: var(--primary); margin-bottom: 4px; }
+        .notification-msg { font-size: 13px; color: var(--text-muted); }
+
+        /* Red Notification Dot */
+        .notif-dot {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 12px;
+            height: 12px;
+            background-color: var(--danger);
+            border-radius: 50%;
+            border: 2px solid #0f172a;
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOutLeft {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(-100%); opacity: 0; }
+        }
+
         @media (max-width: 992px) {
             body { padding: 10px; }
             .site-header { flex-direction: column; align-items: flex-start; gap: 5px; text-align: left; }
@@ -223,7 +280,10 @@
                 <div class="controls">
                     <h2 style="margin:0;">Memo Database</h2>
                     <div>
-                        <button id="adminPendingBtn" class="action-btn hidden" onclick="promptAdminUnlock()" style="background-color: #f59e0b; color: white; padding: 10px 18px; font-weight: bold; border: none;">Review Pending Accounts</button>
+                        <button id="adminPendingBtn" class="action-btn hidden" onclick="promptAdminUnlock()" style="background-color: #f59e0b; color: white; padding: 10px 18px; font-weight: bold; border: none; position: relative;">
+                            Review Pending Accounts
+                            <span id="pendingAccountDot" class="notif-dot hidden"></span>
+                        </button>
                         <button class="action-btn approve-btn" onclick="openMemoModalUser()" style="padding: 10px 18px; font-weight: bold;">+ Create New Memo</button>
                     </div>
                 </div>
@@ -358,6 +418,9 @@
         </div>
     </div>
 
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbx42FXBvP2w42kl5XO9ICUAf04mJqqHLcVfSsEC9Ku8bcYWd5KZ2S1H_zzGWs8zE-kS/exec";
         const ALPHA_ADMIN_NAME = "PCpl Gandia"; 
@@ -377,6 +440,33 @@
         }
         setInterval(updateDateTime, 1000);
         updateDateTime();
+
+        // ---- NOTIFICATION LOGIC ----
+        function showNotification(title, message, onClickAction) {
+            const container = document.getElementById('notificationContainer');
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `
+                <span class="notification-title">${title}</span>
+                <span class="notification-msg">${message}</span>
+            `;
+            
+            // Auto remove after 5 seconds
+            const timeout = setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+
+            // Click interaction
+            toast.addEventListener('click', () => {
+                clearTimeout(timeout);
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+                if (onClickAction) onClickAction();
+            });
+
+            container.appendChild(toast);
+        }
 
         // ---- ACTIVITY FEED LOGIC ----
         async function logActivity(actionText) {
@@ -471,8 +561,42 @@
             renderActivityFeed();
         }
 
+        // Handle Cross-Tab Events (Activity, Real-Time Edits, Notifications)
         window.addEventListener('storage', (e) => {
+            // 1. Activity Feed Updates
             if (e.key === 'appActivityFeed') renderActivityFeed();
+
+            // 2. Real-Time Edit Requests Notification
+            if (e.key === 'rtEditRequest' && e.newValue) {
+                if (localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
+                    const req = JSON.parse(e.newValue);
+                    
+                    document.getElementById('editRequestUser').innerText = req.user;
+                    document.getElementById('editRequestControl').innerText = req.controlNum;
+                    document.getElementById('editRequestModal').dataset.reqId = req.id;
+                    
+                    showNotification(
+                        "New Edit Request",
+                        `User ${req.user} is requesting to edit Memo ${req.controlNum}. Click to review.`,
+                        () => { document.getElementById('editRequestModal').classList.remove('hidden'); }
+                    );
+                }
+            }
+            
+            // 3. New Account Registration Notification
+            if (e.key === 'newAccountRequest' && e.newValue) {
+                if (localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
+                    const req = JSON.parse(e.newValue);
+                    
+                    document.getElementById('pendingAccountDot').classList.remove('hidden');
+                    
+                    showNotification(
+                        "New Account Request",
+                        `${req.user} requested an account. Click to review.`,
+                        () => { promptAdminUnlock(); }
+                    );
+                }
+            }
         });
 
         // ---- UI TOGGLES ----
@@ -565,6 +689,7 @@
 
             if (data.success) {
                 alert("Account created! It is currently pending approval by the Alpha Admin.");
+                localStorage.setItem('newAccountRequest', JSON.stringify({ user: name, time: Date.now() }));
                 document.getElementById('regName').value = "";
                 document.getElementById('regCredential').value = "";
                 toggleAuthViews('loginPage');
@@ -651,6 +776,7 @@
                 sessionAdminPass = pass;
                 document.getElementById('adminModal').classList.add('hidden');
                 document.getElementById('adminPendingSection').classList.remove('hidden');
+                document.getElementById('pendingAccountDot').classList.add('hidden'); // Clear the dot
                 renderPendingUsers(data.pending);
             } else {
                 alert(data.error || "Incorrect Admin Password.");
@@ -711,7 +837,7 @@
         document.getElementById('memoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const subject = document.getElementById('memoSubject').value.trim();
-            const classification = document.getElementById('memoClassification').value; // NEW
+            const classification = document.getElementById('memoClassification').value; 
 
             if (!subject) return alert("Please enter a Memo Subject.");
             
@@ -720,7 +846,7 @@
                 body: JSON.stringify({ 
                     action: 'create', 
                     memoSubject: subject, 
-                    classification: classification, // NEW
+                    classification: classification, 
                     userName: localStorage.getItem('loggedInUser') 
                 })
             });
@@ -775,18 +901,6 @@
                 }
             }, 1000);
         }
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'rtEditRequest' && e.newValue) {
-                if (localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
-                    const req = JSON.parse(e.newValue);
-                    document.getElementById('editRequestUser').innerText = req.user;
-                    document.getElementById('editRequestControl').innerText = req.controlNum;
-                    document.getElementById('editRequestModal').dataset.reqId = req.id;
-                    document.getElementById('editRequestModal').classList.remove('hidden');
-                }
-            }
-        });
 
         function respondToEditRequest(isApproved) {
             const reqId = document.getElementById('editRequestModal').dataset.reqId;
