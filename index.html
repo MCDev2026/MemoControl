@@ -67,7 +67,6 @@
             border-radius: var(--radius-lg);
         }
 
-        /* Updated Symmetrical Auth Modals */
         .auth-container { max-width: 500px; width: 100%; padding: 40px; text-align: center; margin-top: 50px; }
         .auth-container h2 { margin-top: 0; margin-bottom: 25px; font-size: 24px; }
         .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
@@ -88,13 +87,10 @@
         
         .link { color: #818cf8; cursor: pointer; font-size: 14px; font-weight: 500; margin-top: 16px; display: inline-block; }
         .link:hover { text-decoration: underline; color: #a5b4fc; }
-        .forgot-link { display: block; text-align: right; color: #818cf8; font-size: 12px; margin-bottom: 15px; cursor: pointer; }
-        .forgot-link:hover { text-decoration: underline; }
 
         hr { border: none; height: 1px; background-color: var(--border-color); margin: 24px 0; }
         h2 { font-size: 20px; margin-bottom: 12px; }
 
-        /* General App Layout Styling */
         .app-layout { display: flex; width: 100%; max-width: 1400px; gap: 20px; align-items: flex-start; }
         .sidebar { width: 220px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
         .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
@@ -137,8 +133,7 @@
         .notification-toast.fade-out { animation: fadeOutLeft 0.3s ease-in forwards; }
         .notification-title { display: block; font-weight: bold; font-size: 14px; color: var(--primary); margin-bottom: 4px; }
         .notification-msg { font-size: 13px; color: var(--text-muted); }
-        .notif-dot { position: absolute; top: -5px; right: -5px; width: 12px; height: 12px; background-color: var(--danger); border-radius: 50%; border: 2px solid #0f172a; }
-
+        
         @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOutLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
 
@@ -156,7 +151,6 @@
             .action-btn { width: 100%; padding: 12px; }
             #memoForm { flex-direction: column; }
         }
-
         @media (max-width: 480px) {
             .sidebar-btn { min-width: 100%; } 
             .site-header h1 { font-size: 20px; }
@@ -166,8 +160,6 @@
     </style>
 </head>
 <body>
-
-    <!-- SITE HEADER -->
     <header class="site-header">
         <img src="images/PRO 1 LOGO.png" alt="PRO 1 Logo" onerror="this.style.display='none'">
         <h1>RHSU MEMO CONTROL</h1>
@@ -183,7 +175,6 @@
         </div>
         <input type="text" id="loginUsername" placeholder="Enter Username">
         <input type="password" id="loginCredential" placeholder="Enter 6-Digit PIN" maxlength="6">
-        <span class="forgot-link" onclick="toggleAuthViews('forgotPage')">Forgot password?</span>
         <button onclick="loginUser()">Login</button>
         <span class="link" onclick="toggleAuthViews('registerPage')">Create an Account</span>
     </div>
@@ -220,38 +211,24 @@
         <span class="link" onclick="toggleAuthViews('loginPage')">Back to Login</span>
     </div>
 
-    <!-- FORGOT PASSWORD PAGE -->
-    <div id="forgotPage" class="auth-container glass-panel hidden">
-        <h2>Account Recovery</h2>
-        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Enter your registered email address to receive password authentication and reset instructions.</p>
-        <input type="email" id="forgotEmail" placeholder="Email Address">
-        <button onclick="recoverAccount()">Send Recovery Link</button>
-        <span class="link" onclick="toggleAuthViews('loginPage')">Back to Login</span>
-    </div>
-
     <!-- MAIN APP LAYOUT (Sidebar + Content + Activity Feed) -->
     <div id="appLayout" class="app-layout hidden">
-        <!-- Left Sidebar -->
         <aside class="sidebar glass-panel">
             <div style="margin-bottom: 10px; width: 100%;">
                 <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 16px;"></span>
             </div>
             <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home')"><span class="status-dot"></span>Home Page</button>
             <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile')"><span class="status-dot"></span>My Profile</button>
+            <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt')"><span class="status-dot" id="pendingAccountDot" style="background-color: var(--text-muted);"></span>Administration Mgmt</button>
             <div style="flex-grow: 1;"></div>
             <button class="sidebar-btn" style="color: var(--danger);" onclick="logoutUser()"><span class="status-dot"></span>Logout</button>
         </aside>
 
-        <!-- Main Center Content -->
         <main class="main-content glass-panel">
             <div id="tabHome">
                 <div class="controls">
                     <h2 style="margin:0;">Memo Database</h2>
                     <div>
-                        <button id="adminPendingBtn" class="action-btn hidden" onclick="promptAdminUnlock()" style="background-color: #f59e0b; color: white; padding: 10px 18px; font-weight: bold; border: none; position: relative;">
-                            Review Pending Accounts
-                            <span id="pendingAccountDot" class="notif-dot hidden"></span>
-                        </button>
                         <button class="action-btn approve-btn" onclick="openMemoModalUser()" style="padding: 10px 18px; font-weight: bold;">+ Create New Memo</button>
                     </div>
                 </div>
@@ -277,19 +254,6 @@
                         <tbody id="dataTable"></tbody>
                     </table>
                 </div>
-                
-                <div id="adminPendingSection" class="hidden" style="text-align: left; margin-top: 40px;">
-                    <hr style="margin-bottom: 20px;">
-                    <h2 style="color: #fca5a5; margin-bottom: 5px;">Pending Account Approvals</h2>
-                    <div class="table-wrapper">
-                        <table id="pendingTable">
-                            <thead>
-                                <tr><th>User Name</th><th>Credential</th><th>Actions</th></tr>
-                            </thead>
-                            <tbody id="pendingTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
 
             <div id="tabProfile" class="hidden">
@@ -299,9 +263,29 @@
                 <br>
                 <button style="margin-top: 15px; width: auto;" onclick="updateProfile()">Save Changes</button>
             </div>
+
+            <!-- NEW: ADMINISTRATION MANAGEMENT PAGE -->
+            <div id="tabAdminMgmt" class="hidden">
+                <div class="controls">
+                    <h2 style="margin:0; color: #fca5a5;">Administration Management</h2>
+                    <button class="action-btn approve-btn" onclick="loadAdminUsers()" style="padding: 10px 18px; font-weight: bold;">Refresh List</button>
+                </div>
+                <div class="table-wrapper" style="margin-top: 20px;">
+                    <table id="adminUsersTable">
+                        <thead>
+                            <tr>
+                                <th>Rank & Name</th>
+                                <th>Username</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminUsersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
         </main>
 
-        <!-- Right Sidebar Activity Feed -->
         <aside class="right-sidebar glass-panel">
             <div>
                 <h2 style="margin-top: 0; font-size: 18px; text-align: center;">Live Activity Log</h2>
@@ -334,7 +318,7 @@
         </div>
     </div>
 
-    <!-- MODALS (Admin, Edit, Action) - Unchanged visually but logic preserved -->
+    <!-- MODALS -->
     <div id="adminModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
             <h3 style="margin-top:0;">Alpha Admin Validation Required</h3>
@@ -377,6 +361,7 @@
         const ALPHA_ADMIN_NAME = "PCpl Gandia"; 
         let sessionAdminPass = ""; 
         let pendingAction = null;
+        let pendingAdminAction = null;
         let actionTargetControl = null;
         let currentActivityPage = 1;
         const ACTIVITIES_PER_PAGE = 8; 
@@ -386,8 +371,7 @@
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
             document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options);
         }
-        setInterval(updateDateTime, 1000);
-        updateDateTime();
+        setInterval(updateDateTime, 1000); updateDateTime();
 
         function showNotification(title, message, onClickAction) {
             const container = document.getElementById('notificationContainer');
@@ -423,13 +407,11 @@
             const container = document.getElementById('activityFeedList');
             const paginationContainer = document.getElementById('activityPagination');
             
-            if (!container) return;
-            container.innerHTML = "";
+            if (!container) return; container.innerHTML = "";
             if (logs.length === 0) {
                 container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px; text-align: center;'>No recent activity.</p>";
                 if (paginationContainer) paginationContainer.classList.add('hidden'); return;
             }
-
             const totalPages = Math.ceil(logs.length / ACTIVITIES_PER_PAGE);
             if (currentActivityPage > totalPages) currentActivityPage = totalPages;
             const currentLogs = logs.slice((currentActivityPage - 1) * ACTIVITIES_PER_PAGE, ((currentActivityPage - 1) * ACTIVITIES_PER_PAGE) + ACTIVITIES_PER_PAGE);
@@ -437,13 +419,10 @@
             currentLogs.forEach(log => {
                 container.innerHTML += `<div class="activity-item"><span class="activity-time">${log.timeString}</span><span class="activity-user">${log.user}</span> ${log.actionText}</div>`;
             });
-
             if (paginationContainer) {
                 if (logs.length > ACTIVITIES_PER_PAGE) {
-                    paginationContainer.classList.remove('hidden');
-                    document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
-                    document.getElementById('prevActivityBtn').disabled = (currentActivityPage === 1);
-                    document.getElementById('nextActivityBtn').disabled = (currentActivityPage === totalPages);
+                    paginationContainer.classList.remove('hidden'); document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
+                    document.getElementById('prevActivityBtn').disabled = (currentActivityPage === 1); document.getElementById('nextActivityBtn').disabled = (currentActivityPage === totalPages);
                 } else { paginationContainer.classList.add('hidden'); }
             }
         }
@@ -457,15 +436,14 @@
                 showNotification("New Edit Request", `User ${req.user} is requesting to edit Memo ${req.controlNum}. Click to review.`, () => { document.getElementById('editRequestModal').classList.remove('hidden'); });
             }
             if (e.key === 'newAccountRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
-                const req = JSON.parse(e.newValue); document.getElementById('pendingAccountDot').classList.remove('hidden');
-                showNotification("New Account Request", `${req.user} requested an account. Click to review.`, () => { promptAdminUnlock(); });
+                const req = JSON.parse(e.newValue); document.getElementById('pendingAccountDot').style.backgroundColor = 'var(--danger)';
+                showNotification("New Account Request", `${req.user} requested an account. Click to review.`, () => { switchTab('adminMgmt'); });
             }
         });
 
         function toggleAuthViews(viewId) {
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('registerPage').classList.add('hidden');
-            document.getElementById('forgotPage').classList.add('hidden');
             document.getElementById('appLayout').classList.add('hidden');
             document.getElementById(viewId).classList.remove('hidden');
         }
@@ -478,10 +456,36 @@
         }
 
         function switchTab(tabName) {
-            document.getElementById('tabHome').classList.add('hidden'); document.getElementById('tabProfile').classList.add('hidden');
-            document.getElementById('btnHome').classList.remove('active'); document.getElementById('btnProfile').classList.remove('active');
-            if (tabName === 'home') { document.getElementById('tabHome').classList.remove('hidden'); document.getElementById('btnHome').classList.add('active'); loadData(); } 
-            else if (tabName === 'profile') { document.getElementById('tabProfile').classList.remove('hidden'); document.getElementById('btnProfile').classList.add('active'); document.getElementById('newCredential').value = ""; }
+            document.getElementById('tabHome').classList.add('hidden'); 
+            document.getElementById('tabProfile').classList.add('hidden');
+            document.getElementById('tabAdminMgmt').classList.add('hidden');
+            document.getElementById('btnHome').classList.remove('active'); 
+            document.getElementById('btnProfile').classList.remove('active');
+            document.getElementById('btnAdminMgmt').classList.remove('active');
+
+            if (tabName === 'home') { 
+                document.getElementById('tabHome').classList.remove('hidden'); document.getElementById('btnHome').classList.add('active'); loadData(); 
+            } 
+            else if (tabName === 'profile') { 
+                document.getElementById('tabProfile').classList.remove('hidden'); document.getElementById('btnProfile').classList.add('active'); document.getElementById('newCredential').value = ""; 
+            }
+            else if (tabName === 'adminMgmt') {
+                if (sessionAdminPass === "") { 
+                    pendingAdminAction = 'open_mgmt';
+                    document.getElementById('adminModal').classList.remove('hidden'); 
+                    document.getElementById('adminPassInput').value = ""; 
+                    document.getElementById('adminPassInput').focus(); 
+                } else { 
+                    showAdminMgmtTab(); 
+                }
+            }
+        }
+
+        function showAdminMgmtTab() {
+            document.getElementById('tabAdminMgmt').classList.remove('hidden');
+            document.getElementById('btnAdminMgmt').classList.add('active');
+            document.getElementById('pendingAccountDot').style.backgroundColor = 'var(--success)';
+            loadAdminUsers();
         }
 
         function checkAuth() {
@@ -490,9 +494,8 @@
                 document.getElementById('welcomeMsg').innerText = `Welcome, ${user}`;
                 document.getElementById('loginPage').classList.add('hidden');
                 document.getElementById('registerPage').classList.add('hidden');
-                document.getElementById('forgotPage').classList.add('hidden');
                 document.getElementById('appLayout').classList.remove('hidden');
-                document.getElementById('adminPendingBtn').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
+                document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
                 switchTab('home'); renderActivityFeed(); 
             } else { toggleAuthViews('loginPage'); }
         }
@@ -528,9 +531,7 @@
             if(!rank || !firstName || !lastName || !email || !username || cred.length < 4) {
                 return alert("Please complete all required fields and ensure credential is at least 4 characters.");
             }
-
             const payload = { action: 'register', rank, firstName, middleName, lastName, qlf, email, username, pin: cred };
-            
             try {
                 const res = await fetch(`${API_URL}?action=register&` + new URLSearchParams(payload));
                 const data = await res.json();
@@ -542,31 +543,10 @@
             } catch(e) { alert("Network Error"); }
         }
 
-        async function recoverAccount() {
-            const email = document.getElementById('forgotEmail').value.trim();
-            if (!email) return alert("Please enter your email.");
-            
-            alert("Processing recovery request...");
-            
-            try {
-                await fetch(API_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify({ action: 'recover_account', email: email }) 
-                });
-                
-                alert("If this email is registered, recovery instructions have been sent to your inbox.");
-                toggleAuthViews('loginPage');
-                document.getElementById('forgotEmail').value = "";
-            } catch (err) {
-                alert("Network error. Please try again.");
-            }
-        }
-
         function logoutUser() {
             logActivity("logged out of the system.");
-            localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); sessionAdminPass = "";
-            document.getElementById('adminPendingSection').classList.add('hidden'); checkAuth();
+            localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); sessionAdminPass = ""; pendingAdminAction = null;
+            checkAuth();
         }
 
         async function updateProfile() {
@@ -580,38 +560,58 @@
         }
 
         function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); }
-        function promptAdminUnlock() { if (sessionAdminPass === "") { document.getElementById('adminModal').classList.remove('hidden'); document.getElementById('adminPassInput').value = ""; document.getElementById('adminPassInput').focus(); } else { fetchAdminData(sessionAdminPass); } }
         function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
-        function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
+        function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
 
         async function verifyAdmin() {
             const pass = document.getElementById('adminPassInput').value; if (!pass) return;
-            document.getElementById('adminPassInput').value = "Verifying..."; await fetchAdminData(pass);
-        }
-
-        async function fetchAdminData(pass) {
-            const res = await fetch(`${API_URL}?action=get_pending&password=${encodeURIComponent(pass)}`);
+            document.getElementById('adminPassInput').value = "Verifying..."; 
+            
+            const res = await fetch(`${API_URL}?action=verify_admin&password=${encodeURIComponent(pass)}`);
             const data = await res.json();
             if (data.success) {
-                sessionAdminPass = pass; document.getElementById('adminModal').classList.add('hidden'); document.getElementById('adminPendingSection').classList.remove('hidden'); document.getElementById('pendingAccountDot').classList.add('hidden');
-                renderPendingUsers(data.pending);
-            } else { alert(data.error || "Incorrect Admin Password."); document.getElementById('adminPassInput').value = ""; }
+                sessionAdminPass = pass; document.getElementById('adminModal').classList.add('hidden'); 
+                if (pendingAdminAction === 'open_mgmt') {
+                    showAdminMgmtTab();
+                    pendingAdminAction = null;
+                }
+            } else { alert("Incorrect Admin Password."); document.getElementById('adminPassInput').value = ""; }
         }
 
-        function renderPendingUsers(users) {
-            const tbody = document.getElementById('pendingTableBody'); tbody.innerHTML = "";
-            if(users.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>No pending accounts.</td></tr>"; return; }
-            users.forEach(u => {
-                const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                tbody.innerHTML += `<tr><td>${u.name}</td><td>****</td><td><button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button><button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button></td></tr>`;
-            });
+        async function loadAdminUsers() {
+            const res = await fetch(`${API_URL}?action=get_all_users&password=${encodeURIComponent(sessionAdminPass)}`);
+            const data = await res.json();
+            const tbody = document.getElementById('adminUsersTableBody'); tbody.innerHTML = "";
+            if (data.success) {
+                if(data.users.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No accounts found.</td></tr>"; return; }
+                data.users.forEach(u => {
+                    const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const safeUser = String(u.username).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const isPending = u.status === 'Pending';
+                    const actionHtml = isPending ?
+                        `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button>
+                         <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` :
+                        `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete User</button>`;
+
+                    tbody.innerHTML += `<tr><td>${u.rank} ${u.name}</td><td>${u.username}</td><td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td><td>${actionHtml}</td></tr>`;
+                });
+            } else {
+                alert(data.error || "Failed to load users.");
+            }
+        }
+
+        async function adminDeleteUser(username) {
+            if (!confirm(`Are you sure you want to delete user: ${username}?`)) return;
+            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) });
+            logActivity(`deleted user account: ${username}`);
+            setTimeout(loadAdminUsers, 1500);
         }
 
         async function processApproval(pin, actionType) {
             if (!confirm(`Confirm Action?`)) return;
             await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) });
             logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request.");
-            setTimeout(() => { fetchAdminData(sessionAdminPass); }, 1500);
+            setTimeout(loadAdminUsers, 1500);
         }
 
         async function loadData() {
