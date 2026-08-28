@@ -67,40 +67,44 @@
             border-radius: var(--radius-lg);
         }
 
-        .auth-container { max-width: 420px; width: 100%; padding: 32px; text-align: center; margin-top: 50px; }
-        .auth-container h2 { margin-top: 0; margin-bottom: 20px; font-size: 24px; }
+        /* Updated Symmetrical Auth Modals */
+        .auth-container { max-width: 500px; width: 100%; padding: 40px; text-align: center; margin-top: 50px; }
+        .auth-container h2 { margin-top: 0; margin-bottom: 25px; font-size: 24px; }
+        .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
+        .auth-grid .full-width { grid-column: 1 / -1; }
         
-        input[type="text"], input[type="password"] { 
-            width: 100%; padding: 12px 16px; margin: 8px 0; border: 1px solid var(--border-color); 
-            border-radius: var(--radius-md); font-size: 14px; background-color: rgba(255, 255, 255, 0.1); color: white; 
+        input[type="text"], input[type="password"], input[type="email"], select { 
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); 
+            border-radius: var(--radius-md); font-size: 14px; background-color: rgba(255, 255, 255, 0.1); color: white; margin-bottom: 8px;
         }
+        select option { color: #000; }
         input::placeholder { color: #94a3b8; }
-        input:focus { outline: none; border-color: var(--primary); background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
+        input:focus, select:focus { outline: none; border-color: var(--primary); background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
         
         .auth-type-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; font-size: 14px; color: var(--text-muted); }
         
-        button { padding: 12px 20px; border-radius: var(--radius-md); border: none; background-color: var(--primary); color: white; font-weight: 600; font-size: 14px; cursor: pointer; }
+        button { padding: 14px 20px; border-radius: var(--radius-md); border: none; background-color: var(--primary); color: white; font-weight: 600; font-size: 14px; cursor: pointer; width: 100%; margin-top: 10px;}
         button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
         
         .link { color: #818cf8; cursor: pointer; font-size: 14px; font-weight: 500; margin-top: 16px; display: inline-block; }
         .link:hover { text-decoration: underline; color: #a5b4fc; }
+        .forgot-link { display: block; text-align: right; color: #818cf8; font-size: 12px; margin-bottom: 15px; cursor: pointer; }
+        .forgot-link:hover { text-decoration: underline; }
+
         hr { border: none; height: 1px; background-color: var(--border-color); margin: 24px 0; }
         h2 { font-size: 20px; margin-bottom: 12px; }
 
+        /* General App Layout Styling */
         .app-layout { display: flex; width: 100%; max-width: 1400px; gap: 20px; align-items: flex-start; }
-        
         .sidebar { width: 220px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
         .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
         .right-sidebar { width: 280px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; max-height: 80vh; overflow-y: auto; justify-content: space-between; }
-
         .sidebar-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); text-align: left; padding: 12px 15px; font-size: 14px; display: flex; align-items: center; }
         .sidebar-btn:hover, .sidebar-btn.active { background: rgba(255, 255, 255, 0.1); color: white; border-color: var(--border-color); }
-        
         .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: var(--danger); margin-right: 12px; transition: background-color 0.3s; }
         .sidebar-btn.active .status-dot { background-color: var(--success); }
 
         .controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-        
         .action-btn { width: auto; padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); background-color: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border-color); }
         .action-btn:hover { background-color: rgba(255,255,255,0.2); }
         .delete-btn { background-color: var(--danger); color: white; border: none; }
@@ -123,85 +127,20 @@
         .activity-item:last-child { border-bottom: none; }
         .activity-time { display: block; font-size: 11px; color: var(--primary); margin-bottom: 4px; font-weight: bold; }
         .activity-user { color: white; font-weight: bold; }
-
-        .activity-pagination { 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-            margin-top: 15px; 
-            padding-top: 12px; 
-            border-top: 1px solid var(--border-color); 
-            font-size: 12px; 
-            color: var(--text-muted); 
-        }
-        .activity-page-btn { 
-            padding: 6px 12px; 
-            font-size: 12px; 
-            background: rgba(255, 255, 255, 0.1); 
-            border: 1px solid var(--border-color); 
-            border-radius: var(--radius-sm); 
-            color: white; 
-            cursor: pointer; 
-        }
+        .activity-pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); }
+        .activity-page-btn { padding: 6px 12px; font-size: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: white; cursor: pointer; }
         .activity-page-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
         .activity-page-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
 
-        /* Notification Container - Bottom Left */
-        #notificationContainer {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none; /* Allows clicking through the empty space */
-        }
-
-        /* Individual Stackable Toast */
-        .notification-toast {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            border-left: 4px solid var(--primary);
-            color: var(--text-main);
-            padding: 15px 20px;
-            border-radius: var(--radius-md);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            cursor: pointer;
-            pointer-events: auto;
-            animation: slideInLeft 0.3s ease-out forwards;
-            min-width: 250px;
-            max-width: 350px;
-        }
-
-        .notification-toast.fade-out {
-            animation: fadeOutLeft 0.3s ease-in forwards;
-        }
-
+        #notificationContainer { position: fixed; bottom: 20px; left: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+        .notification-toast { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-left: 4px solid var(--primary); color: var(--text-main); padding: 15px 20px; border-radius: var(--radius-md); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); cursor: pointer; pointer-events: auto; animation: slideInLeft 0.3s ease-out forwards; min-width: 250px; max-width: 350px; }
+        .notification-toast.fade-out { animation: fadeOutLeft 0.3s ease-in forwards; }
         .notification-title { display: block; font-weight: bold; font-size: 14px; color: var(--primary); margin-bottom: 4px; }
         .notification-msg { font-size: 13px; color: var(--text-muted); }
+        .notif-dot { position: absolute; top: -5px; right: -5px; width: 12px; height: 12px; background-color: var(--danger); border-radius: 50%; border: 2px solid #0f172a; }
 
-        /* Red Notification Dot */
-        .notif-dot {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 12px;
-            height: 12px;
-            background-color: var(--danger);
-            border-radius: 50%;
-            border: 2px solid #0f172a;
-        }
-
-        @keyframes slideInLeft {
-            from { transform: translateX(-100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        @keyframes fadeOutLeft {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(-100%); opacity: 0; }
-        }
+        @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOutLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
 
         @media (max-width: 992px) {
             body { padding: 10px; }
@@ -222,6 +161,7 @@
             .sidebar-btn { min-width: 100%; } 
             .site-header h1 { font-size: 20px; }
             .auth-type-toggle { flex-direction: column; align-items: center; gap: 8px;}
+            .auth-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -241,27 +181,56 @@
             <label><input type="radio" name="loginType" value="pin" checked onchange="toggleInputType('loginCredential', 'pin')"> Use PIN</label>
             <label><input type="radio" name="loginType" value="password" onchange="toggleInputType('loginCredential', 'password')"> Use Password</label>
         </div>
+        <input type="text" id="loginUsername" placeholder="Enter Username">
         <input type="password" id="loginCredential" placeholder="Enter 6-Digit PIN" maxlength="6">
-        <button style="width: 100%; margin-top: 8px;" onclick="loginUser()">Login</button>
-        <span class="link" onclick="toggleAuthViews('registerPage')" style="margin-top: 20px;">Create an Account</span>
+        <span class="forgot-link" onclick="toggleAuthViews('forgotPage')">Forgot password?</span>
+        <button onclick="loginUser()">Login</button>
+        <span class="link" onclick="toggleAuthViews('registerPage')">Create an Account</span>
     </div>
 
     <!-- REGISTER PAGE -->
     <div id="registerPage" class="auth-container glass-panel hidden">
         <h2>Create Account</h2>
-        <input type="text" id="regName" placeholder="Enter Full Name">
-        <div class="auth-type-toggle" style="margin-top: 15px;">
-            <label><input type="radio" name="regType" value="pin" checked onchange="toggleInputType('regCredential', 'pin')"> Set PIN</label>
-            <label><input type="radio" name="regType" value="password" onchange="toggleInputType('regCredential', 'password')"> Set Password</label>
+        <div class="auth-grid">
+            <select id="regRank" class="full-width">
+                <option value="">Select Rank...</option>
+                <option value="PBGEN">PBGEN</option><option value="PCOL">PCOL</option>
+                <option value="PLTCOL">PLTCOL</option><option value="PMAJ">PMAJ</option>
+                <option value="PCPT">PCPT</option><option value="PLT">PLT</option>
+                <option value="PEMS">PEMS</option><option value="PCMS">PCMS</option>
+                <option value="PSMS">PSMS</option><option value="PMSg">PMSg</option>
+                <option value="PSSg">PSSg</option><option value="PCpl">PCpl</option>
+                <option value="Pat">Pat</option><option value="NUP">NUP</option>
+            </select>
+            <input type="text" id="regFirst" placeholder="First Name">
+            <input type="text" id="regMiddle" placeholder="Middle Name">
+            <input type="text" id="regLast" placeholder="Last Name">
+            <input type="text" id="regQlf" placeholder="Qualifiers (e.g. Jr.)">
+            <input type="email" id="regEmail" placeholder="Email Address" class="full-width">
+            <input type="text" id="regUsername" placeholder="Username" class="full-width">
+            <div class="full-width">
+                <div class="auth-type-toggle" style="margin-bottom: 8px;">
+                    <label><input type="radio" name="regType" value="pin" checked onchange="toggleInputType('regCredential', 'pin')"> Set PIN</label>
+                    <label><input type="radio" name="regType" value="password" onchange="toggleInputType('regCredential', 'password')"> Set Password</label>
+                </div>
+                <input type="password" id="regCredential" placeholder="Create 6-Digit PIN" maxlength="6">
+            </div>
         </div>
-        <input type="password" id="regCredential" placeholder="Create 6-Digit PIN" maxlength="6">
-        <button style="width: 100%; margin-top: 8px;" onclick="registerUser()">Register</button>
+        <button onclick="registerUser()">Register</button>
+        <span class="link" onclick="toggleAuthViews('loginPage')">Back to Login</span>
+    </div>
+
+    <!-- FORGOT PASSWORD PAGE -->
+    <div id="forgotPage" class="auth-container glass-panel hidden">
+        <h2>Account Recovery</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Enter your registered email address to receive password authentication and reset instructions.</p>
+        <input type="email" id="forgotEmail" placeholder="Email Address">
+        <button onclick="recoverAccount()">Send Recovery Link</button>
         <span class="link" onclick="toggleAuthViews('loginPage')">Back to Login</span>
     </div>
 
     <!-- MAIN APP LAYOUT (Sidebar + Content + Activity Feed) -->
     <div id="appLayout" class="app-layout hidden">
-        
         <!-- Left Sidebar -->
         <aside class="sidebar glass-panel">
             <div style="margin-bottom: 10px; width: 100%;">
@@ -275,7 +244,6 @@
 
         <!-- Main Center Content -->
         <main class="main-content glass-panel">
-            <!-- HOME TAB -->
             <div id="tabHome">
                 <div class="controls">
                     <h2 style="margin:0;">Memo Database</h2>
@@ -310,11 +278,9 @@
                     </table>
                 </div>
                 
-                <!-- Alpha Admin Account Creation Requests Section -->
                 <div id="adminPendingSection" class="hidden" style="text-align: left; margin-top: 40px;">
                     <hr style="margin-bottom: 20px;">
                     <h2 style="color: #fca5a5; margin-bottom: 5px;">Pending Account Approvals</h2>
-                    <p style="color: var(--text-muted); font-size: 14px; margin-top: 0;">Review account creation requests below.</p>
                     <div class="table-wrapper">
                         <table id="pendingTable">
                             <thead>
@@ -324,17 +290,14 @@
                         </table>
                     </div>
                 </div>
-                
             </div>
 
-            <!-- PROFILE TAB -->
             <div id="tabProfile" class="hidden">
                 <h2>Update Credentials</h2>
-                <p style="color: var(--text-muted); font-size: 14px;">Update your access PIN or Password below.</p>
                 <label style="font-size: 13px; color: var(--text-muted); text-align: left; display: block; margin-top: 20px;">Change PIN / Password:</label>
                 <input type="password" id="newCredential" placeholder="Enter new PIN or Password" style="max-width: 300px;">
                 <br>
-                <button style="margin-top: 15px;" onclick="updateProfile()">Save Changes</button>
+                <button style="margin-top: 15px; width: auto;" onclick="updateProfile()">Save Changes</button>
             </div>
         </main>
 
@@ -342,12 +305,8 @@
         <aside class="right-sidebar glass-panel">
             <div>
                 <h2 style="margin-top: 0; font-size: 18px; text-align: center;">Live Activity Log</h2>
-                <div id="activityFeedList" style="display: flex; flex-direction: column;">
-                    <!-- Activities populate here -->
-                </div>
+                <div id="activityFeedList" style="display: flex; flex-direction: column;"></div>
             </div>
-
-            <!-- Activity Pagination Panel -->
             <div id="activityPagination" class="activity-pagination hidden">
                 <button id="prevActivityBtn" class="activity-page-btn" onclick="changeActivityPage(-1)">Prev</button>
                 <span id="activityPageInfo">Page 1 of 1</span>
@@ -360,9 +319,7 @@
     <div id="memoSubmissionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel modal-large">
             <h2 style="margin-top: 0;">Submit New Memo</h2>
-            
             <form id="memoForm" style="display: flex; gap: 10px; margin-top: 12px; margin-bottom: 20px;">
-                <!-- Dropdown for Section Classification -->
                 <select id="memoClassification" style="padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.1); color: white; margin: 0;">
                     <option value="A" style="color: black;">Admin</option>
                     <option value="S" style="color: black;">Supply</option>
@@ -370,20 +327,17 @@
                     <option value="BP" style="color: black;">Base Police</option>
                     <option value="SSB" style="color: black;">Special Services Band</option>
                 </select>
-                
                 <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0; flex-grow: 1;">
-                <button type="submit" style="white-space: nowrap;">Submit Data</button>
+                <button type="submit" style="white-space: nowrap; width: auto; margin-top: 0;">Submit Data</button>
             </form>
-            
             <button onclick="closeMemoModal()" style="margin-top: 25px; background: transparent; border: 1px solid var(--border-color); width: 100%;">Close Window</button>
         </div>
     </div>
 
-    <!-- ALPHA ADMIN UNLOCK MODAL -->
+    <!-- MODALS (Admin, Edit, Action) - Unchanged visually but logic preserved -->
     <div id="adminModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
             <h3 style="margin-top:0;">Alpha Admin Validation Required</h3>
-            <p style="font-size: 13px; color: var(--text-muted);">Enter master password to access Alpha-Admin features.</p>
             <input type="password" id="adminPassInput" placeholder="Master Password">
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button style="flex: 1;" onclick="verifyAdmin()">Unlock</button>
@@ -392,7 +346,6 @@
         </div>
     </div>
 
-    <!-- STANDARD EDIT/DELETE ACTION MODAL -->
     <div id="actionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
             <h3 id="actionModalTitle" style="margin-top:0;">Admin Validation Required</h3>
@@ -405,7 +358,6 @@
         </div>
     </div>
 
-    <!-- REAL-TIME EDIT REQUEST MODAL -->
     <div id="editRequestModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
             <h3 style="color: #fca5a5; margin-top: 0;">Real-Time Edit Request</h3>
@@ -418,7 +370,6 @@
         </div>
     </div>
 
-    <!-- Notification Container -->
     <div id="notificationContainer"></div>
 
     <script>
@@ -427,12 +378,9 @@
         let sessionAdminPass = ""; 
         let pendingAction = null;
         let actionTargetControl = null;
-
-        // ---- ACTIVITY LOG PAGINATION STATE ----
         let currentActivityPage = 1;
         const ACTIVITIES_PER_PAGE = 8; 
 
-        // ---- DYNAMIC CLOCK ----
         function updateDateTime() {
             const now = new Date();
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -441,34 +389,19 @@
         setInterval(updateDateTime, 1000);
         updateDateTime();
 
-        // ---- NOTIFICATION LOGIC ----
         function showNotification(title, message, onClickAction) {
             const container = document.getElementById('notificationContainer');
             const toast = document.createElement('div');
             toast.className = 'notification-toast';
-            toast.innerHTML = `
-                <span class="notification-title">${title}</span>
-                <span class="notification-msg">${message}</span>
-            `;
-            
-            // Auto remove after 5 seconds
-            const timeout = setTimeout(() => {
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 300);
-            }, 5000);
-
-            // Click interaction
+            toast.innerHTML = `<span class="notification-title">${title}</span><span class="notification-msg">${message}</span>`;
+            const timeout = setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300); }, 5000);
             toast.addEventListener('click', () => {
-                clearTimeout(timeout);
-                toast.classList.add('fade-out');
-                setTimeout(() => toast.remove(), 300);
+                clearTimeout(timeout); toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300);
                 if (onClickAction) onClickAction();
             });
-
             container.appendChild(toast);
         }
 
-        // ---- ACTIVITY FEED LOGIC ----
         async function logActivity(actionText) {
             const user = localStorage.getItem('loggedInUser') || 'Unknown User';
             const now = new Date();
@@ -476,32 +409,13 @@
             
             const logEntry = { user, actionText, timeString, timestamp: now.getTime() };
             let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
-            
-            const ONE_WEEK_MS = 604800000; 
-            logs = logs.filter(log => (now.getTime() - log.timestamp) < ONE_WEEK_MS);
-
+            logs = logs.filter(log => (now.getTime() - log.timestamp) < 604800000);
             logs.unshift(logEntry);
             if (logs.length > 50) logs = logs.slice(0, 50); 
-            
             localStorage.setItem('appActivityFeed', JSON.stringify(logs));
             
-            currentActivityPage = 1;
-            renderActivityFeed();
-
-            try {
-                await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        action: 'log_activity',
-                        user: user,
-                        actionText: actionText
-                    })
-                });
-            } catch (err) {
-                console.error("Failed to log activity to Google Sheet backend:", err);
-            }
+            currentActivityPage = 1; renderActivityFeed();
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'log_activity', user: user, actionText: actionText }) }); } catch (err) {}
         }
 
         function renderActivityFeed() {
@@ -509,39 +423,19 @@
             const container = document.getElementById('activityFeedList');
             const paginationContainer = document.getElementById('activityPagination');
             
-            const ONE_WEEK_MS = 604800000;
-            const now = new Date().getTime();
-            const originalLength = logs.length;
-            logs = logs.filter(log => (now - log.timestamp) < ONE_WEEK_MS);
-            
-            if (logs.length !== originalLength) {
-                localStorage.setItem('appActivityFeed', JSON.stringify(logs));
-            }
-
             if (!container) return;
-            
             container.innerHTML = "";
             if (logs.length === 0) {
                 container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px; text-align: center;'>No recent activity.</p>";
-                if (paginationContainer) paginationContainer.classList.add('hidden');
-                return;
+                if (paginationContainer) paginationContainer.classList.add('hidden'); return;
             }
 
             const totalPages = Math.ceil(logs.length / ACTIVITIES_PER_PAGE);
             if (currentActivityPage > totalPages) currentActivityPage = totalPages;
-            if (currentActivityPage < 1) currentActivityPage = 1;
-
-            const startIndex = (currentActivityPage - 1) * ACTIVITIES_PER_PAGE;
-            const endIndex = startIndex + ACTIVITIES_PER_PAGE;
-            const currentLogs = logs.slice(startIndex, endIndex);
+            const currentLogs = logs.slice((currentActivityPage - 1) * ACTIVITIES_PER_PAGE, ((currentActivityPage - 1) * ACTIVITIES_PER_PAGE) + ACTIVITIES_PER_PAGE);
             
             currentLogs.forEach(log => {
-                container.innerHTML += `
-                    <div class="activity-item">
-                        <span class="activity-time">${log.timeString}</span>
-                        <span class="activity-user">${log.user}</span> ${log.actionText}
-                    </div>
-                `;
+                container.innerHTML += `<div class="activity-item"><span class="activity-time">${log.timeString}</span><span class="activity-user">${log.user}</span> ${log.actionText}</div>`;
             });
 
             if (paginationContainer) {
@@ -550,120 +444,66 @@
                     document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
                     document.getElementById('prevActivityBtn').disabled = (currentActivityPage === 1);
                     document.getElementById('nextActivityBtn').disabled = (currentActivityPage === totalPages);
-                } else {
-                    paginationContainer.classList.add('hidden');
-                }
+                } else { paginationContainer.classList.add('hidden'); }
             }
         }
+        function changeActivityPage(direction) { currentActivityPage += direction; renderActivityFeed(); }
 
-        function changeActivityPage(direction) {
-            currentActivityPage += direction;
-            renderActivityFeed();
-        }
-
-        // Handle Cross-Tab Events (Activity, Real-Time Edits, Notifications)
         window.addEventListener('storage', (e) => {
-            // 1. Activity Feed Updates
             if (e.key === 'appActivityFeed') renderActivityFeed();
-
-            // 2. Real-Time Edit Requests Notification
-            if (e.key === 'rtEditRequest' && e.newValue) {
-                if (localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
-                    const req = JSON.parse(e.newValue);
-                    
-                    document.getElementById('editRequestUser').innerText = req.user;
-                    document.getElementById('editRequestControl').innerText = req.controlNum;
-                    document.getElementById('editRequestModal').dataset.reqId = req.id;
-                    
-                    showNotification(
-                        "New Edit Request",
-                        `User ${req.user} is requesting to edit Memo ${req.controlNum}. Click to review.`,
-                        () => { document.getElementById('editRequestModal').classList.remove('hidden'); }
-                    );
-                }
+            if (e.key === 'rtEditRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
+                const req = JSON.parse(e.newValue);
+                document.getElementById('editRequestUser').innerText = req.user; document.getElementById('editRequestControl').innerText = req.controlNum; document.getElementById('editRequestModal').dataset.reqId = req.id;
+                showNotification("New Edit Request", `User ${req.user} is requesting to edit Memo ${req.controlNum}. Click to review.`, () => { document.getElementById('editRequestModal').classList.remove('hidden'); });
             }
-            
-            // 3. New Account Registration Notification
-            if (e.key === 'newAccountRequest' && e.newValue) {
-                if (localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
-                    const req = JSON.parse(e.newValue);
-                    
-                    document.getElementById('pendingAccountDot').classList.remove('hidden');
-                    
-                    showNotification(
-                        "New Account Request",
-                        `${req.user} requested an account. Click to review.`,
-                        () => { promptAdminUnlock(); }
-                    );
-                }
+            if (e.key === 'newAccountRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
+                const req = JSON.parse(e.newValue); document.getElementById('pendingAccountDot').classList.remove('hidden');
+                showNotification("New Account Request", `${req.user} requested an account. Click to review.`, () => { promptAdminUnlock(); });
             }
         });
 
-        // ---- UI TOGGLES ----
         function toggleAuthViews(viewId) {
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('registerPage').classList.add('hidden');
+            document.getElementById('forgotPage').classList.add('hidden');
             document.getElementById('appLayout').classList.add('hidden');
             document.getElementById(viewId).classList.remove('hidden');
         }
 
         function toggleInputType(inputId, type) {
             const input = document.getElementById(inputId);
-            if (type === 'pin') {
-                input.placeholder = "Enter 6-Digit PIN";
-                input.setAttribute("maxlength", "6");
-            } else {
-                input.placeholder = "Enter Password";
-                input.removeAttribute("maxlength");
-            }
+            if (type === 'pin') { input.placeholder = "Enter 6-Digit PIN"; input.setAttribute("maxlength", "6"); } 
+            else { input.placeholder = "Enter Password"; input.removeAttribute("maxlength"); }
             input.value = ""; 
         }
 
         function switchTab(tabName) {
-            document.getElementById('tabHome').classList.add('hidden');
-            document.getElementById('tabProfile').classList.add('hidden');
-            document.getElementById('btnHome').classList.remove('active');
-            document.getElementById('btnProfile').classList.remove('active');
-
-            if (tabName === 'home') {
-                document.getElementById('tabHome').classList.remove('hidden');
-                document.getElementById('btnHome').classList.add('active');
-                loadData();
-            } else if (tabName === 'profile') {
-                document.getElementById('tabProfile').classList.remove('hidden');
-                document.getElementById('btnProfile').classList.add('active');
-                document.getElementById('newCredential').value = "";
-            }
+            document.getElementById('tabHome').classList.add('hidden'); document.getElementById('tabProfile').classList.add('hidden');
+            document.getElementById('btnHome').classList.remove('active'); document.getElementById('btnProfile').classList.remove('active');
+            if (tabName === 'home') { document.getElementById('tabHome').classList.remove('hidden'); document.getElementById('btnHome').classList.add('active'); loadData(); } 
+            else if (tabName === 'profile') { document.getElementById('tabProfile').classList.remove('hidden'); document.getElementById('btnProfile').classList.add('active'); document.getElementById('newCredential').value = ""; }
         }
 
-        // ---- AUTHENTICATION ----
         function checkAuth() {
             const user = localStorage.getItem('loggedInUser');
             if (user) {
                 document.getElementById('welcomeMsg').innerText = `Welcome, ${user}`;
                 document.getElementById('loginPage').classList.add('hidden');
                 document.getElementById('registerPage').classList.add('hidden');
+                document.getElementById('forgotPage').classList.add('hidden');
                 document.getElementById('appLayout').classList.remove('hidden');
-                
-                if (user === ALPHA_ADMIN_NAME) {
-                    document.getElementById('adminPendingBtn').classList.remove('hidden');
-                } else {
-                    document.getElementById('adminPendingBtn').classList.add('hidden');
-                }
-
-                switchTab('home');
-                renderActivityFeed(); 
-            } else {
-                toggleAuthViews('loginPage');
-            }
+                document.getElementById('adminPendingBtn').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
+                switchTab('home'); renderActivityFeed(); 
+            } else { toggleAuthViews('loginPage'); }
         }
 
         async function loginUser() {
+            const user = document.getElementById('loginUsername').value.trim();
             const cred = document.getElementById('loginCredential').value.trim();
-            if(!cred) return alert("Enter PIN or Password.");
+            if(!user || !cred) return alert("Enter Username and PIN/Password.");
             
             document.getElementById('loginCredential').value = "Logging in...";
-            const res = await fetch(`${API_URL}?action=login&pin=${encodeURIComponent(cred)}`);
+            const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&pin=${encodeURIComponent(cred)}`);
             const data = await res.json();
             
             if (data.success) {
@@ -672,321 +512,180 @@
                 document.getElementById('loginCredential').value = "";
                 logActivity("logged into the system.");
                 checkAuth();
-            } else {
-                alert(data.error);
-                document.getElementById('loginCredential').value = "";
-            }
+            } else { alert(data.error); document.getElementById('loginCredential').value = ""; }
         }
 
         async function registerUser() {
-            const name = document.getElementById('regName').value.trim();
+            const rank = document.getElementById('regRank').value;
+            const firstName = document.getElementById('regFirst').value.trim();
+            const middleName = document.getElementById('regMiddle').value.trim();
+            const lastName = document.getElementById('regLast').value.trim();
+            const qlf = document.getElementById('regQlf').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
             const cred = document.getElementById('regCredential').value.trim();
-            if(!name || cred.length < 4) return alert("Enter name and at least 4 characters for PIN/Password.");
 
-            document.getElementById('regName').value = "Registering...";
-            const res = await fetch(`${API_URL}?action=register&name=${encodeURIComponent(name)}&pin=${encodeURIComponent(cred)}`);
-            const data = await res.json();
+            if(!rank || !firstName || !lastName || !email || !username || cred.length < 4) {
+                return alert("Please complete all required fields and ensure credential is at least 4 characters.");
+            }
 
-            if (data.success) {
-                alert("Account created! It is currently pending approval by the Alpha Admin.");
-                localStorage.setItem('newAccountRequest', JSON.stringify({ user: name, time: Date.now() }));
-                document.getElementById('regName').value = "";
-                document.getElementById('regCredential').value = "";
+            const payload = { action: 'register', rank, firstName, middleName, lastName, qlf, email, username, pin: cred };
+            
+            try {
+                const res = await fetch(`${API_URL}?action=register&` + new URLSearchParams(payload));
+                const data = await res.json();
+                if (data.success) {
+                    alert("Account created! It is currently pending approval by the Alpha Admin.");
+                    localStorage.setItem('newAccountRequest', JSON.stringify({ user: username, time: Date.now() }));
+                    toggleAuthViews('loginPage');
+                } else { alert(data.error); }
+            } catch(e) { alert("Network Error"); }
+        }
+
+        async function recoverAccount() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            if (!email) return alert("Please enter your email.");
+            
+            alert("Processing recovery request...");
+            
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({ action: 'recover_account', email: email }) 
+                });
+                
+                alert("If this email is registered, recovery instructions have been sent to your inbox.");
                 toggleAuthViews('loginPage');
-            } else {
-                alert(data.error);
-                document.getElementById('regName').value = name;
+                document.getElementById('forgotEmail').value = "";
+            } catch (err) {
+                alert("Network error. Please try again.");
             }
         }
 
         function logoutUser() {
             logActivity("logged out of the system.");
-            localStorage.removeItem('loggedInUser');
-            localStorage.removeItem('loggedCred');
-            sessionAdminPass = "";
-            document.getElementById('adminPendingSection').classList.add('hidden');
-            checkAuth();
+            localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); sessionAdminPass = "";
+            document.getElementById('adminPendingSection').classList.add('hidden'); checkAuth();
         }
 
-        // ---- USER PROFILE LOGIC ----
         async function updateProfile() {
             const newCred = document.getElementById('newCredential').value.trim();
             if(!newCred) return alert("Please enter a new credential to save.");
-
-            const userName = localStorage.getItem('loggedInUser');
-            const oldCred = localStorage.getItem('loggedCred'); 
-
-            const payload = { 
-                action: 'update_profile', 
-                userName: userName, 
-                oldCredential: oldCred, 
-                newCredential: newCred
-            };
-
+            const userName = localStorage.getItem('loggedInUser'); const oldCred = localStorage.getItem('loggedCred'); 
             try {
-                await fetch(API_URL, {
-                    method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                localStorage.setItem('loggedCred', newCred);
-                alert("Credentials updated successfully!");
-                document.getElementById('newCredential').value = "";
-                logActivity("updated their security credentials.");
-            } catch (err) {
-                alert("Profile update requested, check backend.");
-            }
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_profile', userName: userName, oldCredential: oldCred, newCredential: newCred }) });
+                localStorage.setItem('loggedCred', newCred); alert("Credentials updated successfully!"); document.getElementById('newCredential').value = ""; logActivity("updated their security credentials.");
+            } catch (err) {}
         }
 
-        // ---- MEMO SUBMISSION & ADMIN LOGIC ----
-        function openMemoModalUser() {
-            document.getElementById('memoSubmissionModal').classList.remove('hidden');
-        }
-
-        function promptAdminUnlock() {
-            if (sessionAdminPass === "") {
-                document.getElementById('adminModal').classList.remove('hidden');
-                document.getElementById('adminPassInput').value = "";
-                document.getElementById('adminPassInput').focus();
-            } else {
-                fetchAdminData(sessionAdminPass);
-            }
-        }
-
-        function closeMemoModal() {
-            document.getElementById('memoSubmissionModal').classList.add('hidden');
-        }
-
-        function closeAdminModal() {
-            document.getElementById('adminModal').classList.add('hidden');
-        }
+        function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); }
+        function promptAdminUnlock() { if (sessionAdminPass === "") { document.getElementById('adminModal').classList.remove('hidden'); document.getElementById('adminPassInput').value = ""; document.getElementById('adminPassInput').focus(); } else { fetchAdminData(sessionAdminPass); } }
+        function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
+        function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); }
 
         async function verifyAdmin() {
-            const pass = document.getElementById('adminPassInput').value;
-            if (!pass) return;
-            document.getElementById('adminPassInput').value = "Verifying...";
-            await fetchAdminData(pass);
+            const pass = document.getElementById('adminPassInput').value; if (!pass) return;
+            document.getElementById('adminPassInput').value = "Verifying..."; await fetchAdminData(pass);
         }
 
         async function fetchAdminData(pass) {
             const res = await fetch(`${API_URL}?action=get_pending&password=${encodeURIComponent(pass)}`);
             const data = await res.json();
-            
             if (data.success) {
-                sessionAdminPass = pass;
-                document.getElementById('adminModal').classList.add('hidden');
-                document.getElementById('adminPendingSection').classList.remove('hidden');
-                document.getElementById('pendingAccountDot').classList.add('hidden'); // Clear the dot
+                sessionAdminPass = pass; document.getElementById('adminModal').classList.add('hidden'); document.getElementById('adminPendingSection').classList.remove('hidden'); document.getElementById('pendingAccountDot').classList.add('hidden');
                 renderPendingUsers(data.pending);
-            } else {
-                alert(data.error || "Incorrect Admin Password.");
-                document.getElementById('adminPassInput').value = "";
-            }
+            } else { alert(data.error || "Incorrect Admin Password."); document.getElementById('adminPassInput').value = ""; }
         }
 
         function renderPendingUsers(users) {
-            const tbody = document.getElementById('pendingTableBody');
-            tbody.innerHTML = "";
+            const tbody = document.getElementById('pendingTableBody'); tbody.innerHTML = "";
             if(users.length === 0) { tbody.innerHTML = "<tr><td colspan='3' style='text-align:center;'>No pending accounts.</td></tr>"; return; }
             users.forEach(u => {
                 const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                tbody.innerHTML += `<tr>
-                    <td>${u.name}</td><td>****</td>
-                    <td>
-                        <button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button>
-                        <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>
-                    </td></tr>`;
+                tbody.innerHTML += `<tr><td>${u.name}</td><td>****</td><td><button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button><button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button></td></tr>`;
             });
         }
 
         async function processApproval(pin, actionType) {
             if (!confirm(`Confirm Action?`)) return;
-            await fetch(API_URL, {
-                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass })
-            });
+            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) });
             logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request.");
             setTimeout(() => { fetchAdminData(sessionAdminPass); }, 1500);
         }
 
-        // ---- DATABASE LOGIC ----
         async function loadData() {
             try {
-                const response = await fetch(API_URL + "?action=get_memos");;
-                let data = await response.json();
-                const tableBody = document.getElementById('dataTable');
-                tableBody.innerHTML = "";
+                const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
+                const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
                 if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; return; }
-                
                 data.reverse();
                 data.forEach(row => {
                     const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    tableBody.innerHTML += `
-                        <tr>
-                            <td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td>
-                            <td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td>
-                            <td>
-                                <button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button>
-                                <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button>
-                            </td>
-                        </tr>`;
+                    tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button><button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
                 });
-            } catch (err) { console.error(err); }
+            } catch (err) { }
         }
 
         document.getElementById('memoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const subject = document.getElementById('memoSubject').value.trim();
-            const classification = document.getElementById('memoClassification').value; 
-
+            const subject = document.getElementById('memoSubject').value.trim(); const classification = document.getElementById('memoClassification').value; 
             if (!subject) return alert("Please enter a Memo Subject.");
-            
-            await fetch(API_URL, {
-                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    action: 'create', 
-                    memoSubject: subject, 
-                    classification: classification, 
-                    userName: localStorage.getItem('loggedInUser') 
-                })
-            });
-            
-            logActivity(`encoded a new memo: "${subject}"`);
-            document.getElementById('memoSubject').value = ""; 
-            closeMemoModal();
-            setTimeout(loadData, 1500); 
+            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
+            logActivity(`encoded a new memo: "${subject}"`); document.getElementById('memoSubject').value = ""; closeMemoModal(); setTimeout(loadData, 1500); 
         });
 
-        // ---- REAL-TIME EDIT LOGIC ----
         function initiateEdit(controlNum, currentSubject) {
-            const user = localStorage.getItem('loggedInUser');
-            if (user !== ALPHA_ADMIN_NAME) {
-                requestRealTimeApproval(controlNum, currentSubject);
-            } else {
-                triggerActionModal('edit', controlNum, currentSubject);
-            }
+            if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) { requestRealTimeApproval(controlNum, currentSubject); } 
+            else { triggerActionModal('edit', controlNum, currentSubject); }
         }
 
         function requestRealTimeApproval(controlNum, currentSubject) {
-            alert("Edit request sent to Alpha-Admin. Waiting for real-time approval...");
-            const reqId = Date.now().toString();
-            
-            localStorage.setItem('rtEditRequest', JSON.stringify({
-                id: reqId,
-                user: localStorage.getItem('loggedInUser'),
-                controlNum: controlNum,
-                subject: currentSubject
-            }));
-
+            alert("Edit request sent to Alpha-Admin. Waiting for real-time approval..."); const reqId = Date.now().toString();
+            localStorage.setItem('rtEditRequest', JSON.stringify({ id: reqId, user: localStorage.getItem('loggedInUser'), controlNum: controlNum, subject: currentSubject }));
             let attempts = 0;
             const poller = setInterval(() => {
-                attempts++;
-                const response = JSON.parse(localStorage.getItem('rtEditResponse_' + reqId) || "null");
-                if (response) {
-                    clearInterval(poller);
-                    localStorage.removeItem('rtEditResponse_' + reqId);
-                    
-                    if (response.approved) {
-                        alert("Alpha-Admin approved your request. You may now edit.");
-                        sessionAdminPass = response.password;
-                        triggerActionModal('edit', controlNum, currentSubject);
-                    } else {
-                        alert("Edit request was denied by Alpha-Admin.");
-                    }
+                attempts++; const response = JSON.parse(localStorage.getItem('rtEditResponse_' + reqId) || "null");
+                if (response) { clearInterval(poller); localStorage.removeItem('rtEditResponse_' + reqId);
+                    if (response.approved) { alert("Alpha-Admin approved your request. You may now edit."); sessionAdminPass = response.password; triggerActionModal('edit', controlNum, currentSubject); } 
+                    else { alert("Edit request was denied by Alpha-Admin."); }
                 }
-                
-                if (attempts > 90) { 
-                    clearInterval(poller);
-                    alert("Edit request timed out. Admin may be unavailable.");
-                }
+                if (attempts > 90) { clearInterval(poller); alert("Edit request timed out. Admin may be unavailable."); }
             }, 1000);
         }
 
         function respondToEditRequest(isApproved) {
-            const reqId = document.getElementById('editRequestModal').dataset.reqId;
-            const pass = document.getElementById('editRequestAdminPass').value;
-            
+            const reqId = document.getElementById('editRequestModal').dataset.reqId; const pass = document.getElementById('editRequestAdminPass').value;
             if (isApproved && !pass) return alert("Alpha-Admin code is required to allow edits.");
-
-            localStorage.setItem('rtEditResponse_' + reqId, JSON.stringify({
-                approved: isApproved,
-                password: pass
-            }));
-
-            document.getElementById('editRequestModal').classList.add('hidden');
-            document.getElementById('editRequestAdminPass').value = "";
+            localStorage.setItem('rtEditResponse_' + reqId, JSON.stringify({ approved: isApproved, password: pass }));
+            document.getElementById('editRequestModal').classList.add('hidden'); document.getElementById('editRequestAdminPass').value = "";
         }
 
-        // STANDARD ACTION MODAL
         function triggerActionModal(action, controlNum, currentSubject = "") {
-            pendingAction = action;
-            actionTargetControl = controlNum;
-            
-            document.getElementById('actionModal').classList.remove('hidden');
-            document.getElementById('actionAdminPass').value = sessionAdminPass; 
-            document.getElementById('actionNewSubject').value = currentSubject;
-            
-            if (action === 'edit') {
-                document.getElementById('actionModalTitle').innerText = `Edit Memo: ${controlNum}`;
-                document.getElementById('actionNewSubject').classList.remove('hidden');
-            } else {
-                document.getElementById('actionModalTitle').innerText = `Delete Memo: ${controlNum}`;
-                document.getElementById('actionNewSubject').classList.add('hidden');
-            }
+            pendingAction = action; actionTargetControl = controlNum;
+            document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject;
+            if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit Memo: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); } 
+            else { document.getElementById('actionModalTitle').innerText = `Delete Memo: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); }
         }
 
-        function closeActionModal() {
-            document.getElementById('actionModal').classList.add('hidden');
-            pendingAction = null;
-            actionTargetControl = null;
-        }
+        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; }
 
         async function executeAction() {
-            const pass = document.getElementById('actionAdminPass').value;
-            if (!pass) return alert("Admin password required.");
-
-            if (pendingAction === 'edit') {
-                const newSubject = document.getElementById('actionNewSubject').value.trim();
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, password: pass }) });
-                logActivity(`edited memo: ${actionTargetControl}`);
-            } else if (pendingAction === 'delete') {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) });
-                logActivity(`deleted memo: ${actionTargetControl}`);
-            } else if (pendingAction === 'batch_delete') {
-                for (const controlNum of actionTargetControl) {
-                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: controlNum, password: pass }) });
-                }
-                logActivity(`deleted multiple memos in a batch.`);
-            }
-
-            closeActionModal();
-            setTimeout(loadData, 1500);
+            const pass = document.getElementById('actionAdminPass').value; if (!pass) return alert("Admin password required.");
+            if (pendingAction === 'edit') { const newSubject = document.getElementById('actionNewSubject').value.trim(); await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, password: pass }) }); logActivity(`edited memo: ${actionTargetControl}`); } 
+            else if (pendingAction === 'delete') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) }); logActivity(`deleted memo: ${actionTargetControl}`); } 
+            else if (pendingAction === 'batch_delete') { for (const controlNum of actionTargetControl) { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: controlNum, password: pass }) }); } logActivity(`deleted multiple memos in a batch.`); }
+            closeActionModal(); setTimeout(loadData, 1500);
         }
 
         function batchDelete() {
-            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked');
-            if (checkedBoxes.length === 0) return alert("Select at least one memo to delete.");
-            
-            const controlNumbers = Array.from(checkedBoxes).map(cb => cb.value);
-            pendingAction = 'batch_delete';
-            actionTargetControl = controlNumbers;
-            
-            document.getElementById('actionModal').classList.remove('hidden');
-            document.getElementById('actionModalTitle').innerText = `Delete ${checkedBoxes.length} Selected Memos`;
-            document.getElementById('actionAdminPass').value = sessionAdminPass;
-            document.getElementById('actionNewSubject').classList.add('hidden');
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked'); if (checkedBoxes.length === 0) return alert("Select at least one memo to delete.");
+            const controlNumbers = Array.from(checkedBoxes).map(cb => cb.value); pendingAction = 'batch_delete'; actionTargetControl = controlNumbers;
+            document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checkedBoxes.length} Selected Memos`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden');
         }
 
-        function searchTable() {
-            const input = document.getElementById("searchInput").value.toUpperCase();
-            const trs = document.getElementById("dataTable").getElementsByTagName("tr");
-            for (let i = 0; i < trs.length; i++) { trs[i].style.display = trs[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none"; }
-        }
-
-        function toggleSelectAll() {
-            const isChecked = document.getElementById('selectAll').checked;
-            document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked);
-        }
+        function searchTable() { const input = document.getElementById("searchInput").value.toUpperCase(); const trs = document.getElementById("dataTable").getElementsByTagName("tr"); for (let i = 0; i < trs.length; i++) { trs[i].style.display = trs[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none"; } }
+        function toggleSelectAll() { const isChecked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked); }
 
         checkAuth();
     </script>
