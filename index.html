@@ -48,7 +48,7 @@
 
         .site-header {
             display: flex; align-items: center; gap: 15px; margin-bottom: 30px;
-            color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); width: 100%; max-width: 1400px; position: relative;
+            color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); width: 100%; max-width: 1600px; position: relative;
         }
         
         .site-header img { width: 60px; height: 60px; object-fit: contain; }
@@ -83,7 +83,8 @@
         .auth-type-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; font-size: 14px; color: var(--text-muted); }
         
         button { padding: 14px 20px; border-radius: var(--radius-md); border: none; background-color: var(--primary); color: white; font-weight: 600; font-size: 14px; cursor: pointer; width: 100%; margin-top: 10px;}
-        button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        button:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-1px); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .link { color: #818cf8; cursor: pointer; font-size: 14px; font-weight: 500; margin-top: 16px; display: inline-block; }
         .link:hover { text-decoration: underline; color: #a5b4fc; }
@@ -91,10 +92,10 @@
         hr { border: none; height: 1px; background-color: var(--border-color); margin: 24px 0; }
         h2 { font-size: 20px; margin-bottom: 12px; }
 
-        .app-layout { display: flex; width: 100%; max-width: 1400px; gap: 20px; align-items: flex-start; }
+        .app-layout { display: flex; width: 100%; max-width: 1600px; gap: 20px; align-items: flex-start; }
         .sidebar { width: 220px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
         .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
-        .right-sidebar { width: 280px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; max-height: 80vh; overflow-y: auto; justify-content: space-between; }
+        
         .sidebar-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); text-align: left; padding: 12px 15px; font-size: 14px; display: flex; align-items: center; }
         .sidebar-btn:hover, .sidebar-btn.active { background: rgba(255, 255, 255, 0.1); color: white; border-color: var(--border-color); }
         .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: var(--danger); margin-right: 12px; transition: background-color 0.3s; }
@@ -117,16 +118,24 @@
 
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;}
         .modal-content { width: 100%; max-width: 350px; padding: 25px; text-align: center; max-height: 90vh; overflow-y: auto; }
-        .modal-large { max-width: 600px; }
+        
+        /* Wider PC Modals & Sidebar */
+        @media (min-width: 993px) {
+            .modal-large { max-width: 800px; }
+            .right-sidebar { width: 360px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; max-height: 80vh; overflow-y: auto; justify-content: space-between; }
+        }
 
         .activity-item { padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 13px; line-height: 1.4; text-align: left; }
         .activity-item:last-child { border-bottom: none; }
         .activity-time { display: block; font-size: 11px; color: var(--primary); margin-bottom: 4px; font-weight: bold; }
         .activity-user { color: white; font-weight: bold; }
-        .activity-pagination { display: flex; align-items: center; justify-content: space-between; margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); }
-        .activity-page-btn { padding: 6px 12px; font-size: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: white; cursor: pointer; }
-        .activity-page-btn:disabled { opacity: 0.3; cursor: not-allowed; transform: none !important; }
-        .activity-page-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
+        
+        /* Stacked Pagination Styles */
+        .pagination-container { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); }
+        .pagination-buttons { display: flex; justify-content: space-between; width: 100%; gap: 10px;}
+        .page-btn { padding: 6px 12px; font-size: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: white; cursor: pointer; width: 48%; }
+        .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .page-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
 
         #notificationContainer { position: fixed; bottom: 20px; left: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
         .notification-toast { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-left: 4px solid var(--primary); color: var(--text-main); padding: 15px 20px; border-radius: var(--radius-md); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); cursor: pointer; pointer-events: auto; animation: slideInLeft 0.3s ease-out forwards; min-width: 250px; max-width: 350px; }
@@ -137,13 +146,23 @@
         @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOutLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
 
+        /* Responsive Mobile Behavior */
+        #mobileMenuBtn { display: none; }
+        
         @media (max-width: 992px) {
             body { padding: 10px; }
-            .site-header { flex-direction: column; align-items: flex-start; gap: 5px; text-align: left; }
-            #datetime-display { position: relative; right: auto; top: auto; transform: none; padding-top: 5px; }
+            .site-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+            #mobileMenuBtn { display: block; background: var(--primary); border: none; color: white; padding: 10px 15px; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; }
+            #datetime-display { position: relative; right: auto; top: auto; transform: none; width: 100%; text-align: left; padding-top: 5px; }
+            
             .app-layout { flex-direction: column; align-items: stretch; }
-            .sidebar, .right-sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; max-height: none; padding: 15px;}
-            .sidebar-btn { flex: 1; justify-content: center; text-align: center; white-space: nowrap; }
+            
+            /* Collapsible Nav */
+            .sidebar { display: none; width: 100%; padding: 15px; margin-bottom: 10px; }
+            .sidebar.open { display: flex; flex-direction: column; }
+            .sidebar-btn { text-align: left; padding: 10px 15px; font-size: 13px; }
+            
+            .right-sidebar { width: 100%; padding: 15px; max-height: none; }
             .main-content { padding: 15px; min-height: auto; width: 100%; }
             .controls { flex-direction: column; align-items: stretch; gap: 15px;}
             .controls > div { display: flex; flex-direction: column; width: 100%; gap: 10px; }
@@ -152,8 +171,7 @@
             #memoForm { flex-direction: column; }
         }
         @media (max-width: 480px) {
-            .sidebar-btn { min-width: 100%; } 
-            .site-header h1 { font-size: 20px; }
+            .site-header h1 { font-size: 18px; }
             .auth-type-toggle { flex-direction: column; align-items: center; gap: 8px;}
             .auth-grid { grid-template-columns: 1fr; }
         }
@@ -211,18 +229,22 @@
         <span class="link" onclick="toggleAuthViews('loginPage')">Back to Login</span>
     </div>
 
-    <!-- MAIN APP LAYOUT (Sidebar + Content + Activity Feed) -->
+    <!-- MAIN APP LAYOUT -->
     <div id="appLayout" class="app-layout hidden">
-        <aside class="sidebar glass-panel">
-            <div style="margin-bottom: 10px; width: 100%;">
-                <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 16px;"></span>
-            </div>
-            <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home')"><span class="status-dot"></span>Home Page</button>
-            <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile')"><span class="status-dot"></span>My Profile</button>
-            <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt')"><span class="status-dot" id="pendingAccountDot" style="background-color: var(--text-muted);"></span>Administration Mgmt</button>
-            <div style="flex-grow: 1;"></div>
-            <button class="sidebar-btn" style="color: var(--danger);" onclick="logoutUser()"><span class="status-dot"></span>Logout</button>
-        </aside>
+        
+        <div>
+            <button id="mobileMenuBtn" onclick="toggleMobileNav()">☰ Menu</button>
+            <aside class="sidebar glass-panel" id="navSidebar">
+                <div style="margin-bottom: 10px; width: 100%;">
+                    <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 16px;"></span>
+                </div>
+                <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home'); toggleMobileNav();"><span class="status-dot"></span>Home Page</button>
+                <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile'); toggleMobileNav();"><span class="status-dot"></span>My Profile</button>
+                <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt'); toggleMobileNav();"><span class="status-dot" id="pendingAccountDot" style="background-color: var(--text-muted);"></span>Administration Mgmt</button>
+                <div style="flex-grow: 1;"></div>
+                <button class="sidebar-btn" style="color: var(--danger);" onclick="logoutUser()"><span class="status-dot"></span>Logout</button>
+            </aside>
+        </div>
 
         <main class="main-content glass-panel">
             <div id="tabHome">
@@ -253,6 +275,15 @@
                         </thead>
                         <tbody id="dataTable"></tbody>
                     </table>
+                </div>
+
+                <!-- Memo Pagination Control -->
+                <div id="memoPagination" class="pagination-container hidden">
+                    <span id="memoPageInfo" style="font-weight: bold;">Page 1 of 1</span>
+                    <div class="pagination-buttons">
+                        <button id="prevMemoBtn" class="page-btn" onclick="changeMemoPage(-1)">Prev</button>
+                        <button id="nextMemoBtn" class="page-btn" onclick="changeMemoPage(1)">Next</button>
+                    </div>
                 </div>
             </div>
 
@@ -291,10 +322,13 @@
                 <h2 style="margin-top: 0; font-size: 18px; text-align: center;">Live Activity Log</h2>
                 <div id="activityFeedList" style="display: flex; flex-direction: column;"></div>
             </div>
-            <div id="activityPagination" class="activity-pagination hidden">
-                <button id="prevActivityBtn" class="activity-page-btn" onclick="changeActivityPage(-1)">Prev</button>
-                <span id="activityPageInfo">Page 1 of 1</span>
-                <button id="nextActivityBtn" class="activity-page-btn" onclick="changeActivityPage(1)">Next</button>
+            <!-- Activity Pagination Control Layout Updated -->
+            <div id="activityPagination" class="pagination-container hidden">
+                <span id="activityPageInfo" style="font-weight: bold;">Page 1 of 1</span>
+                <div class="pagination-buttons">
+                    <button id="prevActivityBtn" class="page-btn" onclick="changeActivityPage(-1)">Prev</button>
+                    <button id="nextActivityBtn" class="page-btn" onclick="changeActivityPage(1)">Next</button>
+                </div>
             </div>
         </aside>
     </div>
@@ -363,8 +397,15 @@
         let pendingAction = null;
         let pendingAdminAction = null;
         let actionTargetControl = null;
+        
         let currentActivityPage = 1;
         const ACTIVITIES_PER_PAGE = 8; 
+
+        // New pagination variables for Memos
+        let allMemos = [];
+        let filteredMemos = [];
+        let currentMemoPage = 1;
+        const MEMOS_PER_PAGE = 5;
 
         function updateDateTime() {
             const now = new Date();
@@ -372,6 +413,12 @@
             document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options);
         }
         setInterval(updateDateTime, 1000); updateDateTime();
+
+        function toggleMobileNav() {
+            if (window.innerWidth <= 992) {
+                document.getElementById('navSidebar').classList.toggle('open');
+            }
+        }
 
         function showNotification(title, message, onClickAction) {
             const container = document.getElementById('notificationContainer');
@@ -386,17 +433,11 @@
             container.appendChild(toast);
         }
 
-        // --- UPDATED: Activity Logging with Optimistic UI Update (Includes Seconds) ---
         async function logActivity(actionText) {
             const user = localStorage.getItem('loggedInUser') || 'Unknown User';
             const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit', 
-                second: '2-digit' 
-            });
+            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
             
-            // Optimistic UI Update: instantly push new activity to the top
             let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
             logs.unshift({ timeString: timeString, user: user, actionText: actionText });
             if (logs.length > 50) logs = logs.slice(0, 50);
@@ -411,12 +452,10 @@
                     mode: 'no-cors', 
                     body: JSON.stringify({ action: 'log_activity', user: user, actionText: actionText }) 
                 }); 
-                // Refresh from the centralized server after processing
                 setTimeout(fetchActivityLogs, 1500);
             } catch (err) {}
         }
 
-        // --- NEW: Fetch logs from Google Sheets ---
         async function fetchActivityLogs() {
             try {
                 const res = await fetch(API_URL + "?action=get_activity_logs");
@@ -426,12 +465,11 @@
             } catch (err) {}
         }
 
-        // --- NEW: Periodic polling to keep all users in sync ---
         setInterval(() => {
             if (!document.getElementById('appLayout').classList.contains('hidden')) {
                 fetchActivityLogs();
             }
-        }, 15000); // Syncs everyone's activity feed every 15 seconds
+        }, 15000);
 
         function renderActivityFeed() {
             let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
@@ -445,15 +483,20 @@
             }
             const totalPages = Math.ceil(logs.length / ACTIVITIES_PER_PAGE);
             if (currentActivityPage > totalPages) currentActivityPage = totalPages;
+            if (currentActivityPage < 1) currentActivityPage = 1;
+
             const currentLogs = logs.slice((currentActivityPage - 1) * ACTIVITIES_PER_PAGE, ((currentActivityPage - 1) * ACTIVITIES_PER_PAGE) + ACTIVITIES_PER_PAGE);
             
             currentLogs.forEach(log => {
                 container.innerHTML += `<div class="activity-item"><span class="activity-time">${log.timeString}</span><span class="activity-user">${log.user}</span> ${log.actionText}</div>`;
             });
+
             if (paginationContainer) {
                 if (logs.length > ACTIVITIES_PER_PAGE) {
-                    paginationContainer.classList.remove('hidden'); document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
-                    document.getElementById('prevActivityBtn').disabled = (currentActivityPage === 1); document.getElementById('nextActivityBtn').disabled = (currentActivityPage === totalPages);
+                    paginationContainer.classList.remove('hidden'); 
+                    document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
+                    document.getElementById('prevActivityBtn').disabled = (currentActivityPage === 1); 
+                    document.getElementById('nextActivityBtn').disabled = (currentActivityPage === totalPages);
                 } else { paginationContainer.classList.add('hidden'); }
             }
         }
@@ -528,7 +571,7 @@
                 document.getElementById('appLayout').classList.remove('hidden');
                 document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
                 switchTab('home'); 
-                fetchActivityLogs(); // Call server fetch explicitly on login
+                fetchActivityLogs(); 
             } else { toggleAuthViews('loginPage'); }
         }
 
@@ -648,15 +691,61 @@
 
         async function loadData() {
             try {
-                const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
-                const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
-                if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; return; }
-                data.reverse();
-                data.forEach(row => {
-                    const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button><button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
-                });
+                const response = await fetch(API_URL + "?action=get_memos"); 
+                let data = await response.json();
+                
+                const tableBody = document.getElementById('dataTable'); 
+                tableBody.innerHTML = "";
+                
+                if(data.length === 0) { 
+                    tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; 
+                    document.getElementById('memoPagination').classList.add('hidden');
+                    return; 
+                }
+                
+                allMemos = data.reverse();
+                filteredMemos = [...allMemos];
+                currentMemoPage = 1;
+                renderMemoTable();
             } catch (err) { }
+        }
+
+        function renderMemoTable() {
+            const tableBody = document.getElementById('dataTable'); 
+            tableBody.innerHTML = "";
+            const totalPages = Math.ceil(filteredMemos.length / MEMOS_PER_PAGE) || 1;
+            
+            if (currentMemoPage > totalPages) currentMemoPage = totalPages;
+            if (currentMemoPage < 1) currentMemoPage = 1;
+            
+            const startIndex = (currentMemoPage - 1) * MEMOS_PER_PAGE;
+            const currentMemos = filteredMemos.slice(startIndex, startIndex + MEMOS_PER_PAGE);
+            
+            if (currentMemos.length === 0) {
+                tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos match your search.</td></tr>";
+                document.getElementById('memoPagination').classList.add('hidden');
+                return;
+            }
+
+            currentMemos.forEach(row => {
+                const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button><button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
+            });
+            
+            const pagination = document.getElementById('memoPagination');
+            if (filteredMemos.length > MEMOS_PER_PAGE) {
+                pagination.classList.remove('hidden');
+                document.getElementById('memoPageInfo').innerText = `Page ${currentMemoPage} of ${totalPages}`;
+                document.getElementById('prevMemoBtn').disabled = (currentMemoPage === 1); 
+                document.getElementById('nextMemoBtn').disabled = (currentMemoPage === totalPages);
+            } else {
+                pagination.classList.add('hidden');
+            }
+        }
+
+        function changeMemoPage(direction) {
+            currentMemoPage += direction;
+            renderMemoTable();
         }
 
         document.getElementById('memoForm').addEventListener('submit', async (e) => {
@@ -716,7 +805,17 @@
             document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checkedBoxes.length} Selected Memos`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden');
         }
 
-        function searchTable() { const input = document.getElementById("searchInput").value.toUpperCase(); const trs = document.getElementById("dataTable").getElementsByTagName("tr"); for (let i = 0; i < trs.length; i++) { trs[i].style.display = trs[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none"; } }
+        function searchTable() { 
+            const input = document.getElementById("searchInput").value.toUpperCase(); 
+            if(input === "") { 
+                filteredMemos = [...allMemos];
+            } else {
+                filteredMemos = allMemos.filter(row => row.join(" ").toUpperCase().includes(input));
+            }
+            currentMemoPage = 1;
+            renderMemoTable();
+        }
+        
         function toggleSelectAll() { const isChecked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked); }
 
         checkAuth();
