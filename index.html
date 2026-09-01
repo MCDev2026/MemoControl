@@ -386,11 +386,15 @@
             container.appendChild(toast);
         }
 
-        // --- NEW: Activity Logging with Optimistic UI Update ---
+        // --- UPDATED: Activity Logging with Optimistic UI Update (Includes Seconds) ---
         async function logActivity(actionText) {
             const user = localStorage.getItem('loggedInUser') || 'Unknown User';
             const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const timeString = now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                second: '2-digit' 
+            });
             
             // Optimistic UI Update: instantly push new activity to the top
             let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
