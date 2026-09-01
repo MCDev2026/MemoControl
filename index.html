@@ -357,337 +357,354 @@
     <div id="notificationContainer"></div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx42FXBvP2w42kl5XO9ICUAf04mJqqHLcVfSsEC9Ku8bcYWd5KZ2S1H_zzGWs8zE-kS/exec";
-        const ALPHA_ADMIN_NAME = "PCpl Gandia"; 
-        let sessionAdminPass = ""; 
-        let pendingAction = null;
-        let pendingAdminAction = null;
-        let actionTargetControl = null;
-        let currentActivityPage = 1;
-        const ACTIVITIES_PER_PAGE = 8; 
+    const API_URL = "https://script.google.com/macros/s/AKfycbx42FXBvP2w42kl5XO9ICUAf04mJqqHLcVfSsEC9Ku8bcYWd5KZ2S1H_zzGWs8zE-kS/exec";
+    const ALPHA_ADMIN_NAME = "PCpl Gandia"; 
+    let sessionAdminPass = ""; 
+    let pendingAction = null;
+    let pendingAdminAction = null;
+    let actionTargetControl = null;
+    let currentActivityPage = 1;
+    const ACTIVITIES_PER_PAGE = 8; 
 
-        function updateDateTime() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options);
-        }
-        setInterval(updateDateTime, 1000); updateDateTime();
+    function updateDateTime() {
+        const now = new Date();
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+        document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options);
+    }
+    setInterval(updateDateTime, 1000); updateDateTime();
 
-        function showNotification(title, message, onClickAction) {
-            const container = document.getElementById('notificationContainer');
-            const toast = document.createElement('div');
-            toast.className = 'notification-toast';
-            toast.innerHTML = `<span class="notification-title">${title}</span><span class="notification-msg">${message}</span>`;
-            const timeout = setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300); }, 5000);
-            toast.addEventListener('click', () => {
-                clearTimeout(timeout); toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300);
-                if (onClickAction) onClickAction();
-            });
-            container.appendChild(toast);
-        }
-
-        async function logActivity(actionText) {
-            const user = localStorage.getItem('loggedInUser') || 'Unknown User';
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            
-            const logEntry = { user, actionText, timeString, timestamp: now.getTime() };
-            let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
-            logs = logs.filter(log => (now.getTime() - log.timestamp) < 604800000);
-            logs.unshift(logEntry);
-            if (logs.length > 50) logs = logs.slice(0, 50); 
-            localStorage.setItem('appActivityFeed', JSON.stringify(logs));
-            
-            currentActivityPage = 1; renderActivityFeed();
-            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'log_activity', user: user, actionText: actionText }) }); } catch (err) {}
-        }
-
-        function renderActivityFeed() {
-            let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
-            const container = document.getElementById('activityFeedList');
-            const paginationContainer = document.getElementById('activityPagination');
-            
-            if (!container) return; container.innerHTML = "";
-            if (logs.length === 0) {
-                container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px; text-align: center;'>No recent activity.</p>";
-                if (paginationContainer) paginationContainer.classList.add('hidden'); return;
-            }
-            const totalPages = Math.ceil(logs.length / ACTIVITIES_PER_PAGE);
-            if (currentActivityPage > totalPages) currentActivityPage = totalPages;
-            const currentLogs = logs.slice((currentActivityPage - 1) * ACTIVITIES_PER_PAGE, ((currentActivityPage - 1) * ACTIVITIES_PER_PAGE) + ACTIVITIES_PER_PAGE);
-            
-            currentLogs.forEach(log => {
-                container.innerHTML += `<div class="activity-item"><span class="activity-time">${log.timeString}</span><span class="activity-user">${log.user}</span> ${log.actionText}</div>`;
-            });
-            if (paginationContainer) {
-                if (logs.length > ACTIVITIES_PER_PAGE) {
-                    paginationContainer.classList.remove('hidden'); document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
-                    document.getElementById('prevActivityBtn').disabled = (currentActivityPage === 1); document.getElementById('nextActivityBtn').disabled = (currentActivityPage === totalPages);
-                } else { paginationContainer.classList.add('hidden'); }
-            }
-        }
-        function changeActivityPage(direction) { currentActivityPage += direction; renderActivityFeed(); }
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'appActivityFeed') renderActivityFeed();
-            if (e.key === 'rtEditRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
-                const req = JSON.parse(e.newValue);
-                document.getElementById('editRequestUser').innerText = req.user; document.getElementById('editRequestControl').innerText = req.controlNum; document.getElementById('editRequestModal').dataset.reqId = req.id;
-                showNotification("New Edit Request", `User ${req.user} is requesting to edit Memo ${req.controlNum}. Click to review.`, () => { document.getElementById('editRequestModal').classList.remove('hidden'); });
-            }
-            if (e.key === 'newAccountRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
-                const req = JSON.parse(e.newValue); document.getElementById('pendingAccountDot').style.backgroundColor = 'var(--danger)';
-                showNotification("New Account Request", `${req.user} requested an account. Click to review.`, () => { switchTab('adminMgmt'); });
-            }
+    function showNotification(title, message, onClickAction) {
+        const container = document.getElementById('notificationContainer');
+        const toast = document.createElement('div');
+        toast.className = 'notification-toast';
+        toast.innerHTML = `<span class="notification-title">${title}</span><span class="notification-msg">${message}</span>`;
+        const timeout = setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300); }, 5000);
+        toast.addEventListener('click', () => {
+            clearTimeout(timeout); toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300);
+            if (onClickAction) onClickAction();
         });
+        container.appendChild(toast);
+    }
 
-        function toggleAuthViews(viewId) {
+    // --- NEW: Centralized Logging System ---
+    async function logActivity(actionText) {
+        const user = localStorage.getItem('loggedInUser') || 'Unknown User';
+        try { 
+            // Send log to server
+            await fetch(API_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                body: JSON.stringify({ action: 'log_activity', user: user, actionText: actionText }) 
+            }); 
+            // Refresh logs from server after a short delay to allow Google Sheets to process
+            setTimeout(fetchActivityLogs, 1500);
+        } catch (err) {}
+    }
+
+    // --- NEW: Fetch logs from Google Sheets ---
+    async function fetchActivityLogs() {
+        try {
+            const res = await fetch(API_URL + "?action=get_activity_logs");
+            const logs = await res.json();
+            localStorage.setItem('appActivityFeed', JSON.stringify(logs));
+            renderActivityFeed();
+        } catch (err) {}
+    }
+
+    // --- NEW: Periodic polling to keep all users in sync ---
+    setInterval(() => {
+        if (!document.getElementById('appLayout').classList.contains('hidden')) {
+            fetchActivityLogs();
+        }
+    }, 15000); // Syncs everyone's activity feed every 15 seconds
+
+    function renderActivityFeed() {
+        let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
+        const container = document.getElementById('activityFeedList');
+        const paginationContainer = document.getElementById('activityPagination');
+        
+        if (!container) return; container.innerHTML = "";
+        if (logs.length === 0) {
+            container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px; text-align: center;'>No recent activity.</p>";
+            if (paginationContainer) paginationContainer.classList.add('hidden'); return;
+        }
+        const totalPages = Math.ceil(logs.length / ACTIVITIES_PER_PAGE);
+        if (currentActivityPage > totalPages) currentActivityPage = totalPages;
+        const currentLogs = logs.slice((currentActivityPage - 1) * ACTIVITIES_PER_PAGE, ((currentActivityPage - 1) * ACTIVITIES_PER_PAGE) + ACTIVITIES_PER_PAGE);
+        
+        currentLogs.forEach(log => {
+            container.innerHTML += `<div class="activity-item"><span class="activity-time">${log.timeString}</span><span class="activity-user">${log.user}</span> ${log.actionText}</div>`;
+        });
+        if (paginationContainer) {
+            if (logs.length > ACTIVITIES_PER_PAGE) {
+                paginationContainer.classList.remove('hidden'); document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
+                document.getElementById('prevActivityBtn').disabled = (currentActivityPage === 1); document.getElementById('nextActivityBtn').disabled = (currentActivityPage === totalPages);
+            } else { paginationContainer.classList.add('hidden'); }
+        }
+    }
+
+    function changeActivityPage(direction) { currentActivityPage += direction; renderActivityFeed(); }
+
+    window.addEventListener('storage', (e) => {
+        if (e.key === 'rtEditRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
+            const req = JSON.parse(e.newValue);
+            document.getElementById('editRequestUser').innerText = req.user; document.getElementById('editRequestControl').innerText = req.controlNum; document.getElementById('editRequestModal').dataset.reqId = req.id;
+            showNotification("New Edit Request", `User ${req.user} is requesting to edit Memo ${req.controlNum}. Click to review.`, () => { document.getElementById('editRequestModal').classList.remove('hidden'); });
+        }
+        if (e.key === 'newAccountRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
+            const req = JSON.parse(e.newValue); document.getElementById('pendingAccountDot').style.backgroundColor = 'var(--danger)';
+            showNotification("New Account Request", `${req.user} requested an account. Click to review.`, () => { switchTab('adminMgmt'); });
+        }
+    });
+
+    function toggleAuthViews(viewId) {
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('registerPage').classList.add('hidden');
+        document.getElementById('appLayout').classList.add('hidden');
+        document.getElementById(viewId).classList.remove('hidden');
+    }
+
+    function toggleInputType(inputId, type) {
+        const input = document.getElementById(inputId);
+        if (type === 'pin') { input.placeholder = "Enter 6-Digit PIN"; input.setAttribute("maxlength", "6"); } 
+        else { input.placeholder = "Enter Password"; input.removeAttribute("maxlength"); }
+        input.value = ""; 
+    }
+
+    function switchTab(tabName) {
+        document.getElementById('tabHome').classList.add('hidden'); 
+        document.getElementById('tabProfile').classList.add('hidden');
+        document.getElementById('tabAdminMgmt').classList.add('hidden');
+        document.getElementById('btnHome').classList.remove('active'); 
+        document.getElementById('btnProfile').classList.remove('active');
+        document.getElementById('btnAdminMgmt').classList.remove('active');
+
+        if (tabName === 'home') { 
+            document.getElementById('tabHome').classList.remove('hidden'); document.getElementById('btnHome').classList.add('active'); loadData(); 
+        } 
+        else if (tabName === 'profile') { 
+            document.getElementById('tabProfile').classList.remove('hidden'); document.getElementById('btnProfile').classList.add('active'); document.getElementById('newCredential').value = ""; 
+        }
+        else if (tabName === 'adminMgmt') {
+            if (sessionAdminPass === "") { 
+                pendingAdminAction = 'open_mgmt';
+                document.getElementById('adminModal').classList.remove('hidden'); 
+                document.getElementById('adminPassInput').value = ""; 
+                document.getElementById('adminPassInput').focus(); 
+            } else { 
+                showAdminMgmtTab(); 
+            }
+        }
+    }
+
+    function showAdminMgmtTab() {
+        document.getElementById('tabAdminMgmt').classList.remove('hidden');
+        document.getElementById('btnAdminMgmt').classList.add('active');
+        document.getElementById('pendingAccountDot').style.backgroundColor = 'var(--success)';
+        loadAdminUsers();
+    }
+
+    function checkAuth() {
+        const user = localStorage.getItem('loggedInUser');
+        if (user) {
+            document.getElementById('welcomeMsg').innerText = `Welcome, ${user}`;
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('registerPage').classList.add('hidden');
-            document.getElementById('appLayout').classList.add('hidden');
-            document.getElementById(viewId).classList.remove('hidden');
-        }
+            document.getElementById('appLayout').classList.remove('hidden');
+            document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
+            switchTab('home'); 
+            fetchActivityLogs(); // Call server fetch explicitly on login
+        } else { toggleAuthViews('loginPage'); }
+    }
 
-        function toggleInputType(inputId, type) {
-            const input = document.getElementById(inputId);
-            if (type === 'pin') { input.placeholder = "Enter 6-Digit PIN"; input.setAttribute("maxlength", "6"); } 
-            else { input.placeholder = "Enter Password"; input.removeAttribute("maxlength"); }
-            input.value = ""; 
-        }
-
-        function switchTab(tabName) {
-            document.getElementById('tabHome').classList.add('hidden'); 
-            document.getElementById('tabProfile').classList.add('hidden');
-            document.getElementById('tabAdminMgmt').classList.add('hidden');
-            document.getElementById('btnHome').classList.remove('active'); 
-            document.getElementById('btnProfile').classList.remove('active');
-            document.getElementById('btnAdminMgmt').classList.remove('active');
-
-            if (tabName === 'home') { 
-                document.getElementById('tabHome').classList.remove('hidden'); document.getElementById('btnHome').classList.add('active'); loadData(); 
-            } 
-            else if (tabName === 'profile') { 
-                document.getElementById('tabProfile').classList.remove('hidden'); document.getElementById('btnProfile').classList.add('active'); document.getElementById('newCredential').value = ""; 
-            }
-            else if (tabName === 'adminMgmt') {
-                if (sessionAdminPass === "") { 
-                    pendingAdminAction = 'open_mgmt';
-                    document.getElementById('adminModal').classList.remove('hidden'); 
-                    document.getElementById('adminPassInput').value = ""; 
-                    document.getElementById('adminPassInput').focus(); 
-                } else { 
-                    showAdminMgmtTab(); 
-                }
-            }
-        }
-
-        function showAdminMgmtTab() {
-            document.getElementById('tabAdminMgmt').classList.remove('hidden');
-            document.getElementById('btnAdminMgmt').classList.add('active');
-            document.getElementById('pendingAccountDot').style.backgroundColor = 'var(--success)';
-            loadAdminUsers();
-        }
-
-        function checkAuth() {
-            const user = localStorage.getItem('loggedInUser');
-            if (user) {
-                document.getElementById('welcomeMsg').innerText = `Welcome, ${user}`;
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('registerPage').classList.add('hidden');
-                document.getElementById('appLayout').classList.remove('hidden');
-                document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
-                switchTab('home'); renderActivityFeed(); 
-            } else { toggleAuthViews('loginPage'); }
-        }
-
-        async function loginUser() {
-            const user = document.getElementById('loginUsername').value.trim();
-            const cred = document.getElementById('loginCredential').value.trim();
-            if(!user || !cred) return alert("Enter Username and PIN/Password.");
-            
-            document.getElementById('loginCredential').value = "Logging in...";
-            const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&pin=${encodeURIComponent(cred)}`);
-            const data = await res.json();
-            
-            if (data.success) {
-                localStorage.setItem('loggedInUser', data.name);
-                localStorage.setItem('loggedCred', cred);
-                document.getElementById('loginCredential').value = "";
-                logActivity("logged into the system.");
-                checkAuth();
-            } else { alert(data.error); document.getElementById('loginCredential').value = ""; }
-        }
-
-        async function registerUser() {
-            const rank = document.getElementById('regRank').value;
-            const firstName = document.getElementById('regFirst').value.trim();
-            const middleName = document.getElementById('regMiddle').value.trim();
-            const lastName = document.getElementById('regLast').value.trim();
-            const qlf = document.getElementById('regQlf').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const cred = document.getElementById('regCredential').value.trim();
-
-            if(!rank || !firstName || !lastName || !email || !username || cred.length < 4) {
-                return alert("Please complete all required fields and ensure credential is at least 4 characters.");
-            }
-            const payload = { action: 'register', rank, firstName, middleName, lastName, qlf, email, username, pin: cred };
-            try {
-                const res = await fetch(`${API_URL}?action=register&` + new URLSearchParams(payload));
-                const data = await res.json();
-                if (data.success) {
-                    alert("Account created! It is currently pending approval by the Alpha Admin.");
-                    localStorage.setItem('newAccountRequest', JSON.stringify({ user: username, time: Date.now() }));
-                    toggleAuthViews('loginPage');
-                } else { alert(data.error); }
-            } catch(e) { alert("Network Error"); }
-        }
-
-        function logoutUser() {
-            logActivity("logged out of the system.");
-            localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); sessionAdminPass = ""; pendingAdminAction = null;
+    async function loginUser() {
+        const user = document.getElementById('loginUsername').value.trim();
+        const cred = document.getElementById('loginCredential').value.trim();
+        if(!user || !cred) return alert("Enter Username and PIN/Password.");
+        
+        document.getElementById('loginCredential').value = "Logging in...";
+        const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&pin=${encodeURIComponent(cred)}`);
+        const data = await res.json();
+        
+        if (data.success) {
+            localStorage.setItem('loggedInUser', data.name);
+            localStorage.setItem('loggedCred', cred);
+            document.getElementById('loginCredential').value = "";
+            logActivity("logged into the system.");
             checkAuth();
+        } else { alert(data.error); document.getElementById('loginCredential').value = ""; }
+    }
+
+    async function registerUser() {
+        const rank = document.getElementById('regRank').value;
+        const firstName = document.getElementById('regFirst').value.trim();
+        const middleName = document.getElementById('regMiddle').value.trim();
+        const lastName = document.getElementById('regLast').value.trim();
+        const qlf = document.getElementById('regQlf').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const username = document.getElementById('regUsername').value.trim();
+        const cred = document.getElementById('regCredential').value.trim();
+
+        if(!rank || !firstName || !lastName || !email || !username || cred.length < 4) {
+            return alert("Please complete all required fields and ensure credential is at least 4 characters.");
         }
-
-        async function updateProfile() {
-            const newCred = document.getElementById('newCredential').value.trim();
-            if(!newCred) return alert("Please enter a new credential to save.");
-            const userName = localStorage.getItem('loggedInUser'); const oldCred = localStorage.getItem('loggedCred'); 
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_profile', userName: userName, oldCredential: oldCred, newCredential: newCred }) });
-                localStorage.setItem('loggedCred', newCred); alert("Credentials updated successfully!"); document.getElementById('newCredential').value = ""; logActivity("updated their security credentials.");
-            } catch (err) {}
-        }
-
-        function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); }
-        function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
-        function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
-
-        async function verifyAdmin() {
-            const pass = document.getElementById('adminPassInput').value; if (!pass) return;
-            document.getElementById('adminPassInput').value = "Verifying..."; 
-            
-            const res = await fetch(`${API_URL}?action=verify_admin&password=${encodeURIComponent(pass)}`);
+        const payload = { action: 'register', rank, firstName, middleName, lastName, qlf, email, username, pin: cred };
+        try {
+            const res = await fetch(`${API_URL}?action=register&` + new URLSearchParams(payload));
             const data = await res.json();
             if (data.success) {
-                sessionAdminPass = pass; document.getElementById('adminModal').classList.add('hidden'); 
-                if (pendingAdminAction === 'open_mgmt') {
-                    showAdminMgmtTab();
-                    pendingAdminAction = null;
-                }
-            } else { alert("Incorrect Admin Password."); document.getElementById('adminPassInput').value = ""; }
-        }
+                alert("Account created! It is currently pending approval by the Alpha Admin.");
+                localStorage.setItem('newAccountRequest', JSON.stringify({ user: username, time: Date.now() }));
+                toggleAuthViews('loginPage');
+            } else { alert(data.error); }
+        } catch(e) { alert("Network Error"); }
+    }
 
-        async function loadAdminUsers() {
-            const res = await fetch(`${API_URL}?action=get_all_users&password=${encodeURIComponent(sessionAdminPass)}`);
-            const data = await res.json();
-            const tbody = document.getElementById('adminUsersTableBody'); tbody.innerHTML = "";
-            if (data.success) {
-                if(data.users.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No accounts found.</td></tr>"; return; }
-                data.users.forEach(u => {
-                    const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    const safeUser = String(u.username).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    const isPending = u.status === 'Pending';
-                    const actionHtml = isPending ?
-                        `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button>
-                         <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` :
-                        `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete User</button>`;
-
-                    tbody.innerHTML += `<tr><td>${u.rank} ${u.name}</td><td>${u.username}</td><td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td><td>${actionHtml}</td></tr>`;
-                });
-            } else {
-                alert(data.error || "Failed to load users.");
-            }
-        }
-
-        async function adminDeleteUser(username) {
-            if (!confirm(`Are you sure you want to delete user: ${username}?`)) return;
-            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) });
-            logActivity(`deleted user account: ${username}`);
-            setTimeout(loadAdminUsers, 1500);
-        }
-
-        async function processApproval(pin, actionType) {
-            if (!confirm(`Confirm Action?`)) return;
-            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) });
-            logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request.");
-            setTimeout(loadAdminUsers, 1500);
-        }
-
-        async function loadData() {
-            try {
-                const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
-                const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
-                if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; return; }
-                data.reverse();
-                data.forEach(row => {
-                    const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button><button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
-                });
-            } catch (err) { }
-        }
-
-        document.getElementById('memoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const subject = document.getElementById('memoSubject').value.trim(); const classification = document.getElementById('memoClassification').value; 
-            if (!subject) return alert("Please enter a Memo Subject.");
-            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
-            logActivity(`encoded a new memo: "${subject}"`); document.getElementById('memoSubject').value = ""; closeMemoModal(); setTimeout(loadData, 1500); 
-        });
-
-        function initiateEdit(controlNum, currentSubject) {
-            if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) { requestRealTimeApproval(controlNum, currentSubject); } 
-            else { triggerActionModal('edit', controlNum, currentSubject); }
-        }
-
-        function requestRealTimeApproval(controlNum, currentSubject) {
-            alert("Edit request sent to Alpha-Admin. Waiting for real-time approval..."); const reqId = Date.now().toString();
-            localStorage.setItem('rtEditRequest', JSON.stringify({ id: reqId, user: localStorage.getItem('loggedInUser'), controlNum: controlNum, subject: currentSubject }));
-            let attempts = 0;
-            const poller = setInterval(() => {
-                attempts++; const response = JSON.parse(localStorage.getItem('rtEditResponse_' + reqId) || "null");
-                if (response) { clearInterval(poller); localStorage.removeItem('rtEditResponse_' + reqId);
-                    if (response.approved) { alert("Alpha-Admin approved your request. You may now edit."); sessionAdminPass = response.password; triggerActionModal('edit', controlNum, currentSubject); } 
-                    else { alert("Edit request was denied by Alpha-Admin."); }
-                }
-                if (attempts > 90) { clearInterval(poller); alert("Edit request timed out. Admin may be unavailable."); }
-            }, 1000);
-        }
-
-        function respondToEditRequest(isApproved) {
-            const reqId = document.getElementById('editRequestModal').dataset.reqId; const pass = document.getElementById('editRequestAdminPass').value;
-            if (isApproved && !pass) return alert("Alpha-Admin code is required to allow edits.");
-            localStorage.setItem('rtEditResponse_' + reqId, JSON.stringify({ approved: isApproved, password: pass }));
-            document.getElementById('editRequestModal').classList.add('hidden'); document.getElementById('editRequestAdminPass').value = "";
-        }
-
-        function triggerActionModal(action, controlNum, currentSubject = "") {
-            pendingAction = action; actionTargetControl = controlNum;
-            document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject;
-            if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit Memo: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); } 
-            else { document.getElementById('actionModalTitle').innerText = `Delete Memo: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); }
-        }
-
-        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; }
-
-        async function executeAction() {
-            const pass = document.getElementById('actionAdminPass').value; if (!pass) return alert("Admin password required.");
-            if (pendingAction === 'edit') { const newSubject = document.getElementById('actionNewSubject').value.trim(); await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, password: pass }) }); logActivity(`edited memo: ${actionTargetControl}`); } 
-            else if (pendingAction === 'delete') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) }); logActivity(`deleted memo: ${actionTargetControl}`); } 
-            else if (pendingAction === 'batch_delete') { for (const controlNum of actionTargetControl) { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: controlNum, password: pass }) }); } logActivity(`deleted multiple memos in a batch.`); }
-            closeActionModal(); setTimeout(loadData, 1500);
-        }
-
-        function batchDelete() {
-            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked'); if (checkedBoxes.length === 0) return alert("Select at least one memo to delete.");
-            const controlNumbers = Array.from(checkedBoxes).map(cb => cb.value); pendingAction = 'batch_delete'; actionTargetControl = controlNumbers;
-            document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checkedBoxes.length} Selected Memos`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden');
-        }
-
-        function searchTable() { const input = document.getElementById("searchInput").value.toUpperCase(); const trs = document.getElementById("dataTable").getElementsByTagName("tr"); for (let i = 0; i < trs.length; i++) { trs[i].style.display = trs[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none"; } }
-        function toggleSelectAll() { const isChecked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked); }
-
+    function logoutUser() {
+        logActivity("logged out of the system.");
+        localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); sessionAdminPass = ""; pendingAdminAction = null;
         checkAuth();
-    </script>
+    }
+
+    async function updateProfile() {
+        const newCred = document.getElementById('newCredential').value.trim();
+        if(!newCred) return alert("Please enter a new credential to save.");
+        const userName = localStorage.getItem('loggedInUser'); const oldCred = localStorage.getItem('loggedCred'); 
+        try {
+            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_profile', userName: userName, oldCredential: oldCred, newCredential: newCred }) });
+            localStorage.setItem('loggedCred', newCred); alert("Credentials updated successfully!"); document.getElementById('newCredential').value = ""; logActivity("updated their security credentials.");
+        } catch (err) {}
+    }
+
+    function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); }
+    function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
+    function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
+
+    async function verifyAdmin() {
+        const pass = document.getElementById('adminPassInput').value; if (!pass) return;
+        document.getElementById('adminPassInput').value = "Verifying..."; 
+        
+        const res = await fetch(`${API_URL}?action=verify_admin&password=${encodeURIComponent(pass)}`);
+        const data = await res.json();
+        if (data.success) {
+            sessionAdminPass = pass; document.getElementById('adminModal').classList.add('hidden'); 
+            if (pendingAdminAction === 'open_mgmt') {
+                showAdminMgmtTab();
+                pendingAdminAction = null;
+            }
+        } else { alert("Incorrect Admin Password."); document.getElementById('adminPassInput').value = ""; }
+    }
+
+    async function loadAdminUsers() {
+        const res = await fetch(`${API_URL}?action=get_all_users&password=${encodeURIComponent(sessionAdminPass)}`);
+        const data = await res.json();
+        const tbody = document.getElementById('adminUsersTableBody'); tbody.innerHTML = "";
+        if (data.success) {
+            if(data.users.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No accounts found.</td></tr>"; return; }
+            data.users.forEach(u => {
+                const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeUser = String(u.username).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const isPending = u.status === 'Pending';
+                const actionHtml = isPending ?
+                    `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button>
+                     <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` :
+                    `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete User</button>`;
+
+                tbody.innerHTML += `<tr><td>${u.rank} ${u.name}</td><td>${u.username}</td><td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td><td>${actionHtml}</td></tr>`;
+            });
+        } else {
+            alert(data.error || "Failed to load users.");
+        }
+    }
+
+    async function adminDeleteUser(username) {
+        if (!confirm(`Are you sure you want to delete user: ${username}?`)) return;
+        await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) });
+        logActivity(`deleted user account: ${username}`);
+        setTimeout(loadAdminUsers, 1500);
+    }
+
+    async function processApproval(pin, actionType) {
+        if (!confirm(`Confirm Action?`)) return;
+        await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) });
+        logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request.");
+        setTimeout(loadAdminUsers, 1500);
+    }
+
+    async function loadData() {
+        try {
+            const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
+            const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
+            if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; return; }
+            data.reverse();
+            data.forEach(row => {
+                const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button><button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
+            });
+        } catch (err) { }
+    }
+
+    document.getElementById('memoForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const subject = document.getElementById('memoSubject').value.trim(); const classification = document.getElementById('memoClassification').value; 
+        if (!subject) return alert("Please enter a Memo Subject.");
+        await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
+        logActivity(`encoded a new memo: "${subject}"`); document.getElementById('memoSubject').value = ""; closeMemoModal(); setTimeout(loadData, 1500); 
+    });
+
+    function initiateEdit(controlNum, currentSubject) {
+        if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) { requestRealTimeApproval(controlNum, currentSubject); } 
+        else { triggerActionModal('edit', controlNum, currentSubject); }
+    }
+
+    function requestRealTimeApproval(controlNum, currentSubject) {
+        alert("Edit request sent to Alpha-Admin. Waiting for real-time approval..."); const reqId = Date.now().toString();
+        localStorage.setItem('rtEditRequest', JSON.stringify({ id: reqId, user: localStorage.getItem('loggedInUser'), controlNum: controlNum, subject: currentSubject }));
+        let attempts = 0;
+        const poller = setInterval(() => {
+            attempts++; const response = JSON.parse(localStorage.getItem('rtEditResponse_' + reqId) || "null");
+            if (response) { clearInterval(poller); localStorage.removeItem('rtEditResponse_' + reqId);
+                if (response.approved) { alert("Alpha-Admin approved your request. You may now edit."); sessionAdminPass = response.password; triggerActionModal('edit', controlNum, currentSubject); } 
+                else { alert("Edit request was denied by Alpha-Admin."); }
+            }
+            if (attempts > 90) { clearInterval(poller); alert("Edit request timed out. Admin may be unavailable."); }
+        }, 1000);
+    }
+
+    function respondToEditRequest(isApproved) {
+        const reqId = document.getElementById('editRequestModal').dataset.reqId; const pass = document.getElementById('editRequestAdminPass').value;
+        if (isApproved && !pass) return alert("Alpha-Admin code is required to allow edits.");
+        localStorage.setItem('rtEditResponse_' + reqId, JSON.stringify({ approved: isApproved, password: pass }));
+        document.getElementById('editRequestModal').classList.add('hidden'); document.getElementById('editRequestAdminPass').value = "";
+    }
+
+    function triggerActionModal(action, controlNum, currentSubject = "") {
+        pendingAction = action; actionTargetControl = controlNum;
+        document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject;
+        if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit Memo: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); } 
+        else { document.getElementById('actionModalTitle').innerText = `Delete Memo: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); }
+    }
+
+    function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; }
+
+    async function executeAction() {
+        const pass = document.getElementById('actionAdminPass').value; if (!pass) return alert("Admin password required.");
+        if (pendingAction === 'edit') { const newSubject = document.getElementById('actionNewSubject').value.trim(); await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, password: pass }) }); logActivity(`edited memo: ${actionTargetControl}`); } 
+        else if (pendingAction === 'delete') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) }); logActivity(`deleted memo: ${actionTargetControl}`); } 
+        else if (pendingAction === 'batch_delete') { for (const controlNum of actionTargetControl) { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: controlNum, password: pass }) }); } logActivity(`deleted multiple memos in a batch.`); }
+        closeActionModal(); setTimeout(loadData, 1500);
+    }
+
+    function batchDelete() {
+        const checkedBoxes = document.querySelectorAll('.row-checkbox:checked'); if (checkedBoxes.length === 0) return alert("Select at least one memo to delete.");
+        const controlNumbers = Array.from(checkedBoxes).map(cb => cb.value); pendingAction = 'batch_delete'; actionTargetControl = controlNumbers;
+        document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checkedBoxes.length} Selected Memos`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden');
+    }
+
+    function searchTable() { const input = document.getElementById("searchInput").value.toUpperCase(); const trs = document.getElementById("dataTable").getElementsByTagName("tr"); for (let i = 0; i < trs.length; i++) { trs[i].style.display = trs[i].innerText.toUpperCase().indexOf(input) > -1 ? "" : "none"; } }
+    function toggleSelectAll() { const isChecked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked); }
+
+    checkAuth();
+</script>
 </body>
 </html>
