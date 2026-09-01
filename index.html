@@ -93,12 +93,14 @@
         h2 { font-size: 20px; margin-bottom: 12px; }
 
         .app-layout { display: flex; width: 100%; max-width: 1600px; gap: 20px; align-items: flex-start; }
-        .sidebar { width: 220px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+        
+        /* Compact Sidebar Updates */
+        .sidebar { width: 220px; padding: 15px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
         .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
         
-        .sidebar-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); text-align: left; padding: 12px 15px; font-size: 14px; display: flex; align-items: center; }
+        .sidebar-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); text-align: left; padding: 8px 12px; font-size: 13px; display: flex; align-items: center; border-radius: var(--radius-sm); margin-bottom: 2px;}
         .sidebar-btn:hover, .sidebar-btn.active { background: rgba(255, 255, 255, 0.1); color: white; border-color: var(--border-color); }
-        .status-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: var(--danger); margin-right: 12px; transition: background-color 0.3s; }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--danger); margin-right: 10px; transition: background-color 0.3s; }
         .sidebar-btn.active .status-dot { background-color: var(--success); }
 
         .controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
@@ -119,10 +121,15 @@
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;}
         .modal-content { width: 100%; max-width: 350px; padding: 25px; text-align: center; max-height: 90vh; overflow-y: auto; }
         
-        /* Wider PC Modals & Sidebar */
         @media (min-width: 993px) {
             .modal-large { max-width: 800px; }
-            .right-sidebar { width: 360px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; max-height: 80vh; overflow-y: auto; justify-content: space-between; }
+            .right-sidebar { 
+                width: 360px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; 
+                max-height: 80vh; overflow-y: auto; justify-content: space-between; 
+                /* Hide scrollbar for activity log */
+                -ms-overflow-style: none; scrollbar-width: none; 
+            }
+            .right-sidebar::-webkit-scrollbar { display: none; }
         }
 
         .activity-item { padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 13px; line-height: 1.4; text-align: left; }
@@ -130,7 +137,6 @@
         .activity-time { display: block; font-size: 11px; color: var(--primary); margin-bottom: 4px; font-weight: bold; }
         .activity-user { color: white; font-weight: bold; }
         
-        /* Stacked Pagination Styles */
         .pagination-container { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); }
         .pagination-buttons { display: flex; justify-content: space-between; width: 100%; gap: 10px;}
         .page-btn { padding: 6px 12px; font-size: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: white; cursor: pointer; width: 48%; }
@@ -146,7 +152,6 @@
         @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOutLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
 
-        /* Responsive Mobile Behavior */
         #mobileMenuBtn { display: none; }
         
         @media (max-width: 992px) {
@@ -157,7 +162,6 @@
             
             .app-layout { flex-direction: column; align-items: stretch; }
             
-            /* Collapsible Nav */
             .sidebar { display: none; width: 100%; padding: 15px; margin-bottom: 10px; }
             .sidebar.open { display: flex; flex-direction: column; }
             .sidebar-btn { text-align: left; padding: 10px 15px; font-size: 13px; }
@@ -236,13 +240,12 @@
             <button id="mobileMenuBtn" onclick="toggleMobileNav()">☰ Menu</button>
             <aside class="sidebar glass-panel" id="navSidebar">
                 <div style="margin-bottom: 10px; width: 100%;">
-                    <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 16px;"></span>
+                    <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 15px;"></span>
                 </div>
                 <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home'); toggleMobileNav();"><span class="status-dot"></span>Home Page</button>
                 <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile'); toggleMobileNav();"><span class="status-dot"></span>My Profile</button>
                 <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt'); toggleMobileNav();"><span class="status-dot" id="pendingAccountDot" style="background-color: var(--text-muted);"></span>Administration Mgmt</button>
                 <div style="flex-grow: 1;"></div>
-                <button class="sidebar-btn" style="color: var(--danger);" onclick="logoutUser()"><span class="status-dot"></span>Logout</button>
             </aside>
         </div>
 
@@ -287,12 +290,19 @@
                 </div>
             </div>
 
+            <!-- MY PROFILE PAGE -->
             <div id="tabProfile" class="hidden">
-                <h2>Update Credentials</h2>
-                <label style="font-size: 13px; color: var(--text-muted); text-align: left; display: block; margin-top: 20px;">Change PIN / Password:</label>
+                <h2>My Profile Settings</h2>
+                <label style="font-size: 13px; color: var(--text-muted); text-align: left; display: block; margin-top: 20px;">Change Username:</label>
+                <input type="text" id="newUsernameInput" placeholder="Enter new Username" style="max-width: 300px;">
+                
+                <label style="font-size: 13px; color: var(--text-muted); text-align: left; display: block; margin-top: 15px;">Change PIN / Password:</label>
                 <input type="password" id="newCredential" placeholder="Enter new PIN or Password" style="max-width: 300px;">
-                <br>
-                <button style="margin-top: 15px; width: auto;" onclick="updateProfile()">Save Changes</button>
+                
+                <div style="margin-top: 25px; display: flex; gap: 15px;">
+                    <button style="width: auto;" onclick="updateProfile()">Save Changes</button>
+                    <button class="delete-btn" style="width: auto;" onclick="logoutUser()">Logout of System</button>
+                </div>
             </div>
 
             <!-- ADMINISTRATION MANAGEMENT PAGE -->
@@ -541,7 +551,10 @@
                 document.getElementById('tabHome').classList.remove('hidden'); document.getElementById('btnHome').classList.add('active'); loadData(); 
             } 
             else if (tabName === 'profile') { 
-                document.getElementById('tabProfile').classList.remove('hidden'); document.getElementById('btnProfile').classList.add('active'); document.getElementById('newCredential').value = ""; 
+                document.getElementById('tabProfile').classList.remove('hidden'); 
+                document.getElementById('btnProfile').classList.add('active'); 
+                document.getElementById('newCredential').value = ""; 
+                document.getElementById('newUsernameInput').value = "";
             }
             else if (tabName === 'adminMgmt') {
                 if (sessionAdminPass === "") { 
@@ -626,12 +639,35 @@
 
         async function updateProfile() {
             const newCred = document.getElementById('newCredential').value.trim();
-            if(!newCred) return alert("Please enter a new credential to save.");
-            const userName = localStorage.getItem('loggedInUser'); const oldCred = localStorage.getItem('loggedCred'); 
+            const newUsername = document.getElementById('newUsernameInput').value.trim();
+            if(!newCred && !newUsername) return alert("Please enter a new username or credential to save.");
+            
+            const currentUsername = localStorage.getItem('loggedInUser'); 
+            const currentCred = localStorage.getItem('loggedCred'); 
+            
             try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_profile', userName: userName, oldCredential: oldCred, newCredential: newCred }) });
-                localStorage.setItem('loggedCred', newCred); alert("Credentials updated successfully!"); document.getElementById('newCredential').value = ""; logActivity("updated their security credentials.");
-            } catch (err) {}
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({ 
+                        action: 'update_profile', 
+                        currentUsername: currentUsername, 
+                        currentCredential: currentCred, 
+                        newUsername: newUsername,
+                        newCredential: newCred 
+                    }) 
+                });
+                
+                if (newCred) localStorage.setItem('loggedCred', newCred); 
+                if (newUsername) localStorage.setItem('loggedInUser', newUsername);
+                
+                alert("Profile updated successfully!"); 
+                document.getElementById('newCredential').value = ""; 
+                document.getElementById('newUsernameInput').value = "";
+                document.getElementById('welcomeMsg').innerText = `Welcome, ${localStorage.getItem('loggedInUser')}`;
+                
+                logActivity("updated their profile information.");
+            } catch (err) { }
         }
 
         function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); }
