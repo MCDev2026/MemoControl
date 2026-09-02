@@ -72,13 +72,13 @@
         .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
         .auth-grid .full-width { grid-column: 1 / -1; }
         
-        input[type="text"], input[type="password"], input[type="email"], select { 
+        input[type="text"], input[type="password"], input[type="email"], select, textarea { 
             width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); 
             border-radius: var(--radius-md); font-size: 14px; background-color: rgba(255, 255, 255, 0.1); color: white; margin-bottom: 8px;
         }
         select option { color: #000; }
-        input::placeholder { color: #94a3b8; }
-        input:focus, select:focus { outline: none; border-color: var(--primary); background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
+        input::placeholder, textarea::placeholder { color: #94a3b8; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
         
         .auth-type-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; font-size: 14px; color: var(--text-muted); }
         
@@ -94,7 +94,6 @@
 
         .app-layout { display: flex; width: 100%; max-width: 1600px; gap: 20px; align-items: flex-start; }
         
-        /* Compact Sidebar Updates */
         .sidebar { width: 220px; padding: 15px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
         .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
         
@@ -126,7 +125,6 @@
             .right-sidebar { 
                 width: 360px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; 
                 max-height: 80vh; overflow-y: auto; justify-content: space-between; 
-                /* Hide scrollbar for activity log */
                 -ms-overflow-style: none; scrollbar-width: none; 
             }
             .right-sidebar::-webkit-scrollbar { display: none; }
@@ -280,7 +278,6 @@
                     </table>
                 </div>
 
-                <!-- Memo Pagination Control -->
                 <div id="memoPagination" class="pagination-container hidden">
                     <span id="memoPageInfo" style="font-weight: bold;">Page 1 of 1</span>
                     <div class="pagination-buttons">
@@ -309,8 +306,20 @@
             <div id="tabAdminMgmt" class="hidden">
                 <div class="controls">
                     <h2 style="margin:0; color: #fca5a5;">Administration Management</h2>
-                    <button class="action-btn approve-btn" onclick="loadAdminUsers()" style="padding: 10px 18px; font-weight: bold;">Refresh List</button>
+                    <button class="action-btn approve-btn" onclick="loadAdminUsers()" style="padding: 10px 18px; font-weight: bold;">Refresh Data</button>
                 </div>
+
+                <!-- Admin Announcement Control Area -->
+                <div class="glass-panel" style="padding: 20px; margin-top: 20px; border-color: rgba(99,102,241,0.4);">
+                    <h3 style="margin-top:0; color: #818cf8; font-size: 16px;">Global System Announcement Control</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">This message will appear as a popup to all users when they log in.</p>
+                    <textarea id="adminAnnouncementText" placeholder="Enter the system announcement here..." style="min-height: 100px;"></textarea>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="approve-btn" style="width: auto;" onclick="saveAdminAnnouncement()">Post / Update Announcement</button>
+                        <button class="delete-btn" style="width: auto;" onclick="deleteAdminAnnouncement()">Remove Announcement</button>
+                    </div>
+                </div>
+
                 <div class="table-wrapper" style="margin-top: 20px;">
                     <table id="adminUsersTable">
                         <thead>
@@ -332,7 +341,6 @@
                 <h2 style="margin-top: 0; font-size: 18px; text-align: center;">Live Activity Log</h2>
                 <div id="activityFeedList" style="display: flex; flex-direction: column;"></div>
             </div>
-            <!-- Activity Pagination Control Layout Updated -->
             <div id="activityPagination" class="pagination-container hidden">
                 <span id="activityPageInfo" style="font-weight: bold;">Page 1 of 1</span>
                 <div class="pagination-buttons">
@@ -341,6 +349,15 @@
                 </div>
             </div>
         </aside>
+    </div>
+
+    <!-- GLOBAL SYSTEM ANNOUNCEMENT MODAL -->
+    <div id="systemAnnouncementModal" class="modal-overlay hidden" style="z-index: 1000;">
+        <div class="modal-content glass-panel" style="max-width: 450px;">
+            <h2 style="color: #a5b4fc; margin-top: 0;">System Announcement</h2>
+            <p id="globalAnnouncementMsg" style="font-size: 15px; margin-bottom: 25px; line-height: 1.6; white-space: pre-wrap; text-align: left;"></p>
+            <button onclick="closeAnnouncementModal()">Understood</button>
+        </div>
     </div>
 
     <!-- MEMO SUBMISSION MODAL -->
@@ -411,7 +428,6 @@
         let currentActivityPage = 1;
         const ACTIVITIES_PER_PAGE = 8; 
 
-        // New pagination variables for Memos
         let allMemos = [];
         let filteredMemos = [];
         let currentMemoPage = 1;
@@ -575,6 +591,49 @@
             loadAdminUsers();
         }
 
+        async function fetchSystemAnnouncement() {
+            if (sessionStorage.getItem('systemAnnouncementSeen') === 'true') return;
+            try {
+                const res = await fetch(API_URL + "?action=get_announcement");
+                const data = await res.json();
+                if (data.success && data.message) {
+                    document.getElementById('globalAnnouncementMsg').innerText = data.message;
+                    document.getElementById('systemAnnouncementModal').classList.remove('hidden');
+                    sessionStorage.setItem('systemAnnouncementSeen', 'true');
+                }
+            } catch(e) { console.error("Error fetching announcement"); }
+        }
+
+        function closeAnnouncementModal() {
+            document.getElementById('systemAnnouncementModal').classList.add('hidden');
+        }
+
+        async function saveAdminAnnouncement() {
+            const msg = document.getElementById('adminAnnouncementText').value.trim();
+            if (!msg) return alert("Announcement message cannot be empty.");
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', 
+                    body: JSON.stringify({ action: 'save_announcement', message: msg, password: sessionAdminPass }) 
+                });
+                alert("System announcement successfully updated!");
+                logActivity("updated the global system announcement.");
+            } catch (err) {}
+        }
+
+        async function deleteAdminAnnouncement() {
+            if(!confirm("Are you sure you want to remove the global system announcement?")) return;
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', mode: 'no-cors', 
+                    body: JSON.stringify({ action: 'delete_announcement', password: sessionAdminPass }) 
+                });
+                document.getElementById('adminAnnouncementText').value = "";
+                alert("System announcement has been removed.");
+                logActivity("removed the global system announcement.");
+            } catch (err) {}
+        }
+
         function checkAuth() {
             const user = localStorage.getItem('loggedInUser');
             if (user) {
@@ -585,6 +644,7 @@
                 document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
                 switchTab('home'); 
                 fetchActivityLogs(); 
+                fetchSystemAnnouncement(); 
             } else { toggleAuthViews('loginPage'); }
         }
 
@@ -600,6 +660,7 @@
             if (data.success) {
                 localStorage.setItem('loggedInUser', data.name);
                 localStorage.setItem('loggedCred', cred);
+                sessionStorage.removeItem('systemAnnouncementSeen'); 
                 document.getElementById('loginCredential').value = "";
                 logActivity("logged into the system.");
                 checkAuth();
@@ -633,7 +694,7 @@
 
         function logoutUser() {
             logActivity("logged out of the system.");
-            localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); sessionAdminPass = ""; pendingAdminAction = null;
+            localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); sessionAdminPass = ""; pendingAdminAction = null; sessionStorage.removeItem('systemAnnouncementSeen');
             checkAuth();
         }
 
@@ -692,6 +753,15 @@
         async function loadAdminUsers() {
             const res = await fetch(`${API_URL}?action=get_all_users&password=${encodeURIComponent(sessionAdminPass)}`);
             const data = await res.json();
+            
+            const resAnnounce = await fetch(API_URL + "?action=get_announcement");
+            const dataAnnounce = await resAnnounce.json();
+            if (dataAnnounce.success && dataAnnounce.message) {
+                document.getElementById('adminAnnouncementText').value = dataAnnounce.message;
+            } else {
+                document.getElementById('adminAnnouncementText').value = "";
+            }
+
             const tbody = document.getElementById('adminUsersTableBody'); tbody.innerHTML = "";
             if (data.success) {
                 if(data.users.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No accounts found.</td></tr>"; return; }
