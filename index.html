@@ -360,6 +360,18 @@
         </div>
     </div>
 
+    <!-- CUSTOM CONFIRM MODAL -->
+    <div id="customConfirmModal" class="modal-overlay hidden" style="z-index: 2000;">
+        <div class="modal-content glass-panel">
+            <h3 id="customConfirmTitle" style="margin-top:0; color: #fca5a5;">Confirm Action</h3>
+            <p id="customConfirmMessage" style="font-size: 15px; margin-bottom: 20px; color: white;"></p>
+            <div style="display: flex; gap: 10px;">
+                <button id="customConfirmYesBtn" style="flex: 1;" class="approve-btn">Yes</button>
+                <button id="customConfirmNoBtn" style="flex: 1; background: transparent; border: 1px solid var(--border-color);">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MEMO SUBMISSION MODAL -->
     <div id="memoSubmissionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel modal-large">
@@ -371,9 +383,10 @@
                     <option value="GSS" style="color: black;">General Services Section</option>
                     <option value="BP" style="color: black;">Base Police</option>
                     <option value="SSB" style="color: black;">Special Services Band</option>
+                    <option value="RCIA" style="color: black;">Regional Committee on Inspection and Acceptance (RCIA)</option>
                 </select>
                 <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0; flex-grow: 1;">
-                <button type="submit" style="white-space: nowrap; width: auto; margin-top: 0;">Submit Data</button>
+                <button type="submit" id="memoSubmitBtn" style="white-space: nowrap; width: auto; margin-top: 0;">Submit Data</button>
             </form>
             <button onclick="closeMemoModal()" style="margin-top: 25px; background: transparent; border: 1px solid var(--border-color); width: 100%;">Close Window</button>
         </div>
@@ -432,6 +445,37 @@
         let filteredMemos = [];
         let currentMemoPage = 1;
         const MEMOS_PER_PAGE = 5;
+
+        // --- GLOBAL KEYPRESS LISTENER (Triggers buttons on "Enter") ---
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const activeId = document.activeElement.id;
+                if (['loginUsername', 'loginCredential'].includes(activeId)) loginUser();
+                if (['regFirst', 'regMiddle', 'regLast', 'regQlf', 'regEmail', 'regUsername', 'regCredential'].includes(activeId)) registerUser();
+                if (['newUsernameInput', 'newCredential'].includes(activeId)) updateProfile();
+                if (activeId === 'adminPassInput') verifyAdmin();
+                if (['actionAdminPass', 'actionNewSubject'].includes(activeId)) executeAction();
+                if (activeId === 'editRequestAdminPass') respondToEditRequest(true);
+            }
+        });
+
+        function customAlert(message, title = "System Notification") {
+            showNotification(title, message);
+        }
+
+        function customConfirm(message, callback) {
+            document.getElementById('customConfirmMessage').innerText = message;
+            document.getElementById('customConfirmModal').classList.remove('hidden');
+            
+            document.getElementById('customConfirmYesBtn').onclick = () => {
+                document.getElementById('customConfirmModal').classList.add('hidden');
+                callback(true);
+            };
+            document.getElementById('customConfirmNoBtn').onclick = () => {
+                document.getElementById('customConfirmModal').classList.add('hidden');
+                callback(false);
+            };
+        }
 
         function updateDateTime() {
             const now = new Date();
@@ -610,28 +654,30 @@
 
         async function saveAdminAnnouncement() {
             const msg = document.getElementById('adminAnnouncementText').value.trim();
-            if (!msg) return alert("Announcement message cannot be empty.");
+            if (!msg) return customAlert("Announcement message cannot be empty.", "Error");
             try {
                 await fetch(API_URL, { 
                     method: 'POST', mode: 'no-cors', 
                     body: JSON.stringify({ action: 'save_announcement', message: msg, password: sessionAdminPass }) 
                 });
-                alert("System announcement successfully updated!");
+                customAlert("System announcement successfully updated!", "Success");
                 logActivity("updated the global system announcement.");
             } catch (err) {}
         }
 
-        async function deleteAdminAnnouncement() {
-            if(!confirm("Are you sure you want to remove the global system announcement?")) return;
-            try {
-                await fetch(API_URL, { 
-                    method: 'POST', mode: 'no-cors', 
-                    body: JSON.stringify({ action: 'delete_announcement', password: sessionAdminPass }) 
-                });
-                document.getElementById('adminAnnouncementText').value = "";
-                alert("System announcement has been removed.");
-                logActivity("removed the global system announcement.");
-            } catch (err) {}
+        function deleteAdminAnnouncement() {
+            customConfirm("Are you sure you want to remove the global system announcement?", async (confirmed) => {
+                if(!confirmed) return;
+                try {
+                    await fetch(API_URL, { 
+                        method: 'POST', mode: 'no-cors', 
+                        body: JSON.stringify({ action: 'delete_announcement', password: sessionAdminPass }) 
+                    });
+                    document.getElementById('adminAnnouncementText').value = "";
+                    customAlert("System announcement has been removed.", "Success");
+                    logActivity("removed the global system announcement.");
+                } catch (err) {}
+            });
         }
 
         function checkAuth() {
@@ -651,7 +697,7 @@
         async function loginUser() {
             const user = document.getElementById('loginUsername').value.trim();
             const cred = document.getElementById('loginCredential').value.trim();
-            if(!user || !cred) return alert("Enter Username and PIN/Password.");
+            if(!user || !cred) return customAlert("Enter Username and PIN/Password.", "Authentication Error");
             
             document.getElementById('loginCredential').value = "Logging in...";
             const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&pin=${encodeURIComponent(cred)}`);
@@ -664,7 +710,7 @@
                 document.getElementById('loginCredential').value = "";
                 logActivity("logged into the system.");
                 checkAuth();
-            } else { alert(data.error); document.getElementById('loginCredential').value = ""; }
+            } else { customAlert(data.error, "Error"); document.getElementById('loginCredential').value = ""; }
         }
 
         async function registerUser() {
@@ -678,18 +724,18 @@
             const cred = document.getElementById('regCredential').value.trim();
 
             if(!rank || !firstName || !lastName || !email || !username || cred.length < 4) {
-                return alert("Please complete all required fields and ensure credential is at least 4 characters.");
+                return customAlert("Please complete all required fields and ensure credential is at least 4 characters.", "Registration Form");
             }
             const payload = { action: 'register', rank, firstName, middleName, lastName, qlf, email, username, pin: cred };
             try {
                 const res = await fetch(`${API_URL}?action=register&` + new URLSearchParams(payload));
                 const data = await res.json();
                 if (data.success) {
-                    alert("Account created! It is currently pending approval by the Alpha Admin.");
+                    customAlert("Account created! It is currently pending approval by the Alpha Admin.", "Registration Success");
                     localStorage.setItem('newAccountRequest', JSON.stringify({ user: username, time: Date.now() }));
                     toggleAuthViews('loginPage');
-                } else { alert(data.error); }
-            } catch(e) { alert("Network Error"); }
+                } else { customAlert(data.error, "Error"); }
+            } catch(e) { customAlert("Network Error", "Error"); }
         }
 
         function logoutUser() {
@@ -701,7 +747,7 @@
         async function updateProfile() {
             const newCred = document.getElementById('newCredential').value.trim();
             const newUsername = document.getElementById('newUsernameInput').value.trim();
-            if(!newCred && !newUsername) return alert("Please enter a new username or credential to save.");
+            if(!newCred && !newUsername) return customAlert("Please enter a new username or credential to save.", "Error");
             
             const currentUsername = localStorage.getItem('loggedInUser'); 
             const currentCred = localStorage.getItem('loggedCred'); 
@@ -722,7 +768,7 @@
                 if (newCred) localStorage.setItem('loggedCred', newCred); 
                 if (newUsername) localStorage.setItem('loggedInUser', newUsername);
                 
-                alert("Profile updated successfully!"); 
+                customAlert("Profile updated successfully!", "Success"); 
                 document.getElementById('newCredential').value = ""; 
                 document.getElementById('newUsernameInput').value = "";
                 document.getElementById('welcomeMsg').innerText = `Welcome, ${localStorage.getItem('loggedInUser')}`;
@@ -731,7 +777,13 @@
             } catch (err) { }
         }
 
-        function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); }
+        function openMemoModalUser() { 
+            document.getElementById('memoSubmissionModal').classList.remove('hidden'); 
+            // Unlock submission button to clear out double entry block
+            const submitBtn = document.getElementById('memoSubmitBtn');
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Data";
+        }
         function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
         function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
 
@@ -747,7 +799,7 @@
                     showAdminMgmtTab();
                     pendingAdminAction = null;
                 }
-            } else { alert("Incorrect Admin Password."); document.getElementById('adminPassInput').value = ""; }
+            } else { customAlert("Incorrect Admin Password.", "Error"); document.getElementById('adminPassInput').value = ""; }
         }
 
         async function loadAdminUsers() {
@@ -777,22 +829,26 @@
                     tbody.innerHTML += `<tr><td>${u.rank} ${u.name}</td><td>${u.username}</td><td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td><td>${actionHtml}</td></tr>`;
                 });
             } else {
-                alert(data.error || "Failed to load users.");
+                customAlert(data.error || "Failed to load users.", "Error");
             }
         }
 
-        async function adminDeleteUser(username) {
-            if (!confirm(`Are you sure you want to delete user: ${username}?`)) return;
-            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) });
-            logActivity(`deleted user account: ${username}`);
-            setTimeout(loadAdminUsers, 1500);
+        function adminDeleteUser(username) {
+            customConfirm(`Are you sure you want to delete user: ${username}?`, async (confirmed) => {
+                if (!confirmed) return;
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) });
+                logActivity(`deleted user account: ${username}`);
+                setTimeout(loadAdminUsers, 1500);
+            });
         }
 
-        async function processApproval(pin, actionType) {
-            if (!confirm(`Confirm Action?`)) return;
-            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) });
-            logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request.");
-            setTimeout(loadAdminUsers, 1500);
+        function processApproval(pin, actionType) {
+            customConfirm(`Confirm Action?`, async (confirmed) => {
+                if (!confirmed) return;
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) });
+                logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request.");
+                setTimeout(loadAdminUsers, 1500);
+            });
         }
 
         async function loadData() {
@@ -856,10 +912,28 @@
 
         document.getElementById('memoForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const subject = document.getElementById('memoSubject').value.trim(); const classification = document.getElementById('memoClassification').value; 
-            if (!subject) return alert("Please enter a Memo Subject.");
-            await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
-            logActivity(`encoded a new memo: "${subject}"`); document.getElementById('memoSubject').value = ""; closeMemoModal(); setTimeout(loadData, 1500); 
+            const submitBtn = document.getElementById('memoSubmitBtn');
+            const subject = document.getElementById('memoSubject').value.trim(); 
+            const classification = document.getElementById('memoClassification').value; 
+            
+            if (!subject) return customAlert("Please enter a Memo Subject.", "Error");
+            
+            // Lock submission to avoid double entries
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Submitting...";
+
+            try {
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
+                logActivity(`encoded a new memo: "${subject}"`); 
+                document.getElementById('memoSubject').value = ""; 
+                closeMemoModal(); 
+                setTimeout(loadData, 1500); 
+                customAlert("Memo successfully created!", "Success");
+            } catch (err) {
+                customAlert("Submission failed due to network error.", "Error");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Submit Data";
+            }
         });
 
         function initiateEdit(controlNum, currentSubject) {
@@ -868,22 +942,23 @@
         }
 
         function requestRealTimeApproval(controlNum, currentSubject) {
-            alert("Edit request sent to Alpha-Admin. Waiting for real-time approval..."); const reqId = Date.now().toString();
+            customAlert("Edit request sent to Alpha-Admin. Waiting for real-time approval...", "Pending Auth"); 
+            const reqId = Date.now().toString();
             localStorage.setItem('rtEditRequest', JSON.stringify({ id: reqId, user: localStorage.getItem('loggedInUser'), controlNum: controlNum, subject: currentSubject }));
             let attempts = 0;
             const poller = setInterval(() => {
                 attempts++; const response = JSON.parse(localStorage.getItem('rtEditResponse_' + reqId) || "null");
                 if (response) { clearInterval(poller); localStorage.removeItem('rtEditResponse_' + reqId);
-                    if (response.approved) { alert("Alpha-Admin approved your request. You may now edit."); sessionAdminPass = response.password; triggerActionModal('edit', controlNum, currentSubject); } 
-                    else { alert("Edit request was denied by Alpha-Admin."); }
+                    if (response.approved) { customAlert("Alpha-Admin approved your request. You may now edit.", "Success"); sessionAdminPass = response.password; triggerActionModal('edit', controlNum, currentSubject); } 
+                    else { customAlert("Edit request was denied by Alpha-Admin.", "Error"); }
                 }
-                if (attempts > 90) { clearInterval(poller); alert("Edit request timed out. Admin may be unavailable."); }
+                if (attempts > 90) { clearInterval(poller); customAlert("Edit request timed out. Admin may be unavailable.", "Error"); }
             }, 1000);
         }
 
         function respondToEditRequest(isApproved) {
             const reqId = document.getElementById('editRequestModal').dataset.reqId; const pass = document.getElementById('editRequestAdminPass').value;
-            if (isApproved && !pass) return alert("Alpha-Admin code is required to allow edits.");
+            if (isApproved && !pass) return customAlert("Alpha-Admin code is required to allow edits.", "Error");
             localStorage.setItem('rtEditResponse_' + reqId, JSON.stringify({ approved: isApproved, password: pass }));
             document.getElementById('editRequestModal').classList.add('hidden'); document.getElementById('editRequestAdminPass').value = "";
         }
@@ -898,7 +973,7 @@
         function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; }
 
         async function executeAction() {
-            const pass = document.getElementById('actionAdminPass').value; if (!pass) return alert("Admin password required.");
+            const pass = document.getElementById('actionAdminPass').value; if (!pass) return customAlert("Admin password required.", "Error");
             if (pendingAction === 'edit') { const newSubject = document.getElementById('actionNewSubject').value.trim(); await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, password: pass }) }); logActivity(`edited memo: ${actionTargetControl}`); } 
             else if (pendingAction === 'delete') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) }); logActivity(`deleted memo: ${actionTargetControl}`); } 
             else if (pendingAction === 'batch_delete') { for (const controlNum of actionTargetControl) { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: controlNum, password: pass }) }); } logActivity(`deleted multiple memos in a batch.`); }
@@ -906,7 +981,7 @@
         }
 
         function batchDelete() {
-            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked'); if (checkedBoxes.length === 0) return alert("Select at least one memo to delete.");
+            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked'); if (checkedBoxes.length === 0) return customAlert("Select at least one memo to delete.", "Error");
             const controlNumbers = Array.from(checkedBoxes).map(cb => cb.value); pendingAction = 'batch_delete'; actionTargetControl = controlNumbers;
             document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checkedBoxes.length} Selected Memos`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden');
         }
