@@ -94,16 +94,33 @@
 
         .app-layout { display: flex; width: 100%; max-width: 1600px; gap: 20px; align-items: flex-start; }
         
-        .sidebar { width: 220px; padding: 15px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; }
-        .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
+        /* Updated Collapsible Sidebar Styles */
+        .sidebar { width: 220px; padding: 15px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; transition: width 0.3s ease; overflow-x: hidden; }
+        .sidebar.collapsed { width: 70px; padding: 15px 10px; align-items: center; }
+        .sidebar.collapsed .nav-text, .sidebar.collapsed #welcomeContainer { display: none; }
+        .sidebar.collapsed .desktop-menu-toggle { justify-content: center; }
+        .sidebar.collapsed .status-dot-wrapper { position: absolute; right: 6px; top: 6px; margin: 0; }
         
-        .sidebar-btn { background: transparent; border: 1px solid transparent; color: var(--text-muted); text-align: left; padding: 8px 12px; font-size: 13px; display: flex; align-items: center; border-radius: var(--radius-sm); margin-bottom: 2px;}
+        .desktop-menu-toggle { display: flex; justify-content: flex-end; width: 100%; margin-bottom: 15px; }
+        
+        .sidebar-btn { position: relative; background: transparent; border: 1px solid transparent; color: var(--text-muted); text-align: left; padding: 10px 12px; font-size: 13px; display: flex; align-items: center; border-radius: var(--radius-sm); margin-bottom: 2px; width: 100%; white-space: nowrap; overflow: hidden; }
         .sidebar-btn:hover, .sidebar-btn.active { background: rgba(255, 255, 255, 0.1); color: white; border-color: var(--border-color); }
-        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--danger); margin-right: 10px; transition: background-color 0.3s; }
+        
+        .nav-icon { width: 20px; height: 20px; margin-right: 12px; flex-shrink: 0; object-fit: contain; }
+        .sidebar.collapsed .nav-icon { margin-right: 0; }
+        
+        /* Icon Color Logic */
+        .icon-white { filter: brightness(0) invert(1); } /* Forces pure white visibility */
+        .icon-glow { filter: drop-shadow(0 0 3px rgba(255,255,255,0.7)); } /* Best for animated GIFs */
+        
+        .status-dot-wrapper { margin-left: auto; display: flex; align-items: center; }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--danger); transition: background-color 0.3s; flex-shrink: 0; }
         .sidebar-btn.active .status-dot { background-color: var(--success); }
 
+        .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
+        
         .controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-        .action-btn { width: auto; padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); background-color: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border-color); }
+        .action-btn { width: auto; padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); background-color: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border-color); display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
         .action-btn:hover { background-color: rgba(255,255,255,0.2); }
         .delete-btn { background-color: var(--danger); color: white; border: none; }
         .delete-btn:hover { background-color: var(--danger-hover); }
@@ -155,13 +172,21 @@
         @media (max-width: 992px) {
             body { padding: 10px; }
             .site-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            #mobileMenuBtn { display: block; background: var(--primary); border: none; color: white; padding: 10px 15px; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; }
+            
+            .desktop-menu-toggle { display: none; }
+            #mobileMenuBtn { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--primary); border: none; color: white; padding: 10px 15px; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; }
             #datetime-display { position: relative; right: auto; top: auto; transform: none; width: 100%; text-align: left; padding-top: 5px; }
             
             .app-layout { flex-direction: column; align-items: stretch; }
             
             .sidebar { display: none; width: 100%; padding: 15px; margin-bottom: 10px; }
             .sidebar.open { display: flex; flex-direction: column; }
+            /* Reset collapsed state on mobile just in case */
+            .sidebar.collapsed { width: 100%; padding: 15px; align-items: stretch; }
+            .sidebar.collapsed .nav-text, .sidebar.collapsed #welcomeContainer { display: block; }
+            .sidebar.collapsed .nav-icon { margin-right: 12px; }
+            .sidebar.collapsed .status-dot-wrapper { position: static; margin-left: auto; }
+            
             .sidebar-btn { text-align: left; padding: 10px 15px; font-size: 13px; }
             
             .right-sidebar { width: 100%; padding: 15px; max-height: none; }
@@ -169,7 +194,7 @@
             .controls { flex-direction: column; align-items: stretch; gap: 15px;}
             .controls > div { display: flex; flex-direction: column; width: 100%; gap: 10px; }
             #searchInput { width: 100% !important; }
-            .action-btn { width: 100%; padding: 12px; }
+            .action-btn { width: 100%; padding: 12px; justify-content: center; }
             #memoForm { flex-direction: column; }
         }
         @media (max-width: 480px) {
@@ -186,7 +211,6 @@
         <div id="datetime-display"></div>
     </header>
 
-    <!-- LOGIN PAGE -->
     <div id="loginPage" class="auth-container glass-panel">
         <h2>System Login</h2>
         <div class="auth-type-toggle">
@@ -199,7 +223,6 @@
         <span class="link" onclick="toggleAuthViews('registerPage')">Create an Account</span>
     </div>
 
-    <!-- REGISTER PAGE -->
     <div id="registerPage" class="auth-container glass-panel hidden">
         <h2>Create Account</h2>
         <div class="auth-grid">
@@ -231,18 +254,43 @@
         <span class="link" onclick="toggleAuthViews('loginPage')">Back to Login</span>
     </div>
 
-    <!-- MAIN APP LAYOUT -->
     <div id="appLayout" class="app-layout hidden">
         
         <div>
-            <button id="mobileMenuBtn" onclick="toggleMobileNav()">☰ Menu</button>
+            <button id="mobileMenuBtn" onclick="toggleNav()">
+                <img src="images/Menu.png" alt="Menu" class="icon-white" style="width: 20px; height: 20px;">
+                <span>Menu</span>
+            </button>
+            
             <aside class="sidebar glass-panel" id="navSidebar">
-                <div style="margin-bottom: 10px; width: 100%;">
+                <div class="desktop-menu-toggle">
+                    <button onclick="toggleNav()" style="background: transparent; border: none; padding: 0; cursor: pointer;" title="Toggle Menu">
+                        <img src="images/Menu.png" alt="Menu" class="icon-white" style="width: 24px; height: 24px;">
+                    </button>
+                </div>
+
+                <div id="welcomeContainer" style="margin-bottom: 15px; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                     <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 15px;"></span>
                 </div>
-                <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home'); toggleMobileNav();"><span class="status-dot"></span>Home Page</button>
-                <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile'); toggleMobileNav();"><span class="status-dot"></span>My Profile</button>
-                <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt'); toggleMobileNav();"><span class="status-dot" id="pendingAccountDot" style="background-color: var(--text-muted);"></span>Administration Mgmt</button>
+                
+                <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home');">
+                    <img src="images/Home.png" alt="Home" class="nav-icon icon-white">
+                    <span class="nav-text">Home Page</span>
+                    <div class="status-dot-wrapper"><span class="status-dot"></span></div>
+                </button>
+                
+                <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile');">
+                    <img src="images/User.png" alt="Profile" class="nav-icon icon-white">
+                    <span class="nav-text">My Profile</span>
+                    <div class="status-dot-wrapper"><span class="status-dot"></span></div>
+                </button>
+                
+                <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt');">
+                    <img src="images/Admin.gif" alt="Admin" class="nav-icon icon-glow" style="border-radius: 50%;">
+                    <span class="nav-text">Admin Mgmt</span>
+                    <div class="status-dot-wrapper"><span class="status-dot" id="pendingAccountDot" style="background-color: var(--text-muted);"></span></div>
+                </button>
+                
                 <div style="flex-grow: 1;"></div>
             </aside>
         </div>
@@ -258,7 +306,9 @@
                 <div class="controls" style="margin-top: 20px;">
                     <div>
                         <input type="text" id="searchInput" placeholder="Search memos..." onkeyup="searchTable()" style="margin:0; width: 250px;">
-                        <button class="action-btn delete-btn" onclick="batchDelete()">Delete Selected</button>
+                        <button class="action-btn delete-btn" onclick="batchDelete()">
+                            <img src="images/Trash.png" alt="Delete" class="icon-white" style="width: 14px; height: 14px;"> Delete Selected
+                        </button>
                     </div>
                 </div>
 
@@ -287,7 +337,6 @@
                 </div>
             </div>
 
-            <!-- MY PROFILE PAGE -->
             <div id="tabProfile" class="hidden">
                 <h2>My Profile Settings</h2>
                 <label style="font-size: 13px; color: var(--text-muted); text-align: left; display: block; margin-top: 20px;">Change Username:</label>
@@ -302,14 +351,12 @@
                 </div>
             </div>
 
-            <!-- ADMINISTRATION MANAGEMENT PAGE -->
             <div id="tabAdminMgmt" class="hidden">
                 <div class="controls">
                     <h2 style="margin:0; color: #fca5a5;">Administration Management</h2>
                     <button class="action-btn approve-btn" onclick="loadAdminUsers()" style="padding: 10px 18px; font-weight: bold;">Refresh Data</button>
                 </div>
 
-                <!-- Admin Announcement Control Area -->
                 <div class="glass-panel" style="padding: 20px; margin-top: 20px; border-color: rgba(99,102,241,0.4);">
                     <h3 style="margin-top:0; color: #818cf8; font-size: 16px;">Global System Announcement Control</h3>
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">This message will appear as a popup to all users when they log in.</p>
@@ -351,7 +398,6 @@
         </aside>
     </div>
 
-    <!-- GLOBAL SYSTEM ANNOUNCEMENT MODAL -->
     <div id="systemAnnouncementModal" class="modal-overlay hidden" style="z-index: 1000;">
         <div class="modal-content glass-panel" style="max-width: 450px;">
             <h2 style="color: #a5b4fc; margin-top: 0;">System Announcement</h2>
@@ -360,7 +406,6 @@
         </div>
     </div>
 
-    <!-- CUSTOM CONFIRM MODAL -->
     <div id="customConfirmModal" class="modal-overlay hidden" style="z-index: 2000;">
         <div class="modal-content glass-panel">
             <h3 id="customConfirmTitle" style="margin-top:0; color: #fca5a5;">Confirm Action</h3>
@@ -372,7 +417,6 @@
         </div>
     </div>
 
-    <!-- MEMO SUBMISSION MODAL -->
     <div id="memoSubmissionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel modal-large">
             <h2 style="margin-top: 0;">Submit New Memo</h2>
@@ -392,7 +436,6 @@
         </div>
     </div>
 
-    <!-- MODALS -->
     <div id="adminModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
             <h3 style="margin-top:0;">Alpha Admin Validation Required</h3>
@@ -446,7 +489,7 @@
         let currentMemoPage = 1;
         const MEMOS_PER_PAGE = 5;
 
-        // --- GLOBAL KEYPRESS LISTENER (Triggers buttons on "Enter") ---
+        // --- GLOBAL KEYPRESS LISTENER ---
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const activeId = document.activeElement.id;
@@ -484,9 +527,12 @@
         }
         setInterval(updateDateTime, 1000); updateDateTime();
 
-        function toggleMobileNav() {
+        function toggleNav() {
+            const sidebar = document.getElementById('navSidebar');
             if (window.innerWidth <= 992) {
-                document.getElementById('navSidebar').classList.toggle('open');
+                sidebar.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
             }
         }
 
@@ -626,6 +672,8 @@
                     showAdminMgmtTab(); 
                 }
             }
+            // Auto close mobile nav on selection
+            if (window.innerWidth <= 992) toggleNav();
         }
 
         function showAdminMgmtTab() {
@@ -779,7 +827,6 @@
 
         function openMemoModalUser() { 
             document.getElementById('memoSubmissionModal').classList.remove('hidden'); 
-            // Unlock submission button to clear out double entry block
             const submitBtn = document.getElementById('memoSubmitBtn');
             submitBtn.disabled = false;
             submitBtn.innerText = "Submit Data";
@@ -824,7 +871,9 @@
                     const actionHtml = isPending ?
                         `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button>
                          <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` :
-                        `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete User</button>`;
+                        `<button class="action-btn delete-btn" title="Delete User" onclick="adminDeleteUser('${safeUser}')">
+                            <img src="images/Trash.png" alt="Delete" class="icon-white" style="width: 16px; height: 16px;">
+                        </button>`;
 
                     tbody.innerHTML += `<tr><td>${u.rank} ${u.name}</td><td>${u.username}</td><td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td><td>${actionHtml}</td></tr>`;
                 });
@@ -891,7 +940,21 @@
 
             currentMemos.forEach(row => {
                 const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button><button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
+                tableBody.innerHTML += `<tr>
+                    <td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td>
+                    <td>${row[0]}</td>
+                    <td>${row[1]}</td>
+                    <td>${row[2]}</td>
+                    <td>${row[3] || "N/A"}</td>
+                    <td>
+                        <button class="action-btn" title="Edit" onclick="initiateEdit('${row[2]}', '${safeSubject}')">
+                            <img src="images/Edit.png" alt="Edit" class="icon-white" style="width: 16px; height: 16px;">
+                        </button>
+                        <button class="action-btn delete-btn" title="Delete" onclick="triggerActionModal('delete', '${row[2]}')">
+                            <img src="images/Trash.png" alt="Delete" class="icon-white" style="width: 16px; height: 16px;">
+                        </button>
+                    </td>
+                </tr>`;
             });
             
             const pagination = document.getElementById('memoPagination');
@@ -918,7 +981,6 @@
             
             if (!subject) return customAlert("Please enter a Memo Subject.", "Error");
             
-            // Lock submission to avoid double entries
             submitBtn.disabled = true;
             submitBtn.innerText = "Submitting...";
 
