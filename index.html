@@ -351,6 +351,7 @@
                                 <th>Requesting Office</th>
                                 <th>Office In-Charge</th>
                                 <th>Remarks</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody id="activitiesTableBody"></tbody>
@@ -422,6 +423,27 @@
     </div>
 
     <!-- MODALS -->
+
+    <!-- ACTIVITY UPDATE STATUS MODAL -->
+    <div id="updateActivityModal" class="modal-overlay hidden" style="z-index: 2000;">
+        <div class="modal-content glass-panel">
+            <h3 style="margin-top:0; color: #a5b4fc;">Update Activity Status</h3>
+            <p id="updateActNameDisplay" style="font-size: 14px; color: white; margin-bottom: 10px;"></p>
+            <input type="hidden" id="updateActName">
+            <input type="hidden" id="updateActDates">
+            <select id="newActStatus" style="padding: 12px; border-radius: 6px; width: 100%; margin-bottom: 15px;">
+                <option value="Pending" style="color: black;">Pending</option>
+                <option value="Approved" style="color: black;">Approved</option>
+                <option value="Disapproved" style="color: black;">Disapproved</option>
+                <option value="Disregard" style="color: black;">Disregard</option>
+                <option value="For Signature" style="color: black;">For Signature</option>
+            </select>
+            <div style="display: flex; gap: 10px;">
+                <button style="flex: 1;" onclick="submitActivityUpdate()">Save Status</button>
+                <button style="flex: 1; background: transparent; border: 1px solid var(--border-color);" onclick="closeUpdateActivityModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <div id="systemAnnouncementModal" class="modal-overlay hidden" style="z-index: 1000;">
         <div class="modal-content glass-panel" style="max-width: 450px;">
@@ -987,6 +1009,44 @@
             }
         });
 
+        // --- UPDATE STATUS LOGIC ---
+        function openUpdateActivityModal(name, dates, currentStatus) {
+            document.getElementById('updateActName').value = name;
+            document.getElementById('updateActDates').value = dates;
+            document.getElementById('updateActNameDisplay').innerText = `Updating: ${name}`;
+            document.getElementById('newActStatus').value = currentStatus || "Pending";
+            document.getElementById('updateActivityModal').classList.remove('hidden');
+        }
+
+        function closeUpdateActivityModal() {
+            document.getElementById('updateActivityModal').classList.add('hidden');
+        }
+
+        async function submitActivityUpdate() {
+            const name = document.getElementById('updateActName').value;
+            const dates = document.getElementById('updateActDates').value;
+            const newStatus = document.getElementById('newActStatus').value;
+            
+            try {
+                await fetch(API_URL, { 
+                    method: 'POST', 
+                    mode: 'no-cors', 
+                    body: JSON.stringify({ 
+                        action: 'update_activity_status', 
+                        name: name, 
+                        dates: dates, 
+                        newStatus: newStatus 
+                    }) 
+                });
+                logActivity(`updated status of activity "${name}" to ${newStatus}.`);
+                closeUpdateActivityModal();
+                setTimeout(loadActivities, 1000);
+                customAlert("Activity status updated!", "Success");
+            } catch (err) {
+                customAlert("Failed to update status.", "Error");
+            }
+        }
+        
         async function loadActivities() {
             try {
                 const response = await fetch(API_URL + "?action=get_activities");
@@ -995,7 +1055,7 @@
                 tbody.innerHTML = "";
                 
                 if (!data || data.length === 0) {
-                    tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No scheduled activities found.</td></tr>";
+                    tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No scheduled activities found.</td></tr>";
                     return;
                 }
                 
@@ -1007,6 +1067,10 @@
                     else if (rem === 'Disapproved' || rem === 'Disregard') badgeColor = "var(--danger)";
                     else if (rem === 'Pending' || rem === 'For Signature') badgeColor = "#f59e0b";
 
+                    // Safely encode for modal interaction
+                    const safeName = String(row[0]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const safeDates = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
                     tbody.innerHTML += `<tr>
                         <td style="font-weight: 500;">${row[0]}</td>
                         <td>${row[1]}</td>
@@ -1014,6 +1078,11 @@
                         <td>${row[3]}</td>
                         <td>${row[4]}</td>
                         <td style="color: ${badgeColor}; font-weight: bold;">${rem}</td>
+                        <td>
+                            <button class="action-btn" title="Update Status" onclick="openUpdateActivityModal('${safeName}', '${safeDates}', '${rem}')">
+                                <img src="images/Edit.png" alt="Update Status" class="icon-white" style="width: 16px; height: 16px;"> Update
+                            </button>
+                        </td>
                     </tr>`;
                 });
             } catch (e) {
