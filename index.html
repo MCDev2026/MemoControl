@@ -99,7 +99,6 @@
         .sidebar.collapsed { width: 70px; padding: 15px 10px; align-items: center; }
         .sidebar.collapsed .nav-text, .sidebar.collapsed #welcomeContainer { display: none; }
         .sidebar.collapsed .desktop-menu-toggle { justify-content: center; }
-        .sidebar.collapsed .status-dot-wrapper { position: absolute; right: 6px; top: 6px; margin: 0; }
         
         .desktop-menu-toggle { display: flex; justify-content: flex-end; width: 100%; margin-bottom: 15px; }
         
@@ -111,10 +110,6 @@
         
         .icon-white { filter: brightness(0) invert(1); } 
         .icon-glow { filter: drop-shadow(0 0 3px rgba(255,255,255,0.7)); } 
-        
-        .status-dot-wrapper { margin-left: auto; display: flex; align-items: center; }
-        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--danger); transition: background-color 0.3s; flex-shrink: 0; }
-        .sidebar-btn.active .status-dot { background-color: var(--success); }
 
         .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
         
@@ -183,7 +178,6 @@
             .sidebar.collapsed { width: 100%; padding: 15px; align-items: stretch; }
             .sidebar.collapsed .nav-text, .sidebar.collapsed #welcomeContainer { display: block; }
             .sidebar.collapsed .nav-icon { margin-right: 12px; }
-            .sidebar.collapsed .status-dot-wrapper { position: static; margin-left: auto; }
             
             .sidebar-btn { text-align: left; padding: 10px 15px; font-size: 13px; }
             
@@ -274,27 +268,21 @@
                 <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home');">
                     <img src="images/Home.png" alt="Home" class="nav-icon icon-white">
                     <span class="nav-text">Home Page</span>
-                    <div class="status-dot-wrapper"><span class="status-dot"></span></div>
                 </button>
                 
-                <!-- NEW ACTIVITIES BUTTON -->
                 <button class="sidebar-btn" id="btnActivities" onclick="switchTab('activities');">
-                    <!-- Assuming Edit icon as placeholder since no other icon was specified -->
                     <img src="images/Edit.png" alt="Activities" class="nav-icon icon-white">
                     <span class="nav-text">Activities</span>
-                    <div class="status-dot-wrapper"><span class="status-dot" style="background-color: transparent;"></span></div>
                 </button>
                 
                 <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile');">
                     <img src="images/User.png" alt="Profile" class="nav-icon icon-white">
                     <span class="nav-text">My Profile</span>
-                    <div class="status-dot-wrapper"><span class="status-dot"></span></div>
                 </button>
                 
                 <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt');">
                     <img src="images/Admin.gif" alt="Admin" class="nav-icon icon-glow" style="border-radius: 50%;">
                     <span class="nav-text">Admin Mgmt</span>
-                    <div class="status-dot-wrapper"><span class="status-dot" id="pendingAccountDot" style="background-color: var(--text-muted);"></span></div>
                 </button>
                 
                 <div style="flex-grow: 1;"></div>
@@ -359,6 +347,7 @@
                             <tr>
                                 <th>Name of Activity</th>
                                 <th>Date</th>
+                                <th>Venue</th>
                                 <th>Requesting Office</th>
                                 <th>Office In-Charge</th>
                                 <th>Remarks</th>
@@ -488,7 +477,10 @@
                 </div>
                 <div id="actDateList" style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;"></div>
 
-                <label style="font-size:13px; color:var(--text-muted); margin-top:10px;">Requesting Office</label>
+                <label style="font-size:13px; color:var(--text-muted); margin-top:10px;">Venue</label>
+                <input type="text" id="actVenue" required placeholder="e.g. Main Hall">
+
+                <label style="font-size:13px; color:var(--text-muted);">Requesting Office</label>
                 <input type="text" id="actReqOffice" required placeholder="e.g. RHSU Operations">
 
                 <label style="font-size:13px; color:var(--text-muted);">Office In-Charge</label>
@@ -702,7 +694,7 @@
                 showNotification("New Edit Request", `User ${req.user} is requesting to edit Memo ${req.controlNum}. Click to review.`, () => { document.getElementById('editRequestModal').classList.remove('hidden'); });
             }
             if (e.key === 'newAccountRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
-                const req = JSON.parse(e.newValue); document.getElementById('pendingAccountDot').style.backgroundColor = 'var(--danger)';
+                const req = JSON.parse(e.newValue);
                 showNotification("New Account Request", `${req.user} requested an account. Click to review.`, () => { switchTab('adminMgmt'); });
             }
         });
@@ -765,7 +757,6 @@
         function showAdminMgmtTab() {
             document.getElementById('tabAdminMgmt').classList.remove('hidden');
             document.getElementById('btnAdminMgmt').classList.add('active');
-            document.getElementById('pendingAccountDot').style.backgroundColor = 'var(--success)';
             loadAdminUsers();
         }
 
@@ -976,6 +967,7 @@
                 action: 'create_activity',
                 name: document.getElementById('actName').value.trim(),
                 dates: selectedActivityDates.join(', '),
+                venue: document.getElementById('actVenue').value.trim(),
                 reqOffice: document.getElementById('actReqOffice').value.trim(),
                 inCharge: document.getElementById('actInCharge').value.trim(),
                 remarks: document.getElementById('actRemarks').value
@@ -1003,13 +995,13 @@
                 tbody.innerHTML = "";
                 
                 if (!data || data.length === 0) {
-                    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No scheduled activities found.</td></tr>";
+                    tbody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No scheduled activities found.</td></tr>";
                     return;
                 }
                 
                 data.forEach(row => {
                     let badgeColor = "var(--text-muted)";
-                    let rem = String(row[4] || '');
+                    let rem = String(row[5] || '');
                     
                     if (rem === 'Approved') badgeColor = "var(--success)";
                     else if (rem === 'Disapproved' || rem === 'Disregard') badgeColor = "var(--danger)";
@@ -1020,6 +1012,7 @@
                         <td>${row[1]}</td>
                         <td>${row[2]}</td>
                         <td>${row[3]}</td>
+                        <td>${row[4]}</td>
                         <td style="color: ${badgeColor}; font-weight: bold;">${rem}</td>
                     </tr>`;
                 });
