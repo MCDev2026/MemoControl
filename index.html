@@ -72,11 +72,12 @@
         .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
         .auth-grid .full-width { grid-column: 1 / -1; }
         
-        input[type="text"], input[type="password"], input[type="email"], select, textarea { 
+        input[type="text"], input[type="password"], input[type="email"], input[type="date"], select, textarea { 
             width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); 
             border-radius: var(--radius-md); font-size: 14px; background-color: rgba(255, 255, 255, 0.1); color: white; margin-bottom: 8px;
         }
         select option { color: #000; }
+        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
         input::placeholder, textarea::placeholder { color: #94a3b8; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
         
@@ -94,7 +95,6 @@
 
         .app-layout { display: flex; width: 100%; max-width: 1600px; gap: 20px; align-items: flex-start; }
         
-        /* Updated Collapsible Sidebar Styles */
         .sidebar { width: 220px; padding: 15px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; transition: width 0.3s ease; overflow-x: hidden; }
         .sidebar.collapsed { width: 70px; padding: 15px 10px; align-items: center; }
         .sidebar.collapsed .nav-text, .sidebar.collapsed #welcomeContainer { display: none; }
@@ -109,9 +109,8 @@
         .nav-icon { width: 20px; height: 20px; margin-right: 12px; flex-shrink: 0; object-fit: contain; }
         .sidebar.collapsed .nav-icon { margin-right: 0; }
         
-        /* Icon Color Logic */
-        .icon-white { filter: brightness(0) invert(1); } /* Forces pure white visibility */
-        .icon-glow { filter: drop-shadow(0 0 3px rgba(255,255,255,0.7)); } /* Best for animated GIFs */
+        .icon-white { filter: brightness(0) invert(1); } 
+        .icon-glow { filter: drop-shadow(0 0 3px rgba(255,255,255,0.7)); } 
         
         .status-dot-wrapper { margin-left: auto; display: flex; align-items: center; }
         .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--danger); transition: background-color 0.3s; flex-shrink: 0; }
@@ -181,7 +180,6 @@
             
             .sidebar { display: none; width: 100%; padding: 15px; margin-bottom: 10px; }
             .sidebar.open { display: flex; flex-direction: column; }
-            /* Reset collapsed state on mobile just in case */
             .sidebar.collapsed { width: 100%; padding: 15px; align-items: stretch; }
             .sidebar.collapsed .nav-text, .sidebar.collapsed #welcomeContainer { display: block; }
             .sidebar.collapsed .nav-icon { margin-right: 12px; }
@@ -195,7 +193,7 @@
             .controls > div { display: flex; flex-direction: column; width: 100%; gap: 10px; }
             #searchInput { width: 100% !important; }
             .action-btn { width: 100%; padding: 12px; justify-content: center; }
-            #memoForm { flex-direction: column; }
+            #memoForm, #activityForm { flex-direction: column; }
         }
         @media (max-width: 480px) {
             .site-header h1 { font-size: 18px; }
@@ -279,6 +277,14 @@
                     <div class="status-dot-wrapper"><span class="status-dot"></span></div>
                 </button>
                 
+                <!-- NEW ACTIVITIES BUTTON -->
+                <button class="sidebar-btn" id="btnActivities" onclick="switchTab('activities');">
+                    <!-- Assuming Edit icon as placeholder since no other icon was specified -->
+                    <img src="images/Edit.png" alt="Activities" class="nav-icon icon-white">
+                    <span class="nav-text">Activities</span>
+                    <div class="status-dot-wrapper"><span class="status-dot" style="background-color: transparent;"></span></div>
+                </button>
+                
                 <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile');">
                     <img src="images/User.png" alt="Profile" class="nav-icon icon-white">
                     <span class="nav-text">My Profile</span>
@@ -296,6 +302,8 @@
         </div>
 
         <main class="main-content glass-panel">
+            
+            <!-- HOME TAB -->
             <div id="tabHome">
                 <div class="controls">
                     <h2 style="margin:0;">Memo Database</h2>
@@ -337,6 +345,31 @@
                 </div>
             </div>
 
+            <!-- NEW ACTIVITIES TAB -->
+            <div id="tabActivities" class="hidden">
+                <div class="controls">
+                    <h2 style="margin:0;">Scheduled Activities</h2>
+                    <div>
+                        <button class="action-btn approve-btn" onclick="openActivityModal()" style="padding: 10px 18px; font-weight: bold;">+ Add Activity</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="activitiesTable">
+                        <thead>
+                            <tr>
+                                <th>Name of Activity</th>
+                                <th>Date</th>
+                                <th>Requesting Office</th>
+                                <th>Office In-Charge</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activitiesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PROFILE TAB -->
             <div id="tabProfile" class="hidden">
                 <h2>My Profile Settings</h2>
                 <label style="font-size: 13px; color: var(--text-muted); text-align: left; display: block; margin-top: 20px;">Change Username:</label>
@@ -351,6 +384,7 @@
                 </div>
             </div>
 
+            <!-- ADMIN TAB -->
             <div id="tabAdminMgmt" class="hidden">
                 <div class="controls">
                     <h2 style="margin:0; color: #fca5a5;">Administration Management</h2>
@@ -398,6 +432,8 @@
         </aside>
     </div>
 
+    <!-- MODALS -->
+
     <div id="systemAnnouncementModal" class="modal-overlay hidden" style="z-index: 1000;">
         <div class="modal-content glass-panel" style="max-width: 450px;">
             <h2 style="color: #a5b4fc; margin-top: 0;">System Announcement</h2>
@@ -433,6 +469,43 @@
                 <button type="submit" id="memoSubmitBtn" style="white-space: nowrap; width: auto; margin-top: 0;">Submit Data</button>
             </form>
             <button onclick="closeMemoModal()" style="margin-top: 25px; background: transparent; border: 1px solid var(--border-color); width: 100%;">Close Window</button>
+        </div>
+    </div>
+
+    <!-- NEW ACTIVITY MODAL -->
+    <div id="activitySubmissionModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel modal-large">
+            <h2 style="margin-top: 0;">Add Scheduled Activity</h2>
+            <form id="activityForm" style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px; margin-bottom: 20px; text-align: left;">
+                
+                <label style="font-size:13px; color:var(--text-muted);">Name of Activity</label>
+                <input type="text" id="actName" required placeholder="e.g. Weekly Coordination Meeting">
+
+                <label style="font-size:13px; color:var(--text-muted);">Select Dates</label>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="date" id="actDateInput" style="margin:0; flex-grow: 1; min-width: 150px;">
+                    <button type="button" onclick="addActivityDate()" style="width: auto; margin:0; padding: 12px 16px;">Add Date</button>
+                </div>
+                <div id="actDateList" style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;"></div>
+
+                <label style="font-size:13px; color:var(--text-muted); margin-top:10px;">Requesting Office</label>
+                <input type="text" id="actReqOffice" required placeholder="e.g. RHSU Operations">
+
+                <label style="font-size:13px; color:var(--text-muted);">Office In-Charge</label>
+                <input type="text" id="actInCharge" required placeholder="e.g. PCOL. Santos">
+
+                <label style="font-size:13px; color:var(--text-muted);">Remarks</label>
+                <select id="actRemarks">
+                    <option value="Pending" style="color: black;">Pending</option>
+                    <option value="Approved" style="color: black;">Approved</option>
+                    <option value="Disapproved" style="color: black;">Disapproved</option>
+                    <option value="Disregard" style="color: black;">Disregard</option>
+                    <option value="For Signature" style="color: black;">For Signature</option>
+                </select>
+
+                <button type="submit" id="activitySubmitBtn" style="margin-top: 15px;">Submit Activity</button>
+            </form>
+            <button onclick="closeActivityModal()" style="background: transparent; border: 1px solid var(--border-color); width: 100%;">Cancel & Close</button>
         </div>
     </div>
 
@@ -488,6 +561,9 @@
         let filteredMemos = [];
         let currentMemoPage = 1;
         const MEMOS_PER_PAGE = 5;
+
+        // NEW ACTIVITY VARIABLES
+        let selectedActivityDates = [];
 
         // --- GLOBAL KEYPRESS LISTENER ---
         document.addEventListener('keypress', function(e) {
@@ -647,15 +723,25 @@
 
         function switchTab(tabName) {
             document.getElementById('tabHome').classList.add('hidden'); 
+            document.getElementById('tabActivities').classList.add('hidden');
             document.getElementById('tabProfile').classList.add('hidden');
             document.getElementById('tabAdminMgmt').classList.add('hidden');
+            
             document.getElementById('btnHome').classList.remove('active'); 
+            document.getElementById('btnActivities').classList.remove('active');
             document.getElementById('btnProfile').classList.remove('active');
             document.getElementById('btnAdminMgmt').classList.remove('active');
 
             if (tabName === 'home') { 
-                document.getElementById('tabHome').classList.remove('hidden'); document.getElementById('btnHome').classList.add('active'); loadData(); 
+                document.getElementById('tabHome').classList.remove('hidden'); 
+                document.getElementById('btnHome').classList.add('active'); 
+                loadData(); 
             } 
+            else if (tabName === 'activities') { 
+                document.getElementById('tabActivities').classList.remove('hidden'); 
+                document.getElementById('btnActivities').classList.add('active'); 
+                loadActivities(); 
+            }
             else if (tabName === 'profile') { 
                 document.getElementById('tabProfile').classList.remove('hidden'); 
                 document.getElementById('btnProfile').classList.add('active'); 
@@ -833,6 +919,115 @@
         }
         function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
         function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
+
+        // --- NEW ACTIVITIES FUNCTIONS ---
+        function addActivityDate() {
+            const dateVal = document.getElementById('actDateInput').value;
+            if (!dateVal) return;
+            
+            // Format input "YYYY-MM-DD" to "MMMM d, YYYY"
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formatted = new Date(dateVal + 'T00:00:00').toLocaleDateString('en-US', options);
+            
+            if (!selectedActivityDates.includes(formatted)) {
+                selectedActivityDates.push(formatted);
+                renderActivityDates();
+            }
+            document.getElementById('actDateInput').value = '';
+        }
+
+        function renderActivityDates() {
+            const container = document.getElementById('actDateList');
+            container.innerHTML = selectedActivityDates.map((d, index) => 
+                `<span style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                    ${d} <span style="color: #fca5a5; cursor: pointer; font-weight: bold; font-size: 16px; line-height: 1;" onclick="removeActivityDate(${index})" title="Remove Date">×</span>
+                </span>`
+            ).join('');
+        }
+
+        function removeActivityDate(index) {
+            selectedActivityDates.splice(index, 1);
+            renderActivityDates();
+        }
+
+        function openActivityModal() {
+            document.getElementById('activitySubmissionModal').classList.remove('hidden');
+            selectedActivityDates = [];
+            renderActivityDates();
+            document.getElementById('activityForm').reset();
+            const submitBtn = document.getElementById('activitySubmitBtn');
+            submitBtn.disabled = false;
+            submitBtn.innerText = "Submit Activity";
+        }
+
+        function closeActivityModal() {
+            document.getElementById('activitySubmissionModal').classList.add('hidden');
+        }
+
+        document.getElementById('activityForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (selectedActivityDates.length === 0) return customAlert("Please add at least one date.", "Error");
+            
+            const btn = document.getElementById('activitySubmitBtn');
+            btn.disabled = true;
+            btn.innerText = "Submitting...";
+
+            const payload = {
+                action: 'create_activity',
+                name: document.getElementById('actName').value.trim(),
+                dates: selectedActivityDates.join(', '),
+                reqOffice: document.getElementById('actReqOffice').value.trim(),
+                inCharge: document.getElementById('actInCharge').value.trim(),
+                remarks: document.getElementById('actRemarks').value
+            };
+
+            try {
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+                logActivity(`scheduled a new activity: "${payload.name}"`);
+                closeActivityModal();
+                loadActivities();
+                customAlert("Activity successfully scheduled!", "Success");
+            } catch (err) {
+                customAlert("Submission failed due to network error.", "Error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Submit Activity";
+            }
+        });
+
+        async function loadActivities() {
+            try {
+                const response = await fetch(API_URL + "?action=get_activities");
+                const data = await response.json();
+                const tbody = document.getElementById('activitiesTableBody');
+                tbody.innerHTML = "";
+                
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No scheduled activities found.</td></tr>";
+                    return;
+                }
+                
+                data.forEach(row => {
+                    let badgeColor = "var(--text-muted)";
+                    let rem = String(row[4] || '');
+                    
+                    if (rem === 'Approved') badgeColor = "var(--success)";
+                    else if (rem === 'Disapproved' || rem === 'Disregard') badgeColor = "var(--danger)";
+                    else if (rem === 'Pending' || rem === 'For Signature') badgeColor = "#f59e0b";
+
+                    tbody.innerHTML += `<tr>
+                        <td style="font-weight: 500;">${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[3]}</td>
+                        <td style="color: ${badgeColor}; font-weight: bold;">${rem}</td>
+                    </tr>`;
+                });
+            } catch (e) {
+                console.error("Failed to fetch activities: ", e);
+            }
+        }
+        // --- END NEW ACTIVITIES FUNCTIONS ---
 
         async function verifyAdmin() {
             const pass = document.getElementById('adminPassInput').value; if (!pass) return;
