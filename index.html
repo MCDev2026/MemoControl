@@ -419,12 +419,12 @@
                     <!-- 1. Personal Information -->
                     <div class="settings-section glass-panel">
                         <h3>Personal Information</h3>
-                        <div class="setting-row"><span>Rank</span> <span style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>First Name</span> <span style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>Middle Name</span> <span style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>Last Name</span> <span style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>Qualifier</span> <span style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>Email Address</span> <span style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Rank</span> <span id="profRank" style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>First Name</span> <span id="profFirstName" style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Middle Name</span> <span id="profMiddleName" style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Last Name</span> <span id="profLastName" style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Qualifier</span> <span id="profQlf" style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Email Address</span> <span id="profEmail" style="color:var(--text-muted)">Not Available</span></div>
                     </div>
 
                     <!-- 2. Account Information -->
@@ -1094,11 +1094,32 @@
             input.value = ""; 
         }
 
-        function populateProfileData() {
+        async function populateProfileData() {
             const currentUser = localStorage.getItem('loggedInUser') || 'Unknown';
             document.getElementById('profUsername').innerText = currentUser;
             document.getElementById('profAccType').innerText = (currentUser === ALPHA_ADMIN_NAME) ? "System Admin" : "Standard User";
             
+            // Fetch Personal Information
+            try {
+                const res = await fetch(`${API_URL}?action=get_profile&username=${encodeURIComponent(currentUser)}`);
+                const data = await res.json();
+                if (data.success && data.profile) {
+                    const updateField = (id, val) => {
+                        const el = document.getElementById(id);
+                        el.innerText = val || 'Not Available';
+                        if(val) el.style.color = 'var(--text-main)';
+                    };
+                    updateField('profRank', data.profile.rank);
+                    updateField('profFirstName', data.profile.firstName);
+                    updateField('profMiddleName', data.profile.middleName);
+                    updateField('profLastName', data.profile.lastName);
+                    updateField('profQlf', data.profile.qlf);
+                    updateField('profEmail', data.profile.email);
+                }
+            } catch (err) {
+                console.error("Error fetching profile", err);
+            }
+
             let userMemos = 0;
             let lastAct = "Not Available";
             if (allMemos && allMemos.length > 0) {
