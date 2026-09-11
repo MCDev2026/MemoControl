@@ -6,154 +6,213 @@
     <title>RHSU Memo Control</title>
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --text-main: #ffffff;
-            --text-muted: #cbd5e1;
-            --border-color: rgba(255, 255, 255, 0.2);
+            /* Minimalist Light Theme Colors */
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: rgba(0, 0, 0, 0.1);
             --danger: #ef4444;
             --danger-hover: #dc2626;
             --success: #10b981;
             --success-hover: #059669;
-            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-bg: rgba(255, 255, 255, 0.85);
             --radius-lg: 16px;
             --radius-md: 10px;
             --radius-sm: 6px;
         }
 
-        * { box-sizing: border-box; transition: all 0.2s ease-in-out; }
+        * { box-sizing: border-box; transition: background-color 0.2s, border-color 0.2s, color 0.2s; }
         
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #0f172a, #1e1b4b, #000000);
+            background: linear-gradient(135deg, #ffffff, #f1f5f9, #e2e8f0);
             color: var(--text-main); 
             min-height: 100vh; 
             margin: 0; 
             display: flex; 
             flex-direction: column;
             align-items: center; 
-            padding: 20px; 
             position: relative;
             z-index: 1;
         }
 
-        body::before {
-            content: ""; position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); width: 400px; height: 400px;
-            background-image: url('images/PNP LOGO.png');
-            background-size: contain; background-repeat: no-repeat;
-            background-position: center; opacity: 0.05; 
-            z-index: -1; pointer-events: none;
+        /* --- DARK MODE OVERRIDES --- */
+        body.dark-mode {
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --glass-bg: rgba(30, 41, 59, 0.85);
+            background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
+        }
+        body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
+            background-color: rgba(255,255,255,0.05) !important; color: var(--text-main) !important; border-color: var(--border-color);
+        }
+        body.dark-mode th { background-color: rgba(255,255,255,0.05); }
+        body.dark-mode tbody tr:hover { background-color: rgba(255,255,255,0.05); }
+        body.dark-mode .modal-content, body.dark-mode #chatbot-window, body.dark-mode .notification-toast, body.dark-mode .chat-messages {
+            background-color: #1e293b !important;
+        }
+        body.dark-mode .chat-input-area { background: #1e293b; border-color: var(--border-color); }
+        body.dark-mode #chatInput { background: rgba(255,255,255,0.1); color: white; }
+        body.dark-mode .chat-msg.bot { background: #334155; color: white; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .action-btn { background-color: rgba(255,255,255,0.1); color: var(--text-main); border-color: var(--border-color); }
+        body.dark-mode .action-btn:hover { background-color: rgba(255,255,255,0.2); }
+        body.dark-mode [style*="background: white"], body.dark-mode [style*="background:white"] { background-color: #1e293b !important; }
+        body.dark-mode [style*="color: black"], body.dark-mode [style*="color:black"] { color: var(--text-main) !important; }
+        body.dark-mode .page-btn { background: rgba(255,255,255,0.05); color: var(--text-main); }
+        body.dark-mode .page-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
+
+        /* --- COMPACT MODE OVERRIDES --- */
+        body.compact-mode td, body.compact-mode th { padding: 8px 14px; font-size: 13px; }
+        body.compact-mode .action-btn { padding: 4px 10px; font-size: 12px; }
+        body.compact-mode h2 { margin-bottom: 5px; }
+
+        /* Settings Grid Layout */
+        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 15px; }
+        .settings-section { padding: 20px; border-radius: var(--radius-md); background: rgba(0,0,0,0.02); border: 1px solid var(--border-color); }
+        body.dark-mode .settings-section { background: rgba(255,255,255,0.02); }
+        .settings-section h3 { margin-top: 0; font-size: 15px; color: var(--primary); margin-bottom: 15px; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
+        .setting-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 14px; }
+        .setting-row select { width: auto; min-width: 140px; margin: 0; padding: 8px 12px; }
+        
+        /* Switch styling */
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; flex-shrink: 0; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 24px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* Top Bar */
+        .top-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        body.dark-mode .top-bar { background: rgba(30, 41, 59, 0.95); }
+
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .site-header {
-            display: flex; align-items: center; gap: 15px; margin-bottom: 30px;
-            color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5); width: 100%; max-width: 1600px; position: relative;
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
-        
-        .site-header img { width: 60px; height: 60px; object-fit: contain; }
-        .site-header h1 { margin: 0; font-size: 28px; letter-spacing: 1px; }
 
         #datetime-display {
-            position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-            font-size: 14px; font-weight: 500; color: var(--text-muted);
+            font-size: 13px; font-weight: 500; color: var(--text-muted);
         }
+
+        .profile-btn {
+            background: transparent; border: 1px solid var(--border-color);
+            border-radius: 50%; width: 40px; height: 40px; display: flex;
+            align-items: center; justify-content: center; cursor: pointer;
+            padding: 5px;
+        }
+        .profile-btn:hover { background: rgba(0,0,0,0.05); }
+        body.dark-mode .profile-btn:hover { background: rgba(255,255,255,0.1); }
+        .profile-btn img { width: 20px; height: 20px; }
+        body.dark-mode .profile-btn img, body.dark-mode .top-bar-left button img { filter: invert(0.8) !important; }
 
         .hidden { display: none !important; }
         
         .glass-panel {
             background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border: 1px solid var(--border-color); box-shadow: 0 4px 20px 0 rgba(0, 0, 0, 0.05);
             border-radius: var(--radius-lg);
         }
 
         .auth-container { max-width: 500px; width: 100%; padding: 40px; text-align: center; margin-top: 50px; }
-        .auth-container h2 { margin-top: 0; margin-bottom: 25px; font-size: 24px; }
+        .auth-container h2 { margin-top: 0; margin-bottom: 25px; font-size: 24px; color: var(--primary); }
         .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
         .auth-grid .full-width { grid-column: 1 / -1; }
         
         input[type="text"], input[type="password"], input[type="email"], input[type="date"], select, textarea { 
             width: 100%; padding: 12px 16px; border: 1px solid var(--border-color); 
-            border-radius: var(--radius-md); font-size: 14px; background-color: rgba(255, 255, 255, 0.1); color: white; margin-bottom: 8px;
+            border-radius: var(--radius-md); font-size: 14px; background-color: rgba(0, 0, 0, 0.03); color: var(--text-main); margin-bottom: 8px;
         }
-        select option { color: #000; }
-        input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
-        input::placeholder, textarea::placeholder { color: #94a3b8; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background-color: rgba(255, 255, 255, 0.15); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3); }
-        
+        input::placeholder, textarea::placeholder { color: var(--text-muted); }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); background-color: #fff; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        body.dark-mode input:focus, body.dark-mode select:focus, body.dark-mode textarea:focus { background-color: #1e293b; }
+
         .auth-type-toggle { display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; font-size: 14px; color: var(--text-muted); }
         
         button { padding: 14px 20px; border-radius: var(--radius-md); border: none; background-color: var(--primary); color: white; font-weight: 600; font-size: 14px; cursor: pointer; width: 100%; margin-top: 10px;}
         button:hover:not(:disabled) { background-color: var(--primary-hover); transform: translateY(-1px); }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
         
-        .link { color: #818cf8; cursor: pointer; font-size: 14px; font-weight: 500; margin-top: 16px; display: inline-block; }
-        .link:hover { text-decoration: underline; color: #a5b4fc; }
+        .link { color: var(--primary); cursor: pointer; font-size: 14px; font-weight: 500; margin-top: 16px; display: inline-block; }
+        .link:hover { text-decoration: underline; color: var(--primary-hover); }
 
-        hr { border: none; height: 1px; background-color: var(--border-color); margin: 24px 0; }
-        h2 { font-size: 20px; margin-bottom: 12px; }
+        .app-layout { display: flex; width: 100%; flex-grow: 1; align-items: flex-start; }
+        
+        /* Gmail-style Collapsible Sidebar */
+        .sidebar { width: 280px; padding: 15px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; transition: width 0.3s ease; height: calc(100vh - 60px); background: transparent; overflow-x: hidden; border-right: 1px solid var(--border-color); }
+        .sidebar.collapsed { width: 80px; padding: 15px 10px; align-items: center; }
+        .sidebar.collapsed .nav-text, .sidebar.collapsed .sidebar-header { display: none; }
+        
+        .sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding: 0 10px; }
+        .sidebar-header img { width: 45px; height: 45px; object-fit: contain; }
+        .sidebar-header h1 { font-size: 16px; margin: 0; color: var(--text-main); font-weight: 700; line-height: 1.2;}
 
-        .app-layout { display: flex; width: 100%; max-width: 1600px; gap: 20px; align-items: flex-start; }
+        .sidebar-btn { background: transparent; border: 1px solid transparent; color: var(--text-main); text-align: left; padding: 12px 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center; border-radius: 20px; margin-bottom: 4px; width: 100%; white-space: nowrap; overflow: hidden; }
+        .sidebar-btn:hover { background: rgba(0, 0, 0, 0.05); }
+        body.dark-mode .sidebar-btn:hover { background: rgba(255, 255, 255, 0.05); }
+        .sidebar-btn.active { background: rgba(79, 70, 229, 0.1); color: var(--primary); font-weight: 600; }
+        body.dark-mode .sidebar-btn.active { background: rgba(129, 140, 248, 0.2); color: var(--primary); }
         
-        .sidebar { width: 220px; padding: 15px; display: flex; flex-direction: column; gap: 4px; flex-shrink: 0; transition: width 0.3s ease; overflow-x: hidden; }
-        .sidebar.collapsed { width: 70px; padding: 15px 10px; align-items: center; }
-        .sidebar.collapsed .nav-text, .sidebar.collapsed #welcomeContainer { display: none; }
-        .sidebar.collapsed .desktop-menu-toggle { justify-content: center; }
-        
-        .desktop-menu-toggle { display: flex; justify-content: flex-end; width: 100%; margin-bottom: 15px; }
-        
-        .sidebar-btn { position: relative; background: transparent; border: 1px solid transparent; color: var(--text-muted); text-align: left; padding: 10px 12px; font-size: 13px; display: flex; align-items: center; border-radius: var(--radius-sm); margin-bottom: 2px; width: 100%; white-space: nowrap; overflow: hidden; }
-        .sidebar-btn:hover, .sidebar-btn.active { background: rgba(255, 255, 255, 0.1); color: white; border-color: var(--border-color); }
-        
-        .nav-icon { width: 20px; height: 20px; margin-right: 12px; flex-shrink: 0; object-fit: contain; }
+        .nav-icon { width: 20px; height: 20px; margin-right: 16px; flex-shrink: 0; object-fit: contain; opacity: 0.7; }
+        body.dark-mode .nav-icon { filter: invert(0.8); }
+        .sidebar-btn.active .nav-icon { opacity: 1; filter: invert(28%) sepia(91%) saturate(2333%) hue-rotate(228deg) brightness(97%) contrast(92%); }
+        body.dark-mode .sidebar-btn.active .nav-icon { filter: invert(60%) sepia(80%) saturate(1000%) hue-rotate(200deg) brightness(100%) contrast(100%); }
         .sidebar.collapsed .nav-icon { margin-right: 0; }
-        
-        .icon-white { filter: brightness(0) invert(1); } 
-        .icon-glow { filter: drop-shadow(0 0 3px rgba(255,255,255,0.7)); } 
 
-        .main-content { flex-grow: 1; padding: 30px; min-height: 500px; width: 100%; }
+        .main-content { flex-grow: 1; padding: 30px; width: 100%; max-width: 1400px; margin: 0 auto;}
         
         .controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
-        .action-btn { width: auto; padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); background-color: rgba(255,255,255,0.1); color: white; border: 1px solid var(--border-color); display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
-        .action-btn:hover { background-color: rgba(255,255,255,0.2); }
+        .action-btn { width: auto; padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); background-color: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid var(--border-color); display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-weight: 500;}
+        .action-btn:hover { background-color: rgba(0,0,0,0.1); }
         .delete-btn { background-color: var(--danger); color: white; border: none; }
         .delete-btn:hover { background-color: var(--danger-hover); }
         .approve-btn { background-color: var(--success); color: white; border: none; }
         .approve-btn:hover { background-color: var(--success-hover); }
         
-        .table-wrapper { overflow-x: auto; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-top: 12px; width: 100%; }
+        .table-wrapper { overflow-x: auto; border-radius: var(--radius-md); background: white; border: 1px solid var(--border-color); margin-top: 12px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        body.dark-mode .table-wrapper { background: #1e293b; }
         table { width: 100%; border-collapse: collapse; }
-        th { background-color: rgba(0,0,0,0.3); color: var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase; padding: 14px; border-bottom: 1px solid var(--border-color); text-align: left; white-space: nowrap;}
+        th { background-color: rgba(0,0,0,0.02); color: var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase; padding: 14px; border-bottom: 1px solid var(--border-color); text-align: left; white-space: nowrap;}
         td { padding: 14px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
-        tbody tr:hover { background-color: rgba(255,255,255,0.05); }
+        tbody tr:hover { background-color: rgba(0,0,0,0.02); }
         input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;}
-        .modal-content { width: 100%; max-width: 350px; padding: 25px; text-align: center; max-height: 90vh; overflow-y: auto; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px;}
+        .modal-content { width: 100%; max-width: 400px; padding: 25px; text-align: center; max-height: 90vh; overflow-y: auto; background: white; }
         
-        @media (min-width: 993px) {
-            .modal-large { max-width: 800px; }
-            .right-sidebar { 
-                width: 360px; padding: 20px; display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; 
-                max-height: 80vh; overflow-y: auto; justify-content: space-between; 
-                -ms-overflow-style: none; scrollbar-width: none; 
-            }
-            .right-sidebar::-webkit-scrollbar { display: none; }
-        }
+        @media (min-width: 993px) { .modal-large { max-width: 800px; } }
 
-        .activity-item { padding: 12px 0; border-bottom: 1px solid var(--border-color); font-size: 13px; line-height: 1.4; text-align: left; }
-        .activity-item:last-child { border-bottom: none; }
-        .activity-time { display: block; font-size: 11px; color: var(--primary); margin-bottom: 4px; font-weight: bold; }
-        .activity-user { color: white; font-weight: bold; }
-        
-        .pagination-container { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; padding-top: 12px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-muted); }
-        .pagination-buttons { display: flex; justify-content: space-between; width: 100%; gap: 10px;}
-        .page-btn { padding: 6px 12px; font-size: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: white; cursor: pointer; width: 48%; }
+        .pagination-container { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 15px; padding-top: 12px; font-size: 12px; color: var(--text-muted); }
+        .pagination-buttons { display: flex; justify-content: space-between; width: 100%; gap: 10px; max-width: 300px;}
+        .page-btn { padding: 6px 12px; font-size: 12px; background: rgba(0, 0, 0, 0.05); border: 1px solid var(--border-color); border-radius: var(--radius-sm); color: var(--text-main); cursor: pointer; width: 48%; }
         .page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
-        .page-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
+        .page-btn:hover:not(:disabled) { background: rgba(0, 0, 0, 0.1); }
 
         #notificationContainer { position: fixed; bottom: 20px; left: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-        .notification-toast { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--border-color); border-left: 4px solid var(--primary); color: var(--text-main); padding: 15px 20px; border-radius: var(--radius-md); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); cursor: pointer; pointer-events: auto; animation: slideInLeft 0.3s ease-out forwards; min-width: 250px; max-width: 350px; }
+        .notification-toast { background: white; border: 1px solid var(--border-color); border-left: 4px solid var(--primary); color: var(--text-main); padding: 15px 20px; border-radius: var(--radius-md); box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12); cursor: pointer; pointer-events: auto; animation: slideInLeft 0.3s ease-out forwards; min-width: 250px; max-width: 350px; }
         .notification-toast.fade-out { animation: fadeOutLeft 0.3s ease-in forwards; }
         .notification-title { display: block; font-weight: bold; font-size: 14px; color: var(--primary); margin-bottom: 4px; }
         .notification-msg { font-size: 13px; color: var(--text-muted); }
@@ -161,49 +220,48 @@
         @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOutLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
 
-        #mobileMenuBtn { display: none; }
-        
+        /* Floating Chatbot Styles */
+        #chatbot-container { position: fixed; bottom: 25px; right: 25px; z-index: 5000; display: flex; flex-direction: column; align-items: flex-end;}
+        #chatbot-bubble { width: 60px; height: 60px; border-radius: 50%; background-color: var(--primary); color: white; font-size: 24px; border: none; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        #chatbot-bubble:hover { transform: scale(1.05); }
+        #chatbot-window { width: 320px; height: 400px; background: white; border-radius: var(--radius-lg); box-shadow: 0 10px 40px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: hidden; margin-bottom: 15px; border: 1px solid var(--border-color); }
+        .chat-header { background: var(--primary); color: white; padding: 15px; font-weight: bold; font-size: 15px; text-align: center; }
+        .chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; font-size: 13px; background: #f8fafc; }
+        .chat-msg { padding: 10px 12px; border-radius: 12px; max-width: 85%; word-wrap: break-word;}
+        .chat-msg.bot { background: white; border: 1px solid var(--border-color); align-self: flex-start; border-bottom-left-radius: 2px;}
+        .chat-msg.user { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-input-area { padding: 10px; border-top: 1px solid var(--border-color); background: white; display:flex;}
+        #chatInput { margin: 0; border: none; background: #f1f5f9; border-radius: 20px; padding: 10px 15px; width:100%;}
+        #chatInput:focus { box-shadow: none; border: 1px solid var(--primary); }
+
         @media (max-width: 992px) {
-            body { padding: 10px; }
-            .site-header { flex-direction: column; align-items: flex-start; gap: 10px; }
-            
-            .desktop-menu-toggle { display: none; }
-            #mobileMenuBtn { display: flex; align-items: center; justify-content: center; gap: 10px; background: var(--primary); border: none; color: white; padding: 10px 15px; border-radius: var(--radius-sm); font-weight: bold; cursor: pointer; width: 100%; margin-bottom: 10px; }
-            #datetime-display { position: relative; right: auto; top: auto; transform: none; width: 100%; text-align: left; padding-top: 5px; }
-            
-            .app-layout { flex-direction: column; align-items: stretch; }
-            
-            .sidebar { display: none; width: 100%; padding: 15px; margin-bottom: 10px; }
-            .sidebar.open { display: flex; flex-direction: column; }
-            .sidebar.collapsed { width: 100%; padding: 15px; align-items: stretch; }
-            .sidebar.collapsed .nav-text, .sidebar.collapsed #welcomeContainer { display: block; }
-            .sidebar.collapsed .nav-icon { margin-right: 12px; }
-            
-            .sidebar-btn { text-align: left; padding: 10px 15px; font-size: 13px; }
-            
-            .right-sidebar { width: 100%; padding: 15px; max-height: none; }
-            .main-content { padding: 15px; min-height: auto; width: 100%; }
-            .controls { flex-direction: column; align-items: stretch; gap: 15px;}
-            .controls > div { display: flex; flex-direction: column; width: 100%; gap: 10px; }
-            #searchInput { width: 100% !important; }
-            .action-btn { width: 100%; padding: 12px; justify-content: center; }
-            #memoForm, #activityForm { flex-direction: column; }
-        }
-        @media (max-width: 480px) {
-            .site-header h1 { font-size: 18px; }
-            .auth-type-toggle { flex-direction: column; align-items: center; gap: 8px;}
-            .auth-grid { grid-template-columns: 1fr; }
+            .app-layout { flex-direction: column; }
+            .sidebar { position: fixed; z-index: 1000; left: -100%; width: 250px; background: white; transition: left 0.3s; }
+            body.dark-mode .sidebar { background: #1e293b; }
+            .sidebar.open { left: 0; }
+            .main-content { padding: 15px; }
+            .top-bar-left button { display: block; }
         }
     </style>
 </head>
 <body>
-    <header class="site-header">
-        <img src="images/PRO 1 LOGO.png" alt="PRO 1 Logo" onerror="this.style.display='none'">
-        <h1>RHSU MEMO CONTROL</h1>
-        <div id="datetime-display"></div>
-    </header>
+    <div class="top-bar hidden" id="mainTopBar">
+        <div class="top-bar-left">
+            <button onclick="toggleNav()" style="background: transparent; border: none; cursor: pointer; padding: 5px;">
+                <img src="images/Menu.png" alt="Menu" style="width: 24px; height: 24px; filter: invert(0.3);" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><line x1=\'3\' y1=\'12\' x2=\'21\' y2=\'12\'></line><line x1=\'3\' y1=\'6\' x2=\'21\' y2=\'6\'></line><line x1=\'3\' y1=\'18\' x2=\'21\' y2=\'18\'></line></svg>'">
+            </button>
+            <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 15px;"></span>
+        </div>
+        <div class="top-bar-right">
+            <div id="datetime-display"></div>
+            <button class="profile-btn" onclick="switchTab('profile')" title="My Profile">
+                <img src="images/User.png" alt="Profile" style="filter: invert(0.3);" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'></path><circle cx=\'12\' cy=\'7\' r=\'4\'></circle></svg>'">
+            </button>
+        </div>
+    </div>
 
     <div id="loginPage" class="auth-container glass-panel">
+        <img src="images/PRO 1 LOGO.png" alt="Logo" style="width: 80px; margin-bottom: 10px;" onerror="this.style.display='none'">
         <h2>System Login</h2>
         <div class="auth-type-toggle">
             <label><input type="radio" name="loginType" value="pin" checked onchange="toggleInputType('loginCredential', 'pin')"> Use PIN</label>
@@ -248,62 +306,53 @@
 
     <div id="appLayout" class="app-layout hidden">
         
-        <div>
-            <button id="mobileMenuBtn" onclick="toggleNav()">
-                <img src="images/Menu.png" alt="Menu" class="icon-white" style="width: 20px; height: 20px;">
-                <span>Menu</span>
+        <aside class="sidebar" id="navSidebar">
+            <div class="sidebar-header">
+                <img src="images/PRO 1 LOGO.png" alt="PRO 1 Logo" onerror="this.style.display='none'">
+                <h1>RHSU MEMO<br>CONTROL</h1>
+            </div>
+            
+            <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home');">
+                <img src="images/Home.png" alt="Home" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\'></path><polyline points=\'9 22 9 12 15 12 15 22\'></polyline></svg>'">
+                <span class="nav-text">Home Page</span>
             </button>
             
-            <aside class="sidebar glass-panel" id="navSidebar">
-                <div class="desktop-menu-toggle">
-                    <button onclick="toggleNav()" style="background: transparent; border: none; padding: 0; cursor: pointer;" title="Toggle Menu">
-                        <img src="images/Menu.png" alt="Menu" class="icon-white" style="width: 24px; height: 24px;">
-                    </button>
-                </div>
+            <button class="sidebar-btn" id="btnActivities" onclick="switchTab('activities');">
+                <img src="images/Activity.png" alt="Activities" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><rect x=\'3\' y=\'4\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><line x1=\'16\' y1=\'2\' x2=\'16\' y2=\'6\'></line><line x1=\'8\' y1=\'2\' x2=\'8\' y2=\'6\'></line><line x1=\'3\' y1=\'10\' x2=\'21\' y2=\'10\'></line></svg>'">
+                <span class="nav-text">Activities</span>
+            </button>
+            
+            <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt');">
+                <img src="images/Users.png" alt="Admin" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\'></path><circle cx=\'9\' cy=\'7\' r=\'4\'></circle><path d=\'M23 21v-2a4 4 0 0 0-3-3.87\'></path><path d=\'M16 3.13a4 4 0 0 1 0 7.75\'></path></svg>'">
+                <span class="nav-text">User Management</span>
+            </button>
 
-                <div id="welcomeContainer" style="margin-bottom: 15px; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                    <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 15px;"></span>
-                </div>
-                
-                <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home');">
-                    <img src="images/Home.png" alt="Home" class="nav-icon icon-white">
-                    <span class="nav-text">Home Page</span>
-                </button>
-                
-                <button class="sidebar-btn" id="btnActivities" onclick="switchTab('activities');">
-                    <img src="images/Edit.png" alt="Activities" class="nav-icon icon-white">
-                    <span class="nav-text">Activities</span>
-                </button>
-                
-                <button class="sidebar-btn" id="btnProfile" onclick="switchTab('profile');">
-                    <img src="images/User.png" alt="Profile" class="nav-icon icon-white">
-                    <span class="nav-text">My Profile</span>
-                </button>
-                
-                <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt');">
-                    <img src="images/Admin.gif" alt="Admin" class="nav-icon icon-glow" style="border-radius: 50%;">
-                    <span class="nav-text">Admin Mgmt</span>
-                </button>
-                
-                <div style="flex-grow: 1;"></div>
-            </aside>
-        </div>
+            <!-- New Settings Button -->
+            <button class="sidebar-btn" id="btnSettings" onclick="switchTab('settings');">
+                <img src="images/Settings.png" alt="Settings" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'12\' cy=\'12\' r=\'3\'></circle><path d=\'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z\'></path></svg>'">
+                <span class="nav-text">Settings</span>
+            </button>
+            
+            <div style="flex-grow: 1;"></div>
+        </aside>
 
-        <main class="main-content glass-panel">
+        <main class="main-content">
             
             <!-- HOME TAB -->
             <div id="tabHome">
                 <div class="controls">
-                    <h2 style="margin:0;">Memo Database</h2>
+                    <h2 style="margin:0; color: var(--primary);">Memo Database</h2>
                     <div>
-                        <button class="action-btn approve-btn" onclick="openMemoModalUser()" style="padding: 10px 18px; font-weight: bold;">+ Create New Memo</button>
+                        <button class="action-btn approve-btn" onclick="openMemoModalUser()" style="padding: 10px 18px; font-weight: bold; color:white;">
+                            <img src="images/Add.png" alt="Add" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Create New Memo
+                        </button>
                     </div>
                 </div>
                 <div class="controls" style="margin-top: 20px;">
                     <div>
-                        <input type="text" id="searchInput" placeholder="Search memos..." onkeyup="searchTable()" style="margin:0; width: 250px;">
-                        <button class="action-btn delete-btn" onclick="batchDelete()">
-                            <img src="images/Trash.png" alt="Delete" class="icon-white" style="width: 14px; height: 14px;"> Delete Selected
+                        <input type="text" id="searchInput" placeholder="Search memos..." onkeyup="searchTable()" style="margin:0; width: 250px; background: white;">
+                        <button class="action-btn delete-btn" onclick="batchDelete()" style="color:white;">
+                            <img src="images/Trash.png" alt="Delete" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Delete Selected
                         </button>
                     </div>
                 </div>
@@ -336,9 +385,11 @@
             <!-- NEW ACTIVITIES TAB -->
             <div id="tabActivities" class="hidden">
                 <div class="controls">
-                    <h2 style="margin:0;">Scheduled Activities</h2>
+                    <h2 style="margin:0; color: var(--primary);">Scheduled Activities</h2>
                     <div>
-                        <button class="action-btn approve-btn" onclick="openActivityModal()" style="padding: 10px 18px; font-weight: bold;">+ Add Activity</button>
+                        <button class="action-btn approve-btn" onclick="openActivityModal()" style="padding: 10px 18px; font-weight: bold; color:white;">
+                            <img src="images/Add.png" alt="Add" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Add Activity
+                        </button>
                     </div>
                 </div>
                 <div class="table-wrapper">
@@ -361,33 +412,73 @@
 
             <!-- PROFILE TAB -->
             <div id="tabProfile" class="hidden">
-                <h2>My Profile Settings</h2>
-                <label style="font-size: 13px; color: var(--text-muted); text-align: left; display: block; margin-top: 20px;">Change Username:</label>
-                <input type="text" id="newUsernameInput" placeholder="Enter new Username" style="max-width: 300px;">
-                
-                <label style="font-size: 13px; color: var(--text-muted); text-align: left; display: block; margin-top: 15px;">Change PIN / Password:</label>
-                <input type="password" id="newCredential" placeholder="Enter new PIN or Password" style="max-width: 300px;">
-                
-                <div style="margin-top: 25px; display: flex; gap: 15px;">
-                    <button style="width: auto;" onclick="updateProfile()">Save Changes</button>
-                    <button class="delete-btn" style="width: auto;" onclick="logoutUser()">Logout of System</button>
+                <div class="controls">
+                    <h2 style="margin:0; color: var(--primary);">My Profile</h2>
+                </div>
+                <div class="settings-grid">
+                    <!-- 1. Personal Information -->
+                    <div class="settings-section glass-panel">
+                        <h3>Personal Information</h3>
+                        <div class="setting-row"><span>Rank</span> <span style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>First Name</span> <span style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Middle Name</span> <span style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Last Name</span> <span style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Qualifier</span> <span style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Email Address</span> <span style="color:var(--text-muted)">Not Available</span></div>
+                    </div>
+
+                    <!-- 2. Account Information -->
+                    <div class="settings-section glass-panel">
+                        <h3>Account Information</h3>
+                        <div class="setting-row"><span>Username</span> <span id="profUsername" style="font-weight:500;"></span></div>
+                        <div class="setting-row"><span>Account Type</span> <span id="profAccType"></span></div>
+                        <div class="setting-row"><span>Account Status</span> <span style="color:var(--success); font-weight:500;">Active</span></div>
+                        <div class="setting-row"><span>Date Registered</span> <span style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Last Login</span> <span style="color:var(--text-muted)">Not Available</span></div>
+                    </div>
+
+                    <!-- 3. Activity Summary -->
+                    <div class="settings-section glass-panel">
+                        <h3>Activity Summary</h3>
+                        <div class="setting-row"><span>Total Memos Created</span> <span id="profTotalMemos" style="font-weight:bold; color:var(--primary);">0</span></div>
+                        <div class="setting-row"><span>Total Activities Created</span> <span id="profTotalActivities" style="font-weight:bold; color:var(--primary);">0</span></div>
+                        <div class="setting-row"><span>Last Activity</span> <span id="profLastActivity" style="color:var(--text-muted)">Not Available</span></div>
+                    </div>
+
+                    <!-- 4. Security & Actions -->
+                    <div class="settings-section glass-panel">
+                        <h3>Security & Authentication</h3>
+                        <div style="margin-bottom: 15px;">
+                            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 5px;">Change Username:</label>
+                            <input type="text" id="newUsernameInput" placeholder="Enter new Username" style="margin:0;">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 5px;">Change PIN / Password:</label>
+                            <input type="password" id="newCredential" placeholder="Enter new PIN or Password" style="margin:0;">
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; margin-top: 15px;">
+                            <button style="flex:1; margin:0;" onclick="updateProfile()">Save Changes</button>
+                            <button class="delete-btn" style="flex:1; margin:0;" onclick="attemptLogout()">Logout</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <!-- ADMIN TAB -->
             <div id="tabAdminMgmt" class="hidden">
                 <div class="controls">
-                    <h2 style="margin:0; color: #fca5a5;">Administration Management</h2>
-                    <button class="action-btn approve-btn" onclick="loadAdminUsers()" style="padding: 10px 18px; font-weight: bold;">Refresh Data</button>
+                    <h2 style="margin:0; color: var(--danger);">Administration Management</h2>
+                    <button class="action-btn approve-btn" onclick="loadAdminUsers()" style="padding: 10px 18px; font-weight: bold; color:white;">Refresh Data</button>
                 </div>
 
-                <div class="glass-panel" style="padding: 20px; margin-top: 20px; border-color: rgba(99,102,241,0.4);">
-                    <h3 style="margin-top:0; color: #818cf8; font-size: 16px;">Global System Announcement Control</h3>
+                <div class="glass-panel" style="padding: 20px; margin-top: 20px; background: white;">
+                    <h3 style="margin-top:0; color: var(--primary); font-size: 16px;">Global System Announcement Control</h3>
                     <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">This message will appear as a popup to all users when they log in.</p>
                     <textarea id="adminAnnouncementText" placeholder="Enter the system announcement here..." style="min-height: 100px;"></textarea>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="approve-btn" style="width: auto;" onclick="saveAdminAnnouncement()">Post / Update Announcement</button>
-                        <button class="delete-btn" style="width: auto;" onclick="deleteAdminAnnouncement()">Remove Announcement</button>
+                    <div style="display: flex; gap: 10px; margin-top:10px;">
+                        <button class="approve-btn" style="width: auto; margin:0;" onclick="saveAdminAnnouncement()">Post Announcement</button>
+                        <button class="delete-btn" style="width: auto; margin:0;" onclick="deleteAdminAnnouncement()">Remove</button>
                     </div>
                 </div>
 
@@ -405,21 +496,134 @@
                     </table>
                 </div>
             </div>
-        </main>
 
-        <aside class="right-sidebar glass-panel">
-            <div>
-                <h2 style="margin-top: 0; font-size: 18px; text-align: center;">Live Activity Log</h2>
-                <div id="activityFeedList" style="display: flex; flex-direction: column;"></div>
-            </div>
-            <div id="activityPagination" class="pagination-container hidden">
-                <span id="activityPageInfo" style="font-weight: bold;">Page 1 of 1</span>
-                <div class="pagination-buttons">
-                    <button id="prevActivityBtn" class="page-btn" onclick="changeActivityPage(-1)">Prev</button>
-                    <button id="nextActivityBtn" class="page-btn" onclick="changeActivityPage(1)">Next</button>
+            <!-- SETTINGS TAB -->
+            <div id="tabSettings" class="hidden">
+                <div class="controls">
+                    <h2 style="margin:0; color: var(--primary);">System Settings</h2>
+                    <button class="action-btn delete-btn" style="color:white;" onclick="resetPreferences()">
+                        Reset Preferences
+                    </button>
+                </div>
+
+                <div class="settings-grid">
+                    <!-- Appearance -->
+                    <div class="settings-section glass-panel">
+                        <h3>Appearance</h3>
+                        <div class="setting-row">
+                            <span>Theme</span>
+                            <select id="setTheme" onchange="saveSettings()">
+                                <option value="Light">Light</option>
+                                <option value="Dark">Dark</option>
+                                <option value="System">System</option>
+                            </select>
+                        </div>
+                        <div class="setting-row">
+                            <span>Sidebar</span>
+                            <select id="setSidebar" onchange="saveSettings()">
+                                <option value="Expanded">Expanded</option>
+                                <option value="Collapsed">Collapsed</option>
+                            </select>
+                        </div>
+                        <div class="setting-row">
+                            <span>Compact Mode</span>
+                            <label class="switch"><input type="checkbox" id="setCompact" onchange="saveSettings()"><span class="slider"></span></label>
+                        </div>
+                    </div>
+
+                    <!-- Notifications -->
+                    <div class="settings-section glass-panel">
+                        <h3>Notifications</h3>
+                        <div class="setting-row">
+                            <span>Live Activity Notifications</span>
+                            <label class="switch"><input type="checkbox" id="setLiveNotif" onchange="saveSettings()"><span class="slider"></span></label>
+                        </div>
+                        <div class="setting-row">
+                            <span>Notification Sound</span>
+                            <label class="switch"><input type="checkbox" id="setNotifSound" onchange="saveSettings()"><span class="slider"></span></label>
+                        </div>
+                    </div>
+
+                    <!-- Memo -->
+                    <div class="settings-section glass-panel">
+                        <h3>Memo Settings</h3>
+                        <div class="setting-row">
+                            <span>Records per page</span>
+                            <select id="setRecordsPage" onchange="saveSettings()">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="50">50</option>
+                            </select>
+                        </div>
+                        <div class="setting-row">
+                            <span>Remember Search/Filter</span>
+                            <label class="switch"><input type="checkbox" id="setRemSearch" onchange="saveSettings()"><span class="slider"></span></label>
+                        </div>
+                    </div>
+
+                    <!-- Activities -->
+                    <div class="settings-section glass-panel">
+                        <h3>Activities</h3>
+                        <div class="setting-row">
+                            <span>Auto Refresh Interval</span>
+                            <select id="setAutoRef" onchange="saveSettings()">
+                                <option value="15">15 sec</option>
+                                <option value="30">30 sec</option>
+                                <option value="60">1 min</option>
+                                <option value="300">5 min</option>
+                                <option value="0">OFF</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- AI Assistant -->
+                    <div class="settings-section glass-panel">
+                        <h3>AI Assistant</h3>
+                        <div class="setting-row">
+                            <span>Show Chatbot</span>
+                            <label class="switch"><input type="checkbox" id="setShowChat" onchange="saveSettings()"><span class="slider"></span></label>
+                        </div>
+                        <div class="setting-row">
+                            <span>Auto Open Chatbot</span>
+                            <label class="switch"><input type="checkbox" id="setAutoChat" onchange="saveSettings()"><span class="slider"></span></label>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="settings-section glass-panel">
+                        <h3>Security</h3>
+                        <div class="setting-row">
+                            <span>Auto Logout (Inactivity)</span>
+                            <select id="setAutoLogout" onchange="saveSettings()">
+                                <option value="Never">Never</option>
+                                <option value="15">15 min</option>
+                                <option value="30">30 min</option>
+                                <option value="60">1 hour</option>
+                            </select>
+                        </div>
+                        <div class="setting-row">
+                            <span>Confirm Before Logout</span>
+                            <label class="switch"><input type="checkbox" id="setConfirmLogout" onchange="saveSettings()"><span class="slider"></span></label>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </aside>
+        </main>
+    </div>
+
+    <!-- FLOATING CHATBOT AI -->
+    <div id="chatbot-container">
+        <div id="chatbot-window" class="hidden">
+            <div class="chat-header">System AI Assistant</div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-msg bot">Hello! I am your AI assistant for the RHSU Memo Control system. How can I politely assist you today?</div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" placeholder="Ask a question..." onkeypress="handleChat(event)">
+            </div>
+        </div>
+        <button id="chatbot-bubble" onclick="toggleChat()" title="Chat with Assistant">💬</button>
     </div>
 
     <!-- MODALS -->
@@ -427,27 +631,27 @@
     <!-- ACTIVITY UPDATE STATUS MODAL -->
     <div id="updateActivityModal" class="modal-overlay hidden" style="z-index: 2000;">
         <div class="modal-content glass-panel">
-            <h3 style="margin-top:0; color: #a5b4fc;">Update Activity Status</h3>
-            <p id="updateActNameDisplay" style="font-size: 14px; color: white; margin-bottom: 10px;"></p>
+            <h3 style="margin-top:0; color: var(--primary);">Update Activity Status</h3>
+            <p id="updateActNameDisplay" style="font-size: 14px; color: var(--text-main); margin-bottom: 10px;"></p>
             <input type="hidden" id="updateActName">
             <input type="hidden" id="updateActDates">
             <select id="newActStatus" style="padding: 12px; border-radius: 6px; width: 100%; margin-bottom: 15px;">
-                <option value="Pending" style="color: black;">Pending</option>
-                <option value="Approved" style="color: black;">Approved</option>
-                <option value="Disapproved" style="color: black;">Disapproved</option>
-                <option value="Disregard" style="color: black;">Disregard</option>
-                <option value="For Signature" style="color: black;">For Signature</option>
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Disapproved">Disapproved</option>
+                <option value="Disregard">Disregard</option>
+                <option value="For Signature">For Signature</option>
             </select>
             <div style="display: flex; gap: 10px;">
                 <button style="flex: 1;" onclick="submitActivityUpdate()">Save Status</button>
-                <button style="flex: 1; background: transparent; border: 1px solid var(--border-color);" onclick="closeUpdateActivityModal()">Cancel</button>
+                <button style="flex: 1; background: #e2e8f0; color: #475569;" onclick="closeUpdateActivityModal()">Cancel</button>
             </div>
         </div>
     </div>
 
     <div id="systemAnnouncementModal" class="modal-overlay hidden" style="z-index: 1000;">
         <div class="modal-content glass-panel" style="max-width: 450px;">
-            <h2 style="color: #a5b4fc; margin-top: 0;">System Announcement</h2>
+            <h2 style="color: var(--primary); margin-top: 0;">System Announcement</h2>
             <p id="globalAnnouncementMsg" style="font-size: 15px; margin-bottom: 25px; line-height: 1.6; white-space: pre-wrap; text-align: left;"></p>
             <button onclick="closeAnnouncementModal()">Understood</button>
         </div>
@@ -455,38 +659,38 @@
 
     <div id="customConfirmModal" class="modal-overlay hidden" style="z-index: 2000;">
         <div class="modal-content glass-panel">
-            <h3 id="customConfirmTitle" style="margin-top:0; color: #fca5a5;">Confirm Action</h3>
-            <p id="customConfirmMessage" style="font-size: 15px; margin-bottom: 20px; color: white;"></p>
+            <h3 id="customConfirmTitle" style="margin-top:0; color: var(--danger);">Confirm Action</h3>
+            <p id="customConfirmMessage" style="font-size: 15px; margin-bottom: 20px; color: var(--text-main);"></p>
             <div style="display: flex; gap: 10px;">
                 <button id="customConfirmYesBtn" style="flex: 1;" class="approve-btn">Yes</button>
-                <button id="customConfirmNoBtn" style="flex: 1; background: transparent; border: 1px solid var(--border-color);">Cancel</button>
+                <button id="customConfirmNoBtn" style="flex: 1; background: #e2e8f0; color: #475569;">Cancel</button>
             </div>
         </div>
     </div>
 
     <div id="memoSubmissionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel modal-large">
-            <h2 style="margin-top: 0;">Submit New Memo</h2>
-            <form id="memoForm" style="display: flex; gap: 10px; margin-top: 12px; margin-bottom: 20px;">
-                <select id="memoClassification" style="padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: rgba(255, 255, 255, 0.1); color: white; margin: 0;">
-                    <option value="A" style="color: black;">Admin</option>
-                    <option value="S" style="color: black;">Supply</option>
-                    <option value="GSS" style="color: black;">General Services Section</option>
-                    <option value="BP" style="color: black;">Base Police</option>
-                    <option value="SSB" style="color: black;">Special Services Band</option>
-                    <option value="RCIA" style="color: black;">Regional Committee on Inspection and Acceptance (RCIA)</option>
+            <h2 style="margin-top: 0; color: var(--primary);">Submit New Memo</h2>
+            <form id="memoForm" style="display: flex; gap: 10px; margin-top: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                <select id="memoClassification" style="padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: white; color: black; margin: 0; min-width: 200px;">
+                    <option value="A">Admin</option>
+                    <option value="S">Supply</option>
+                    <option value="GSS">General Services Section</option>
+                    <option value="BP">Base Police</option>
+                    <option value="SSB">Special Services Band</option>
+                    <option value="RCIA">Regional Committee on Inspection & Acceptance</option>
                 </select>
-                <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0; flex-grow: 1;">
+                <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0; flex-grow: 1; min-width: 250px;">
                 <button type="submit" id="memoSubmitBtn" style="white-space: nowrap; width: auto; margin-top: 0;">Submit Data</button>
             </form>
-            <button onclick="closeMemoModal()" style="margin-top: 25px; background: transparent; border: 1px solid var(--border-color); width: 100%;">Close Window</button>
+            <button onclick="closeMemoModal()" style="margin-top: 25px; background: #e2e8f0; color: #475569; width: 100%;">Close Window</button>
         </div>
     </div>
 
     <!-- NEW ACTIVITY MODAL -->
     <div id="activitySubmissionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel modal-large">
-            <h2 style="margin-top: 0;">Add Scheduled Activity</h2>
+            <h2 style="margin-top: 0; color: var(--primary);">Add Scheduled Activity</h2>
             <form id="activityForm" style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px; margin-bottom: 20px; text-align: left;">
                 
                 <label style="font-size:13px; color:var(--text-muted);">Name of Activity</label>
@@ -494,7 +698,7 @@
 
                 <label style="font-size:13px; color:var(--text-muted);">Select Dates</label>
                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="date" id="actDateInput" style="margin:0; flex-grow: 1; min-width: 150px;">
+                    <input type="date" id="actDateInput" style="margin:0; flex-grow: 1; min-width: 150px; background: white;">
                     <button type="button" onclick="addActivityDate()" style="width: auto; margin:0; padding: 12px 16px;">Add Date</button>
                 </div>
                 <div id="actDateList" style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;"></div>
@@ -509,48 +713,48 @@
                 <input type="text" id="actInCharge" required placeholder="e.g. PCOL. Santos">
 
                 <label style="font-size:13px; color:var(--text-muted);">Remarks</label>
-                <select id="actRemarks">
-                    <option value="Pending" style="color: black;">Pending</option>
-                    <option value="Approved" style="color: black;">Approved</option>
-                    <option value="Disapproved" style="color: black;">Disapproved</option>
-                    <option value="Disregard" style="color: black;">Disregard</option>
-                    <option value="For Signature" style="color: black;">For Signature</option>
+                <select id="actRemarks" style="background: white;">
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Disapproved">Disapproved</option>
+                    <option value="Disregard">Disregard</option>
+                    <option value="For Signature">For Signature</option>
                 </select>
 
                 <button type="submit" id="activitySubmitBtn" style="margin-top: 15px;">Submit Activity</button>
             </form>
-            <button onclick="closeActivityModal()" style="background: transparent; border: 1px solid var(--border-color); width: 100%;">Cancel & Close</button>
+            <button onclick="closeActivityModal()" style="background: #e2e8f0; color: #475569; width: 100%;">Cancel & Close</button>
         </div>
     </div>
 
     <div id="adminModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
-            <h3 style="margin-top:0;">Alpha Admin Validation Required</h3>
-            <input type="password" id="adminPassInput" placeholder="Master Password">
+            <h3 style="margin-top:0; color: var(--primary);">Alpha Admin Validation Required</h3>
+            <input type="password" id="adminPassInput" placeholder="Master Password" style="background: white;">
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button style="flex: 1;" onclick="verifyAdmin()">Unlock</button>
-                <button style="flex: 1; background: transparent; border: 1px solid var(--border-color);" onclick="closeAdminModal()">Cancel</button>
+                <button style="flex: 1; background: #e2e8f0; color: #475569;" onclick="closeAdminModal()">Cancel</button>
             </div>
         </div>
     </div>
 
     <div id="actionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
-            <h3 id="actionModalTitle" style="margin-top:0;">Admin Validation Required</h3>
-            <input type="password" id="actionAdminPass" placeholder="Master Password" style="margin-bottom: 10px;">
-            <input type="text" id="actionNewSubject" placeholder="New Subject (For Edits Only)" class="hidden">
+            <h3 id="actionModalTitle" style="margin-top:0; color: var(--primary);">Admin Validation Required</h3>
+            <input type="password" id="actionAdminPass" placeholder="Master Password" style="margin-bottom: 10px; background: white;">
+            <input type="text" id="actionNewSubject" placeholder="New Subject (For Edits Only)" class="hidden" style="background: white;">
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button style="flex: 1;" onclick="executeAction()">Confirm</button>
-                <button style="flex: 1; background: transparent; border: 1px solid var(--border-color);" onclick="closeActionModal()">Cancel</button>
+                <button style="flex: 1; background: #e2e8f0; color: #475569;" onclick="closeActionModal()">Cancel</button>
             </div>
         </div>
     </div>
 
     <div id="editRequestModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
-            <h3 style="color: #fca5a5; margin-top: 0;">Real-Time Edit Request</h3>
-            <p style="font-size: 15px;">User <strong id="editRequestUser" style="color:white;"></strong> is requesting to edit Memo: <strong id="editRequestControl" style="color:white;"></strong></p>
-            <input type="password" id="editRequestAdminPass" placeholder="Enter Alpha-Admin Code to allow" style="margin-bottom: 10px;">
+            <h3 style="color: var(--danger); margin-top: 0;">Real-Time Edit Request</h3>
+            <p style="font-size: 15px;">User <strong id="editRequestUser"></strong> is requesting to edit Memo: <strong id="editRequestControl"></strong></p>
+            <input type="password" id="editRequestAdminPass" placeholder="Enter Alpha-Admin Code to allow" style="margin-bottom: 10px; background: white;">
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button class="approve-btn" style="flex: 1;" onclick="respondToEditRequest(true)">Allow Edit</button>
                 <button class="delete-btn" style="flex: 1;" onclick="respondToEditRequest(false)">Deny</button>
@@ -561,6 +765,7 @@
     <div id="notificationContainer"></div>
 
     <script>
+        // API Integration
         const API_URL = "https://script.google.com/macros/s/AKfycbx42FXBvP2w42kl5XO9ICUAf04mJqqHLcVfSsEC9Ku8bcYWd5KZ2S1H_zzGWs8zE-kS/exec";
         const ALPHA_ADMIN_NAME = "PCpl Gandia"; 
         let sessionAdminPass = ""; 
@@ -568,18 +773,34 @@
         let pendingAdminAction = null;
         let actionTargetControl = null;
         
-        let currentActivityPage = 1;
-        const ACTIVITIES_PER_PAGE = 8; 
-
         let allMemos = [];
         let filteredMemos = [];
+        let allActivities = [];
         let currentMemoPage = 1;
-        const MEMOS_PER_PAGE = 5;
-
-        // NEW ACTIVITY VARIABLES
         let selectedActivityDates = [];
+        
+        // Dynamic Settings Variables
+        let MEMOS_PER_PAGE = 10;
+        let activityRefreshTimer = null;
+        let autoLogoutTimer = null;
+        let userSettings = {
+            theme: 'Light',
+            sidebar: 'Expanded',
+            compactMode: false,
+            liveNotif: true,
+            notifSound: false,
+            recordsPerPage: '10',
+            rememberSearch: false,
+            autoRefresh: '15',
+            showChatbot: true,
+            autoOpenChatbot: false,
+            autoLogout: 'Never',
+            confirmLogout: true
+        };
 
-        // --- GLOBAL KEYPRESS LISTENER ---
+        // Track last known activity log count to trigger notifications without rendering a side modal
+        let lastLogCount = 0;
+
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const activeId = document.activeElement.id;
@@ -591,6 +812,187 @@
                 if (activeId === 'editRequestAdminPass') respondToEditRequest(true);
             }
         });
+
+        // Settings Management
+        function loadSettings() {
+            const user = localStorage.getItem('loggedInUser');
+            if(!user) return;
+            const stored = localStorage.getItem('rhsuSettings_' + user);
+            if(stored) {
+                try { userSettings = { ...userSettings, ...JSON.parse(stored) }; } catch(e) {}
+            }
+            updateSettingsUI();
+            applySettingsEffects();
+        }
+
+        function updateSettingsUI() {
+            document.getElementById('setTheme').value = userSettings.theme;
+            document.getElementById('setSidebar').value = userSettings.sidebar;
+            document.getElementById('setCompact').checked = userSettings.compactMode;
+            document.getElementById('setLiveNotif').checked = userSettings.liveNotif;
+            document.getElementById('setNotifSound').checked = userSettings.notifSound;
+            document.getElementById('setRecordsPage').value = userSettings.recordsPerPage;
+            document.getElementById('setRemSearch').checked = userSettings.rememberSearch;
+            document.getElementById('setAutoRef').value = userSettings.autoRefresh;
+            document.getElementById('setShowChat').checked = userSettings.showChatbot;
+            document.getElementById('setAutoChat').checked = userSettings.autoOpenChatbot;
+            document.getElementById('setAutoLogout').value = userSettings.autoLogout;
+            document.getElementById('setConfirmLogout').checked = userSettings.confirmLogout;
+        }
+
+        function saveSettings() {
+            userSettings.theme = document.getElementById('setTheme').value;
+            userSettings.sidebar = document.getElementById('setSidebar').value;
+            userSettings.compactMode = document.getElementById('setCompact').checked;
+            userSettings.liveNotif = document.getElementById('setLiveNotif').checked;
+            userSettings.notifSound = document.getElementById('setNotifSound').checked;
+            userSettings.recordsPerPage = document.getElementById('setRecordsPage').value;
+            userSettings.rememberSearch = document.getElementById('setRemSearch').checked;
+            userSettings.autoRefresh = document.getElementById('setAutoRef').value;
+            userSettings.showChatbot = document.getElementById('setShowChat').checked;
+            userSettings.autoOpenChatbot = document.getElementById('setAutoChat').checked;
+            userSettings.autoLogout = document.getElementById('setAutoLogout').value;
+            userSettings.confirmLogout = document.getElementById('setConfirmLogout').checked;
+
+            const user = localStorage.getItem('loggedInUser');
+            if(user) localStorage.setItem('rhsuSettings_' + user, JSON.stringify(userSettings));
+            
+            applySettingsEffects();
+            showNotification("Settings Saved", "Your preferences have been updated successfully.");
+        }
+
+        function resetPreferences() {
+            customConfirm("Are you sure you want to reset all preferences to default?", (confirmed) => {
+                if(confirmed) {
+                    userSettings = {
+                        theme: 'Light', sidebar: 'Expanded', compactMode: false,
+                        liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false,
+                        autoRefresh: '15', showChatbot: true, autoOpenChatbot: false,
+                        autoLogout: 'Never', confirmLogout: true
+                    };
+                    updateSettingsUI();
+                    saveSettings();
+                }
+            });
+        }
+
+        function applySettingsEffects() {
+            // Theme
+            const body = document.body;
+            if (userSettings.theme === 'Dark' || (userSettings.theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                body.classList.add('dark-mode');
+            } else {
+                body.classList.remove('dark-mode');
+            }
+
+            // Compact Mode
+            if (userSettings.compactMode) body.classList.add('compact-mode');
+            else body.classList.remove('compact-mode');
+
+            // Sidebar
+            const sb = document.getElementById('navSidebar');
+            if (window.innerWidth > 992) {
+                if (userSettings.sidebar === 'Collapsed') sb.classList.add('collapsed');
+                else sb.classList.remove('collapsed');
+            }
+
+            // Memo pagination override
+            MEMOS_PER_PAGE = parseInt(userSettings.recordsPerPage, 10) || 10;
+            if (filteredMemos && filteredMemos.length > 0) renderMemoTable();
+
+            // Activity Auto Refresh Timer
+            if (activityRefreshTimer) clearInterval(activityRefreshTimer);
+            let sec = parseInt(userSettings.autoRefresh, 10);
+            if (!isNaN(sec) && sec > 0) {
+                activityRefreshTimer = setInterval(() => {
+                    if (!document.getElementById('appLayout').classList.contains('hidden')) {
+                        fetchActivityLogs();
+                    }
+                }, sec * 1000);
+            }
+
+            // AI Assistant Chatbot Display
+            const bot = document.getElementById('chatbot-container');
+            if(userSettings.showChatbot) bot.classList.remove('hidden');
+            else bot.classList.add('hidden');
+
+            // Auto Logout Setup
+            resetIdleTimer();
+        }
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (userSettings.theme === 'System') applySettingsEffects();
+        });
+
+        function playAudioBeep() {
+            try {
+                let ctx = new (window.AudioContext || window.webkitAudioContext)();
+                let osc = ctx.createOscillator();
+                let gainNode = ctx.createGain();
+                osc.connect(gainNode);
+                gainNode.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = 800;
+                gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+                osc.start();
+                osc.stop(ctx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        // Global Activity Listeners for Auto Logout
+        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
+            window.addEventListener(evt, resetIdleTimer);
+        });
+
+        function resetIdleTimer() {
+            if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+            if (!localStorage.getItem('loggedInUser')) return;
+            if (userSettings.autoLogout !== 'Never') {
+                let minutes = parseInt(userSettings.autoLogout, 10);
+                if (!isNaN(minutes) && minutes > 0) {
+                    autoLogoutTimer = setTimeout(() => {
+                        customAlert("Your session has expired due to inactivity.", "Session Expired");
+                        logoutUser(true);
+                    }, minutes * 60000);
+                }
+            }
+        }
+
+        // Toggle Gmail style nav
+        function toggleNav() {
+            const sidebar = document.getElementById('navSidebar');
+            if (window.innerWidth <= 992) {
+                sidebar.classList.toggle('open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+                userSettings.sidebar = sidebar.classList.contains('collapsed') ? 'Collapsed' : 'Expanded';
+                const user = localStorage.getItem('loggedInUser');
+                if(user) {
+                    document.getElementById('setSidebar').value = userSettings.sidebar;
+                    localStorage.setItem('rhsuSettings_' + user, JSON.stringify(userSettings));
+                }
+            }
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options);
+        }
+        setInterval(updateDateTime, 1000); updateDateTime();
+
+        function showNotification(title, message, onClickAction) {
+            const container = document.getElementById('notificationContainer');
+            const toast = document.createElement('div');
+            toast.className = 'notification-toast';
+            toast.innerHTML = `<span class="notification-title">${title}</span><span class="notification-msg">${message}</span>`;
+            const timeout = setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300); }, 5000);
+            toast.addEventListener('click', () => {
+                clearTimeout(timeout); toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300);
+                if (onClickAction) onClickAction();
+            });
+            container.appendChild(toast);
+        }
 
         function customAlert(message, title = "System Notification") {
             showNotification(title, message);
@@ -610,48 +1012,8 @@
             };
         }
 
-        function updateDateTime() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options);
-        }
-        setInterval(updateDateTime, 1000); updateDateTime();
-
-        function toggleNav() {
-            const sidebar = document.getElementById('navSidebar');
-            if (window.innerWidth <= 992) {
-                sidebar.classList.toggle('open');
-            } else {
-                sidebar.classList.toggle('collapsed');
-            }
-        }
-
-        function showNotification(title, message, onClickAction) {
-            const container = document.getElementById('notificationContainer');
-            const toast = document.createElement('div');
-            toast.className = 'notification-toast';
-            toast.innerHTML = `<span class="notification-title">${title}</span><span class="notification-msg">${message}</span>`;
-            const timeout = setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300); }, 5000);
-            toast.addEventListener('click', () => {
-                clearTimeout(timeout); toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300);
-                if (onClickAction) onClickAction();
-            });
-            container.appendChild(toast);
-        }
-
         async function logActivity(actionText) {
             const user = localStorage.getItem('loggedInUser') || 'Unknown User';
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            
-            let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
-            logs.unshift({ timeString: timeString, user: user, actionText: actionText });
-            if (logs.length > 50) logs = logs.slice(0, 50);
-            
-            localStorage.setItem('appActivityFeed', JSON.stringify(logs));
-            currentActivityPage = 1;
-            renderActivityFeed();
-            
             try { 
                 await fetch(API_URL, { 
                     method: 'POST', 
@@ -666,65 +1028,62 @@
             try {
                 const res = await fetch(API_URL + "?action=get_activity_logs");
                 const logs = await res.json();
-                localStorage.setItem('appActivityFeed', JSON.stringify(logs));
-                renderActivityFeed();
+                
+                if (lastLogCount > 0 && logs.length > lastLogCount) {
+                    const newLogs = logs.length - lastLogCount;
+                    for (let i = 0; i < Math.min(newLogs, 3); i++) {
+                        const log = logs[i]; 
+                        if (userSettings.liveNotif) {
+                            showNotification("Live Activity", `${log.user} ${log.actionText}`);
+                            if (userSettings.notifSound && i === 0) playAudioBeep();
+                        }
+                    }
+                }
+                lastLogCount = logs.length;
             } catch (err) {}
         }
 
-        setInterval(() => {
-            if (!document.getElementById('appLayout').classList.contains('hidden')) {
-                fetchActivityLogs();
-            }
-        }, 15000);
+        // Chatbot Logic
+        function toggleChat() {
+            const window = document.getElementById('chatbot-window');
+            window.classList.toggle('hidden');
+            if(!window.classList.contains('hidden')) document.getElementById('chatInput').focus();
+        }
 
-        function renderActivityFeed() {
-            let logs = JSON.parse(localStorage.getItem('appActivityFeed') || '[]');
-            const container = document.getElementById('activityFeedList');
-            const paginationContainer = document.getElementById('activityPagination');
-            
-            if (!container) return; container.innerHTML = "";
-            if (logs.length === 0) {
-                container.innerHTML = "<p style='color: var(--text-muted); font-size: 13px; text-align: center;'>No recent activity.</p>";
-                if (paginationContainer) paginationContainer.classList.add('hidden'); return;
-            }
-            const totalPages = Math.ceil(logs.length / ACTIVITIES_PER_PAGE);
-            if (currentActivityPage > totalPages) currentActivityPage = totalPages;
-            if (currentActivityPage < 1) currentActivityPage = 1;
+        function handleChat(e) {
+            if (e.key === 'Enter') {
+                const input = document.getElementById('chatInput');
+                const text = input.value.trim();
+                if (!text) return;
 
-            const currentLogs = logs.slice((currentActivityPage - 1) * ACTIVITIES_PER_PAGE, ((currentActivityPage - 1) * ACTIVITIES_PER_PAGE) + ACTIVITIES_PER_PAGE);
-            
-            currentLogs.forEach(log => {
-                container.innerHTML += `<div class="activity-item"><span class="activity-time">${log.timeString}</span><span class="activity-user">${log.user}</span> ${log.actionText}</div>`;
-            });
-
-            if (paginationContainer) {
-                if (logs.length > ACTIVITIES_PER_PAGE) {
-                    paginationContainer.classList.remove('hidden'); 
-                    document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
-                    document.getElementById('prevActivityBtn').disabled = (currentActivityPage === 1); 
-                    document.getElementById('nextActivityBtn').disabled = (currentActivityPage === totalPages);
-                } else { paginationContainer.classList.add('hidden'); }
+                const chatBox = document.getElementById('chatMessages');
+                chatBox.innerHTML += `<div class="chat-msg user">${text}</div>`;
+                input.value = "";
+                
+                setTimeout(() => {
+                    const response = getChatbotResponse(text.toLowerCase());
+                    chatBox.innerHTML += `<div class="chat-msg bot">${response}</div>`;
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }, 500);
+                chatBox.scrollTop = chatBox.scrollHeight;
             }
         }
 
-        function changeActivityPage(direction) { currentActivityPage += direction; renderActivityFeed(); }
-
-        window.addEventListener('storage', (e) => {
-            if (e.key === 'rtEditRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
-                const req = JSON.parse(e.newValue);
-                document.getElementById('editRequestUser').innerText = req.user; document.getElementById('editRequestControl').innerText = req.controlNum; document.getElementById('editRequestModal').dataset.reqId = req.id;
-                showNotification("New Edit Request", `User ${req.user} is requesting to edit Memo ${req.controlNum}. Click to review.`, () => { document.getElementById('editRequestModal').classList.remove('hidden'); });
-            }
-            if (e.key === 'newAccountRequest' && e.newValue && localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME) {
-                const req = JSON.parse(e.newValue);
-                showNotification("New Account Request", `${req.user} requested an account. Click to review.`, () => { switchTab('adminMgmt'); });
-            }
-        });
+        function getChatbotResponse(query) {
+            if (query.includes('memo')) return "To manage memos, go to the Home Page tab. You can create a new memo by clicking the 'Create New Memo' button, which is now indicated by a clear Add icon.";
+            if (query.includes('activity') || query.includes('activities')) return "You can schedule and manage activities in the 'Activities' tab. Use 'Add Activity' to set dates, venues, and status marks.";
+            if (query.includes('admin')) return "Admin Management is strictly available for the Alpha Admin. It lets you approve users and set global system announcements.";
+            if (query.includes('profile') || query.includes('password') || query.includes('pin')) return "You can change your PIN, password, or username securely by clicking the user icon at the top right of the navigation bar to open your Profile Settings.";
+            if (query.includes('setting') || query.includes('theme') || query.includes('dark mode') || query.includes('notification')) return "You can adjust Theme, Notifications, AI behaviors, Auto Logout, and more inside the Settings tab located on the sidebar.";
+            if (query.includes('hello') || query.includes('hi')) return "Hello! I am the RHSU System AI. I am here to politely assist you with navigating and managing the Memo Control panel. What do you need help with?";
+            return "I am a polite system assistant. I can guide you on creating memos, updating activities, settings, or managing your profile. Could you please provide more details about your inquiry?";
+        }
 
         function toggleAuthViews(viewId) {
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('registerPage').classList.add('hidden');
             document.getElementById('appLayout').classList.add('hidden');
+            document.getElementById('mainTopBar').classList.add('hidden');
             document.getElementById(viewId).classList.remove('hidden');
         }
 
@@ -735,16 +1094,39 @@
             input.value = ""; 
         }
 
+        function populateProfileData() {
+            const currentUser = localStorage.getItem('loggedInUser') || 'Unknown';
+            document.getElementById('profUsername').innerText = currentUser;
+            document.getElementById('profAccType').innerText = (currentUser === ALPHA_ADMIN_NAME) ? "System Admin" : "Standard User";
+            
+            let userMemos = 0;
+            let lastAct = "Not Available";
+            if (allMemos && allMemos.length > 0) {
+                const userMemosArr = allMemos.filter(m => m[3] === currentUser);
+                userMemos = userMemosArr.length;
+                if(userMemos > 0) lastAct = userMemosArr[0][0]; // Assuming reversed array, index 0 is newest
+            }
+            document.getElementById('profTotalMemos').innerText = userMemos;
+            document.getElementById('profLastActivity').innerText = lastAct;
+
+            let actCount = 0;
+            if (typeof allActivities !== 'undefined' && allActivities.length > 0) {
+                actCount = allActivities.length;
+            }
+            document.getElementById('profTotalActivities').innerText = actCount;
+        }
+
         function switchTab(tabName) {
             document.getElementById('tabHome').classList.add('hidden'); 
             document.getElementById('tabActivities').classList.add('hidden');
             document.getElementById('tabProfile').classList.add('hidden');
             document.getElementById('tabAdminMgmt').classList.add('hidden');
+            document.getElementById('tabSettings').classList.add('hidden');
             
             document.getElementById('btnHome').classList.remove('active'); 
             document.getElementById('btnActivities').classList.remove('active');
-            document.getElementById('btnProfile').classList.remove('active');
-            document.getElementById('btnAdminMgmt').classList.remove('active');
+            if(document.getElementById('btnSettings')) document.getElementById('btnSettings').classList.remove('active');
+            if(document.getElementById('btnAdminMgmt')) document.getElementById('btnAdminMgmt').classList.remove('active');
 
             if (tabName === 'home') { 
                 document.getElementById('tabHome').classList.remove('hidden'); 
@@ -758,9 +1140,13 @@
             }
             else if (tabName === 'profile') { 
                 document.getElementById('tabProfile').classList.remove('hidden'); 
-                document.getElementById('btnProfile').classList.add('active'); 
                 document.getElementById('newCredential').value = ""; 
                 document.getElementById('newUsernameInput').value = "";
+                populateProfileData();
+            }
+            else if (tabName === 'settings') {
+                document.getElementById('tabSettings').classList.remove('hidden');
+                document.getElementById('btnSettings').classList.add('active');
             }
             else if (tabName === 'adminMgmt') {
                 if (sessionAdminPass === "") { 
@@ -772,8 +1158,9 @@
                     showAdminMgmtTab(); 
                 }
             }
-            // Auto close mobile nav on selection
-            if (window.innerWidth <= 992) toggleNav();
+            if (window.innerWidth <= 992) {
+                document.getElementById('navSidebar').classList.remove('open');
+            }
         }
 
         function showAdminMgmtTab() {
@@ -792,36 +1179,28 @@
                     document.getElementById('systemAnnouncementModal').classList.remove('hidden');
                     sessionStorage.setItem('systemAnnouncementSeen', 'true');
                 }
-            } catch(e) { console.error("Error fetching announcement"); }
+            } catch(e) {}
         }
 
-        function closeAnnouncementModal() {
-            document.getElementById('systemAnnouncementModal').classList.add('hidden');
-        }
+        function closeAnnouncementModal() { document.getElementById('systemAnnouncementModal').classList.add('hidden'); }
 
         async function saveAdminAnnouncement() {
             const msg = document.getElementById('adminAnnouncementText').value.trim();
             if (!msg) return customAlert("Announcement message cannot be empty.", "Error");
             try {
-                await fetch(API_URL, { 
-                    method: 'POST', mode: 'no-cors', 
-                    body: JSON.stringify({ action: 'save_announcement', message: msg, password: sessionAdminPass }) 
-                });
-                customAlert("System announcement successfully updated!", "Success");
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_announcement', message: msg, password: sessionAdminPass }) });
+                customAlert("System announcement updated!", "Success");
                 logActivity("updated the global system announcement.");
             } catch (err) {}
         }
 
         function deleteAdminAnnouncement() {
-            customConfirm("Are you sure you want to remove the global system announcement?", async (confirmed) => {
+            customConfirm("Remove global system announcement?", async (confirmed) => {
                 if(!confirmed) return;
                 try {
-                    await fetch(API_URL, { 
-                        method: 'POST', mode: 'no-cors', 
-                        body: JSON.stringify({ action: 'delete_announcement', password: sessionAdminPass }) 
-                    });
+                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_announcement', password: sessionAdminPass }) });
                     document.getElementById('adminAnnouncementText').value = "";
-                    customAlert("System announcement has been removed.", "Success");
+                    customAlert("Announcement removed.", "Success");
                     logActivity("removed the global system announcement.");
                 } catch (err) {}
             });
@@ -834,7 +1213,17 @@
                 document.getElementById('loginPage').classList.add('hidden');
                 document.getElementById('registerPage').classList.add('hidden');
                 document.getElementById('appLayout').classList.remove('hidden');
+                document.getElementById('mainTopBar').classList.remove('hidden');
                 document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
+                
+                loadSettings();
+                
+                if (userSettings.autoOpenChatbot && userSettings.showChatbot) {
+                    document.getElementById('chatbot-window').classList.remove('hidden');
+                } else {
+                    document.getElementById('chatbot-window').classList.add('hidden');
+                }
+
                 switchTab('home'); 
                 fetchActivityLogs(); 
                 fetchSystemAnnouncement(); 
@@ -871,449 +1260,223 @@
             const cred = document.getElementById('regCredential').value.trim();
 
             if(!rank || !firstName || !lastName || !email || !username || cred.length < 4) {
-                return customAlert("Please complete all required fields and ensure credential is at least 4 characters.", "Registration Form");
+                return customAlert("Please complete all required fields.", "Registration");
             }
             const payload = { action: 'register', rank, firstName, middleName, lastName, qlf, email, username, pin: cred };
             try {
                 const res = await fetch(`${API_URL}?action=register&` + new URLSearchParams(payload));
                 const data = await res.json();
                 if (data.success) {
-                    customAlert("Account created! It is currently pending approval by the Alpha Admin.", "Registration Success");
-                    localStorage.setItem('newAccountRequest', JSON.stringify({ user: username, time: Date.now() }));
+                    customAlert("Account created! Pending approval by Admin.", "Success");
                     toggleAuthViews('loginPage');
                 } else { customAlert(data.error, "Error"); }
             } catch(e) { customAlert("Network Error", "Error"); }
         }
 
-        function logoutUser() {
-            logActivity("logged out of the system.");
+        function attemptLogout() {
+            if (userSettings.confirmLogout) {
+                customConfirm("Are you sure you want to log out of the system?", (confirmed) => {
+                    if (confirmed) logoutUser(false);
+                });
+            } else {
+                logoutUser(false);
+            }
+        }
+
+        function logoutUser(force = false) {
+            if (!force) logActivity("logged out of the system.");
             localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); sessionAdminPass = ""; pendingAdminAction = null; sessionStorage.removeItem('systemAnnouncementSeen');
+            if (activityRefreshTimer) clearInterval(activityRefreshTimer);
+            if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
             checkAuth();
         }
 
         async function updateProfile() {
             const newCred = document.getElementById('newCredential').value.trim();
             const newUsername = document.getElementById('newUsernameInput').value.trim();
-            if(!newCred && !newUsername) return customAlert("Please enter a new username or credential to save.", "Error");
-            
-            const currentUsername = localStorage.getItem('loggedInUser'); 
-            const currentCred = localStorage.getItem('loggedCred'); 
+            if(!newCred && !newUsername) return customAlert("Enter new username or credential.", "Error");
             
             try {
                 await fetch(API_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify({ 
-                        action: 'update_profile', 
-                        currentUsername: currentUsername, 
-                        currentCredential: currentCred, 
-                        newUsername: newUsername,
-                        newCredential: newCred 
-                    }) 
+                    method: 'POST', mode: 'no-cors', 
+                    body: JSON.stringify({ action: 'update_profile', currentUsername: localStorage.getItem('loggedInUser'), currentCredential: localStorage.getItem('loggedCred'), newUsername: newUsername, newCredential: newCred }) 
                 });
-                
                 if (newCred) localStorage.setItem('loggedCred', newCred); 
                 if (newUsername) localStorage.setItem('loggedInUser', newUsername);
-                
                 customAlert("Profile updated successfully!", "Success"); 
-                document.getElementById('newCredential').value = ""; 
-                document.getElementById('newUsernameInput').value = "";
+                document.getElementById('newCredential').value = ""; document.getElementById('newUsernameInput').value = "";
                 document.getElementById('welcomeMsg').innerText = `Welcome, ${localStorage.getItem('loggedInUser')}`;
-                
+                populateProfileData();
                 logActivity("updated their profile information.");
             } catch (err) { }
         }
 
-        function openMemoModalUser() { 
-            document.getElementById('memoSubmissionModal').classList.remove('hidden'); 
-            const submitBtn = document.getElementById('memoSubmitBtn');
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Submit Data";
-        }
+        function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); document.getElementById('memoSubmitBtn').disabled = false; document.getElementById('memoSubmitBtn').innerText = "Submit Data"; }
         function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
         function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
 
-        // --- NEW ACTIVITIES FUNCTIONS ---
         function addActivityDate() {
             const dateVal = document.getElementById('actDateInput').value;
             if (!dateVal) return;
-            
-            // Format input "YYYY-MM-DD" to "MMMM d, YYYY"
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             const formatted = new Date(dateVal + 'T00:00:00').toLocaleDateString('en-US', options);
-            
-            if (!selectedActivityDates.includes(formatted)) {
-                selectedActivityDates.push(formatted);
-                renderActivityDates();
-            }
+            if (!selectedActivityDates.includes(formatted)) { selectedActivityDates.push(formatted); renderActivityDates(); }
             document.getElementById('actDateInput').value = '';
         }
 
         function renderActivityDates() {
             const container = document.getElementById('actDateList');
             container.innerHTML = selectedActivityDates.map((d, index) => 
-                `<span style="background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 4px; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-                    ${d} <span style="color: #fca5a5; cursor: pointer; font-weight: bold; font-size: 16px; line-height: 1;" onclick="removeActivityDate(${index})" title="Remove Date">×</span>
+                `<span style="background: rgba(0,0,0,0.05); padding: 5px 10px; border-radius: 4px; font-size: 13px; display: flex; align-items: center; gap: 8px;">
+                    ${d} <span style="color: var(--danger); cursor: pointer; font-weight: bold; font-size: 16px; line-height: 1;" onclick="removeActivityDate(${index})">×</span>
                 </span>`
             ).join('');
         }
 
-        function removeActivityDate(index) {
-            selectedActivityDates.splice(index, 1);
-            renderActivityDates();
-        }
-
-        function openActivityModal() {
-            document.getElementById('activitySubmissionModal').classList.remove('hidden');
-            selectedActivityDates = [];
-            renderActivityDates();
-            document.getElementById('activityForm').reset();
-            const submitBtn = document.getElementById('activitySubmitBtn');
-            submitBtn.disabled = false;
-            submitBtn.innerText = "Submit Activity";
-        }
-
-        function closeActivityModal() {
-            document.getElementById('activitySubmissionModal').classList.add('hidden');
-        }
+        function removeActivityDate(index) { selectedActivityDates.splice(index, 1); renderActivityDates(); }
+        function openActivityModal() { document.getElementById('activitySubmissionModal').classList.remove('hidden'); selectedActivityDates = []; renderActivityDates(); document.getElementById('activityForm').reset(); document.getElementById('activitySubmitBtn').disabled = false; document.getElementById('activitySubmitBtn').innerText = "Submit Activity"; }
+        function closeActivityModal() { document.getElementById('activitySubmissionModal').classList.add('hidden'); }
 
         document.getElementById('activityForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (selectedActivityDates.length === 0) return customAlert("Please add at least one date.", "Error");
-            
-            const btn = document.getElementById('activitySubmitBtn');
-            btn.disabled = true;
-            btn.innerText = "Submitting...";
+            const btn = document.getElementById('activitySubmitBtn'); btn.disabled = true; btn.innerText = "Submitting...";
 
-            const payload = {
-                action: 'create_activity',
-                name: document.getElementById('actName').value.trim(),
-                dates: selectedActivityDates.join(', '),
-                venue: document.getElementById('actVenue').value.trim(),
-                reqOffice: document.getElementById('actReqOffice').value.trim(),
-                inCharge: document.getElementById('actInCharge').value.trim(),
-                remarks: document.getElementById('actRemarks').value
-            };
-
+            const payload = { action: 'create_activity', name: document.getElementById('actName').value.trim(), dates: selectedActivityDates.join(', '), venue: document.getElementById('actVenue').value.trim(), reqOffice: document.getElementById('actReqOffice').value.trim(), inCharge: document.getElementById('actInCharge').value.trim(), remarks: document.getElementById('actRemarks').value };
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                logActivity(`scheduled a new activity: "${payload.name}"`);
-                closeActivityModal();
-                loadActivities();
-                customAlert("Activity successfully scheduled!", "Success");
-            } catch (err) {
-                customAlert("Submission failed due to network error.", "Error");
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "Submit Activity";
-            }
+                logActivity(`scheduled a new activity: "${payload.name}"`); closeActivityModal(); loadActivities(); customAlert("Activity successfully scheduled!", "Success");
+            } catch (err) { btn.disabled = false; btn.innerText = "Submit Activity"; }
         });
 
-        // --- UPDATE STATUS LOGIC ---
-        function openUpdateActivityModal(name, dates, currentStatus) {
-            document.getElementById('updateActName').value = name;
-            document.getElementById('updateActDates').value = dates;
-            document.getElementById('updateActNameDisplay').innerText = `Updating: ${name}`;
-            document.getElementById('newActStatus').value = currentStatus || "Pending";
-            document.getElementById('updateActivityModal').classList.remove('hidden');
-        }
-
-        function closeUpdateActivityModal() {
-            document.getElementById('updateActivityModal').classList.add('hidden');
-        }
+        function openUpdateActivityModal(name, dates, currentStatus) { document.getElementById('updateActName').value = name; document.getElementById('updateActDates').value = dates; document.getElementById('updateActNameDisplay').innerText = `Updating: ${name}`; document.getElementById('newActStatus').value = currentStatus || "Pending"; document.getElementById('updateActivityModal').classList.remove('hidden'); }
+        function closeUpdateActivityModal() { document.getElementById('updateActivityModal').classList.add('hidden'); }
 
         async function submitActivityUpdate() {
-            const name = document.getElementById('updateActName').value;
-            const dates = document.getElementById('updateActDates').value;
-            const newStatus = document.getElementById('newActStatus').value;
-            
+            const name = document.getElementById('updateActName').value; const dates = document.getElementById('updateActDates').value; const newStatus = document.getElementById('newActStatus').value;
             try {
-                await fetch(API_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify({ 
-                        action: 'update_activity_status', 
-                        name: name, 
-                        dates: dates, 
-                        newStatus: newStatus 
-                    }) 
-                });
-                logActivity(`updated status of activity "${name}" to ${newStatus}.`);
-                closeUpdateActivityModal();
-                setTimeout(loadActivities, 1000);
-                customAlert("Activity status updated!", "Success");
-            } catch (err) {
-                customAlert("Failed to update status.", "Error");
-            }
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_activity_status', name: name, dates: dates, newStatus: newStatus }) });
+                logActivity(`updated status of activity "${name}" to ${newStatus}.`); closeUpdateActivityModal(); setTimeout(loadActivities, 1000); customAlert("Status updated!", "Success");
+            } catch (err) { }
         }
         
         async function loadActivities() {
             try {
-                const response = await fetch(API_URL + "?action=get_activities");
-                const data = await response.json();
-                const tbody = document.getElementById('activitiesTableBody');
-                tbody.innerHTML = "";
-                
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No scheduled activities found.</td></tr>";
-                    return;
-                }
+                const response = await fetch(API_URL + "?action=get_activities"); const data = await response.json(); 
+                allActivities = data || [];
+                const tbody = document.getElementById('activitiesTableBody'); tbody.innerHTML = "";
+                if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No scheduled activities.</td></tr>"; return; }
                 
                 data.forEach(row => {
-                    let badgeColor = "var(--text-muted)";
-                    let rem = String(row[5] || '');
-                    
-                    if (rem === 'Approved') badgeColor = "var(--success)";
-                    else if (rem === 'Disapproved' || rem === 'Disregard') badgeColor = "var(--danger)";
-                    else if (rem === 'Pending' || rem === 'For Signature') badgeColor = "#f59e0b";
-
-                    // Safely encode for modal interaction
-                    const safeName = String(row[0]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    const safeDates = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-
-                    tbody.innerHTML += `<tr>
-                        <td style="font-weight: 500;">${row[0]}</td>
-                        <td>${row[1]}</td>
-                        <td>${row[2]}</td>
-                        <td>${row[3]}</td>
-                        <td>${row[4]}</td>
-                        <td style="color: ${badgeColor}; font-weight: bold;">${rem}</td>
-                        <td>
-                            <button class="action-btn" title="Update Status" onclick="openUpdateActivityModal('${safeName}', '${safeDates}', '${rem}')">
-                                <img src="images/Edit.png" alt="Update Status" class="icon-white" style="width: 16px; height: 16px;"> Update
-                            </button>
-                        </td>
-                    </tr>`;
+                    let badgeColor = "var(--text-muted)"; let rem = String(row[5] || '');
+                    if (rem === 'Approved') badgeColor = "var(--success)"; else if (rem === 'Disapproved' || rem === 'Disregard') badgeColor = "var(--danger)"; else if (rem === 'Pending' || rem === 'For Signature') badgeColor = "#f59e0b";
+                    const safeName = String(row[0]).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const safeDates = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    tbody.innerHTML += `<tr><td style="font-weight: 500;">${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td><td style="color: ${badgeColor}; font-weight: bold;">${rem}</td><td><button class="action-btn" onclick="openUpdateActivityModal('${safeName}', '${safeDates}', '${rem}')">Update</button></td></tr>`;
                 });
-            } catch (e) {
-                console.error("Failed to fetch activities: ", e);
-            }
+            } catch (e) { }
         }
-        // --- END NEW ACTIVITIES FUNCTIONS ---
 
         async function verifyAdmin() {
-            const pass = document.getElementById('adminPassInput').value; if (!pass) return;
-            document.getElementById('adminPassInput').value = "Verifying..."; 
-            
-            const res = await fetch(`${API_URL}?action=verify_admin&password=${encodeURIComponent(pass)}`);
-            const data = await res.json();
-            if (data.success) {
-                sessionAdminPass = pass; document.getElementById('adminModal').classList.add('hidden'); 
-                if (pendingAdminAction === 'open_mgmt') {
-                    showAdminMgmtTab();
-                    pendingAdminAction = null;
-                }
-            } else { customAlert("Incorrect Admin Password.", "Error"); document.getElementById('adminPassInput').value = ""; }
+            const pass = document.getElementById('adminPassInput').value; if (!pass) return; document.getElementById('adminPassInput').value = "Verifying..."; 
+            const res = await fetch(`${API_URL}?action=verify_admin&password=${encodeURIComponent(pass)}`); const data = await res.json();
+            if (data.success) { sessionAdminPass = pass; document.getElementById('adminModal').classList.add('hidden'); if (pendingAdminAction === 'open_mgmt') { showAdminMgmtTab(); pendingAdminAction = null; } } else { customAlert("Incorrect Admin Password.", "Error"); document.getElementById('adminPassInput').value = ""; }
         }
 
         async function loadAdminUsers() {
-            const res = await fetch(`${API_URL}?action=get_all_users&password=${encodeURIComponent(sessionAdminPass)}`);
-            const data = await res.json();
-            
-            const resAnnounce = await fetch(API_URL + "?action=get_announcement");
-            const dataAnnounce = await resAnnounce.json();
-            if (dataAnnounce.success && dataAnnounce.message) {
-                document.getElementById('adminAnnouncementText').value = dataAnnounce.message;
-            } else {
-                document.getElementById('adminAnnouncementText').value = "";
-            }
+            const res = await fetch(`${API_URL}?action=get_all_users&password=${encodeURIComponent(sessionAdminPass)}`); const data = await res.json();
+            const resAnnounce = await fetch(API_URL + "?action=get_announcement"); const dataAnnounce = await resAnnounce.json();
+            document.getElementById('adminAnnouncementText').value = (dataAnnounce.success && dataAnnounce.message) ? dataAnnounce.message : "";
 
             const tbody = document.getElementById('adminUsersTableBody'); tbody.innerHTML = "";
             if (data.success) {
-                if(data.users.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No accounts found.</td></tr>"; return; }
+                if(data.users.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No accounts.</td></tr>"; return; }
                 data.users.forEach(u => {
-                    const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    const safeUser = String(u.username).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    const isPending = u.status === 'Pending';
-                    const actionHtml = isPending ?
-                        `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button>
-                         <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` :
-                        `<button class="action-btn delete-btn" title="Delete User" onclick="adminDeleteUser('${safeUser}')">
-                            <img src="images/Trash.png" alt="Delete" class="icon-white" style="width: 16px; height: 16px;">
-                        </button>`;
-
+                    const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const safeUser = String(u.username).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const isPending = u.status === 'Pending';
+                    const actionHtml = isPending ? `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button> <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` : `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete</button>`;
                     tbody.innerHTML += `<tr><td>${u.rank} ${u.name}</td><td>${u.username}</td><td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td><td>${actionHtml}</td></tr>`;
                 });
-            } else {
-                customAlert(data.error || "Failed to load users.", "Error");
             }
         }
 
         function adminDeleteUser(username) {
-            customConfirm(`Are you sure you want to delete user: ${username}?`, async (confirmed) => {
+            customConfirm(`Delete user: ${username}?`, async (confirmed) => {
                 if (!confirmed) return;
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) });
-                logActivity(`deleted user account: ${username}`);
-                setTimeout(loadAdminUsers, 1500);
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) }); logActivity(`deleted user account: ${username}`); setTimeout(loadAdminUsers, 1500);
             });
         }
-
         function processApproval(pin, actionType) {
             customConfirm(`Confirm Action?`, async (confirmed) => {
                 if (!confirmed) return;
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) });
-                logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request.");
-                setTimeout(loadAdminUsers, 1500);
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) }); logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request."); setTimeout(loadAdminUsers, 1500);
             });
         }
 
         async function loadData() {
             try {
-                const response = await fetch(API_URL + "?action=get_memos"); 
-                let data = await response.json();
+                const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
+                const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
+                if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
+                allMemos = data.reverse(); 
                 
-                const tableBody = document.getElementById('dataTable'); 
-                tableBody.innerHTML = "";
-                
-                if(data.length === 0) { 
-                    tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; 
-                    document.getElementById('memoPagination').classList.add('hidden');
-                    return; 
+                if (userSettings.rememberSearch) {
+                    const savedSearch = localStorage.getItem('rhsuSearch_' + localStorage.getItem('loggedInUser'));
+                    if (savedSearch) {
+                        document.getElementById('searchInput').value = savedSearch;
+                        searchTable();
+                        return; 
+                    }
                 }
-                
-                allMemos = data.reverse();
-                filteredMemos = [...allMemos];
-                currentMemoPage = 1;
-                renderMemoTable();
+
+                filteredMemos = [...allMemos]; currentMemoPage = 1; renderMemoTable();
             } catch (err) { }
         }
 
         function renderMemoTable() {
-            const tableBody = document.getElementById('dataTable'); 
-            tableBody.innerHTML = "";
+            const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
             const totalPages = Math.ceil(filteredMemos.length / MEMOS_PER_PAGE) || 1;
+            if (currentMemoPage > totalPages) currentMemoPage = totalPages; if (currentMemoPage < 1) currentMemoPage = 1;
+            const currentMemos = filteredMemos.slice((currentMemoPage - 1) * MEMOS_PER_PAGE, ((currentMemoPage - 1) * MEMOS_PER_PAGE) + MEMOS_PER_PAGE);
             
-            if (currentMemoPage > totalPages) currentMemoPage = totalPages;
-            if (currentMemoPage < 1) currentMemoPage = 1;
-            
-            const startIndex = (currentMemoPage - 1) * MEMOS_PER_PAGE;
-            const currentMemos = filteredMemos.slice(startIndex, startIndex + MEMOS_PER_PAGE);
-            
-            if (currentMemos.length === 0) {
-                tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos match your search.</td></tr>";
-                document.getElementById('memoPagination').classList.add('hidden');
-                return;
-            }
-
+            if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
             currentMemos.forEach(row => {
                 const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                tableBody.innerHTML += `<tr>
-                    <td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td>
-                    <td>${row[0]}</td>
-                    <td>${row[1]}</td>
-                    <td>${row[2]}</td>
-                    <td>${row[3] || "N/A"}</td>
-                    <td>
-                        <button class="action-btn" title="Edit" onclick="initiateEdit('${row[2]}', '${safeSubject}')">
-                            <img src="images/Edit.png" alt="Edit" class="icon-white" style="width: 16px; height: 16px;">
-                        </button>
-                        <button class="action-btn delete-btn" title="Delete" onclick="triggerActionModal('delete', '${row[2]}')">
-                            <img src="images/Trash.png" alt="Delete" class="icon-white" style="width: 16px; height: 16px;">
-                        </button>
-                    </td>
-                </tr>`;
+                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
             });
-            
             const pagination = document.getElementById('memoPagination');
-            if (filteredMemos.length > MEMOS_PER_PAGE) {
-                pagination.classList.remove('hidden');
-                document.getElementById('memoPageInfo').innerText = `Page ${currentMemoPage} of ${totalPages}`;
-                document.getElementById('prevMemoBtn').disabled = (currentMemoPage === 1); 
-                document.getElementById('nextMemoBtn').disabled = (currentMemoPage === totalPages);
-            } else {
-                pagination.classList.add('hidden');
-            }
+            if (filteredMemos.length > MEMOS_PER_PAGE) { pagination.classList.remove('hidden'); document.getElementById('memoPageInfo').innerText = `Page ${currentMemoPage} of ${totalPages}`; document.getElementById('prevMemoBtn').disabled = (currentMemoPage === 1); document.getElementById('nextMemoBtn').disabled = (currentMemoPage === totalPages); } else { pagination.classList.add('hidden'); }
         }
 
-        function changeMemoPage(direction) {
-            currentMemoPage += direction;
-            renderMemoTable();
-        }
+        function changeMemoPage(direction) { currentMemoPage += direction; renderMemoTable(); }
 
         document.getElementById('memoForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const submitBtn = document.getElementById('memoSubmitBtn');
-            const subject = document.getElementById('memoSubject').value.trim(); 
-            const classification = document.getElementById('memoClassification').value; 
-            
-            if (!subject) return customAlert("Please enter a Memo Subject.", "Error");
-            
-            submitBtn.disabled = true;
-            submitBtn.innerText = "Submitting...";
-
+            e.preventDefault(); const submitBtn = document.getElementById('memoSubmitBtn'); const subject = document.getElementById('memoSubject').value.trim(); const classification = document.getElementById('memoClassification').value; 
+            if (!subject) return customAlert("Please enter a Memo Subject.", "Error"); submitBtn.disabled = true; submitBtn.innerText = "Submitting...";
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
-                logActivity(`encoded a new memo: "${subject}"`); 
-                document.getElementById('memoSubject').value = ""; 
-                closeMemoModal(); 
-                setTimeout(loadData, 1500); 
-                customAlert("Memo successfully created!", "Success");
-            } catch (err) {
-                customAlert("Submission failed due to network error.", "Error");
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Submit Data";
-            }
+                logActivity(`encoded a new memo: "${subject}"`); document.getElementById('memoSubject').value = ""; closeMemoModal(); setTimeout(loadData, 1500); customAlert("Memo created!", "Success");
+            } catch (err) { submitBtn.disabled = false; submitBtn.innerText = "Submit Data"; }
         });
 
-        function initiateEdit(controlNum, currentSubject) {
-            if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) { requestRealTimeApproval(controlNum, currentSubject); } 
-            else { triggerActionModal('edit', controlNum, currentSubject); }
-        }
-
-        function requestRealTimeApproval(controlNum, currentSubject) {
-            customAlert("Edit request sent to Alpha-Admin. Waiting for real-time approval...", "Pending Auth"); 
-            const reqId = Date.now().toString();
-            localStorage.setItem('rtEditRequest', JSON.stringify({ id: reqId, user: localStorage.getItem('loggedInUser'), controlNum: controlNum, subject: currentSubject }));
-            let attempts = 0;
-            const poller = setInterval(() => {
-                attempts++; const response = JSON.parse(localStorage.getItem('rtEditResponse_' + reqId) || "null");
-                if (response) { clearInterval(poller); localStorage.removeItem('rtEditResponse_' + reqId);
-                    if (response.approved) { customAlert("Alpha-Admin approved your request. You may now edit.", "Success"); sessionAdminPass = response.password; triggerActionModal('edit', controlNum, currentSubject); } 
-                    else { customAlert("Edit request was denied by Alpha-Admin.", "Error"); }
-                }
-                if (attempts > 90) { clearInterval(poller); customAlert("Edit request timed out. Admin may be unavailable.", "Error"); }
-            }, 1000);
-        }
-
-        function respondToEditRequest(isApproved) {
-            const reqId = document.getElementById('editRequestModal').dataset.reqId; const pass = document.getElementById('editRequestAdminPass').value;
-            if (isApproved && !pass) return customAlert("Alpha-Admin code is required to allow edits.", "Error");
-            localStorage.setItem('rtEditResponse_' + reqId, JSON.stringify({ approved: isApproved, password: pass }));
-            document.getElementById('editRequestModal').classList.add('hidden'); document.getElementById('editRequestAdminPass').value = "";
-        }
-
-        function triggerActionModal(action, controlNum, currentSubject = "") {
-            pendingAction = action; actionTargetControl = controlNum;
-            document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject;
-            if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit Memo: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); } 
-            else { document.getElementById('actionModalTitle').innerText = `Delete Memo: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); }
-        }
-
+        function initiateEdit(controlNum, currentSubject) { if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) { customAlert("Admin required.", "Error"); } else { triggerActionModal('edit', controlNum, currentSubject); } }
+        function triggerActionModal(action, controlNum, currentSubject = "") { pendingAction = action; actionTargetControl = controlNum; document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject; if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); } else { document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); } }
         function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; }
-
+        
         async function executeAction() {
-            const pass = document.getElementById('actionAdminPass').value; if (!pass) return customAlert("Admin password required.", "Error");
-            if (pendingAction === 'edit') { const newSubject = document.getElementById('actionNewSubject').value.trim(); await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, password: pass }) }); logActivity(`edited memo: ${actionTargetControl}`); } 
-            else if (pendingAction === 'delete') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) }); logActivity(`deleted memo: ${actionTargetControl}`); } 
-            else if (pendingAction === 'batch_delete') { for (const controlNum of actionTargetControl) { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: controlNum, password: pass }) }); } logActivity(`deleted multiple memos in a batch.`); }
+            const pass = document.getElementById('actionAdminPass').value; if (!pass) return;
+            if (pendingAction === 'edit') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: document.getElementById('actionNewSubject').value.trim(), password: pass }) }); } 
+            else if (pendingAction === 'delete') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) }); } 
+            else if (pendingAction === 'batch_delete') { for (const c of actionTargetControl) { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: c, password: pass }) }); } }
             closeActionModal(); setTimeout(loadData, 1500);
         }
 
-        function batchDelete() {
-            const checkedBoxes = document.querySelectorAll('.row-checkbox:checked'); if (checkedBoxes.length === 0) return customAlert("Select at least one memo to delete.", "Error");
-            const controlNumbers = Array.from(checkedBoxes).map(cb => cb.value); pendingAction = 'batch_delete'; actionTargetControl = controlNumbers;
-            document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checkedBoxes.length} Selected Memos`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden');
-        }
-
+        function batchDelete() { const checked = document.querySelectorAll('.row-checkbox:checked'); if (checked.length === 0) return; pendingAction = 'batch_delete'; actionTargetControl = Array.from(checked).map(cb => cb.value); document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden'); }
+        
         function searchTable() { 
             const input = document.getElementById("searchInput").value.toUpperCase(); 
-            if(input === "") { 
-                filteredMemos = [...allMemos];
-            } else {
-                filteredMemos = allMemos.filter(row => row.join(" ").toUpperCase().includes(input));
+            if (userSettings.rememberSearch) {
+                localStorage.setItem('rhsuSearch_' + localStorage.getItem('loggedInUser'), input);
             }
-            currentMemoPage = 1;
-            renderMemoTable();
+            filteredMemos = input === "" ? [...allMemos] : allMemos.filter(row => row.join(" ").toUpperCase().includes(input)); currentMemoPage = 1; renderMemoTable(); 
         }
         
         function toggleSelectAll() { const isChecked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked); }
