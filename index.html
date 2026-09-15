@@ -50,7 +50,7 @@
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
             background-color: rgba(255,255,255,0.05) !important; color: var(--text-main) !important; border-color: var(--border-color);
         }
-        body.dark-mode th { background-color: rgba(255,255,255,0.05); }
+        body.dark-mode th { background-color: #1e293b; border-bottom-color: rgba(255,255,255,0.1); }
         body.dark-mode tbody tr:hover { background-color: rgba(255,255,255,0.05); }
         body.dark-mode .modal-content, body.dark-mode #chatbot-window, body.dark-mode .notification-toast, body.dark-mode .chat-messages {
             background-color: #1e293b !important;
@@ -192,10 +192,23 @@
         .approve-btn { background-color: var(--success); color: white; border: none; }
         .approve-btn:hover { background-color: var(--success-hover); }
         
-        .table-wrapper { overflow-x: auto; border-radius: var(--radius-md); background: white; border: 1px solid var(--border-color); margin-top: 12px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 600px; border-radius: var(--radius-md); background: white; border: 1px solid var(--border-color); margin-top: 12px; width: 100%; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
         body.dark-mode .table-wrapper { background: #1e293b; }
         table { width: 100%; border-collapse: collapse; }
-        th { background-color: rgba(0,0,0,0.02); color: var(--text-muted); font-weight: 600; font-size: 13px; text-transform: uppercase; padding: 14px; border-bottom: 1px solid var(--border-color); text-align: left; white-space: nowrap;}
+        th { 
+            position: sticky; 
+            top: 0; 
+            z-index: 10; 
+            background-color: #f8fafc; 
+            color: var(--text-muted); 
+            font-weight: 600; 
+            font-size: 13px; 
+            text-transform: uppercase; 
+            padding: 14px; 
+            border-bottom: 1px solid var(--border-color); 
+            text-align: left; 
+            white-space: nowrap;
+        }
         td { padding: 14px; border-bottom: 1px solid var(--border-color); font-size: 14px; }
         tbody tr:hover { background-color: rgba(0,0,0,0.02); }
         input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
@@ -317,11 +330,6 @@
                 <span class="nav-text">Home Page</span>
             </button>
             
-            <button class="sidebar-btn" id="btnActivities" onclick="switchTab('activities');">
-                <img src="images/Activity.png" alt="Activities" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><rect x=\'3\' y=\'4\' width=\'18\' height=\'18\' rx=\'2\' ry=\'2\'></rect><line x1=\'16\' y1=\'2\' x2=\'16\' y2=\'6\'></line><line x1=\'8\' y1=\'2\' x2=\'8\' y2=\'6\'></line><line x1=\'3\' y1=\'10\' x2=\'21\' y2=\'10\'></line></svg>'">
-                <span class="nav-text">Activities</span>
-            </button>
-            
             <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt');">
                 <img src="images/Users.png" alt="Admin" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\'></path><circle cx=\'9\' cy=\'7\' r=\'4\'></circle><path d=\'M23 21v-2a4 4 0 0 0-3-3.87\'></path><path d=\'M16 3.13a4 4 0 0 1 0 7.75\'></path></svg>'">
                 <span class="nav-text">User Management</span>
@@ -348,6 +356,23 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- DYNAMIC DASHBOARD -->
+                <div class="settings-grid" style="margin-top: 15px; margin-bottom: 25px;">
+                    <div class="settings-section glass-panel" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                        <h3 style="margin-bottom: 5px; border-bottom: none; padding-bottom: 0;">Total Memos Created</h3>
+                        <div id="dashTotalMemos" style="font-size: 38px; font-weight: bold; color: var(--primary);">0</div>
+                    </div>
+                    <div class="settings-section glass-panel">
+                        <h3 style="margin-bottom: 10px;">Total Memos by Categories</h3>
+                        <div id="dashCategories" style="max-height: 120px; overflow-y: auto; padding-right: 5px;"></div>
+                    </div>
+                    <div class="settings-section glass-panel">
+                        <h3 style="margin-bottom: 10px;">Total Memos by Users</h3>
+                        <div id="dashUsers" style="max-height: 120px; overflow-y: auto; padding-right: 5px;"></div>
+                    </div>
+                </div>
+
                 <div class="controls" style="margin-top: 20px;">
                     <div>
                         <input type="text" id="searchInput" placeholder="Search memos..." onkeyup="searchTable()" style="margin:0; width: 250px; background: white;">
@@ -382,34 +407,6 @@
                 </div>
             </div>
 
-            <!-- ACTIVITIES TAB -->
-            <div id="tabActivities" class="hidden">
-                <div class="controls">
-                    <h2 style="margin:0; color: var(--primary);">Scheduled Activities</h2>
-                    <div>
-                        <button class="action-btn approve-btn" onclick="openActivityModal()" style="padding: 10px 18px; font-weight: bold; color:white;">
-                            <img src="images/Add.png" alt="Add" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Add Activity
-                        </button>
-                    </div>
-                </div>
-                <div class="table-wrapper">
-                    <table id="activitiesTable">
-                        <thead>
-                            <tr>
-                                <th>Name of Activity</th>
-                                <th>Date</th>
-                                <th>Venue</th>
-                                <th>Requesting Office</th>
-                                <th>Office In-Charge</th>
-                                <th>Remarks</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="activitiesTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
             <!-- PROFILE TAB -->
             <div id="tabProfile" class="hidden">
                 <div class="controls">
@@ -441,7 +438,6 @@
                     <div class="settings-section glass-panel">
                         <h3>Activity Summary</h3>
                         <div class="setting-row"><span>Total Memos Created</span> <span id="profTotalMemos" style="font-weight:bold; color:var(--primary);">0</span></div>
-                        <div class="setting-row"><span>Total Activities Created</span> <span id="profTotalActivities" style="font-weight:bold; color:var(--primary);">0</span></div>
                         <div class="setting-row"><span>Last Activity</span> <span id="profLastActivity" style="color:var(--text-muted)">Not Available</span></div>
                     </div>
 
@@ -526,8 +522,11 @@
                             </select>
                         </div>
                         <div class="setting-row">
-                            <span>Compact Mode</span>
-                            <label class="switch"><input type="checkbox" id="setCompact" onchange="saveSettings()"><span class="slider"></span></label>
+                            <span>Table Display</span>
+                            <select id="setTableDisplay" onchange="saveSettings()">
+                                <option value="Comfortable">Comfortable (Default)</option>
+                                <option value="Compact">Compact</option>
+                            </select>
                         </div>
                     </div>
 
@@ -559,21 +558,6 @@
                         <div class="setting-row">
                             <span>Remember Search/Filter</span>
                             <label class="switch"><input type="checkbox" id="setRemSearch" onchange="saveSettings()"><span class="slider"></span></label>
-                        </div>
-                    </div>
-
-                    <!-- Activities -->
-                    <div class="settings-section glass-panel">
-                        <h3>Activities</h3>
-                        <div class="setting-row">
-                            <span>Auto Refresh Interval</span>
-                            <select id="setAutoRef" onchange="saveSettings()">
-                                <option value="15">15 sec</option>
-                                <option value="30">30 sec</option>
-                                <option value="60">1 min</option>
-                                <option value="300">5 min</option>
-                                <option value="0">OFF</option>
-                            </select>
                         </div>
                     </div>
 
@@ -627,26 +611,6 @@
     </div>
 
     <!-- MODALS -->
-    <div id="updateActivityModal" class="modal-overlay hidden" style="z-index: 2000;">
-        <div class="modal-content glass-panel">
-            <h3 style="margin-top:0; color: var(--primary);">Update Activity Status</h3>
-            <p id="updateActNameDisplay" style="font-size: 14px; color: var(--text-main); margin-bottom: 10px;"></p>
-            <input type="hidden" id="updateActName">
-            <input type="hidden" id="updateActDates">
-            <select id="newActStatus" style="padding: 12px; border-radius: 6px; width: 100%; margin-bottom: 15px;">
-                <option value="Pending">Pending</option>
-                <option value="Approved">Approved</option>
-                <option value="Disapproved">Disapproved</option>
-                <option value="Disregard">Disregard</option>
-                <option value="For Signature">For Signature</option>
-            </select>
-            <div style="display: flex; gap: 10px;">
-                <button style="flex: 1;" onclick="submitActivityUpdate()">Save Status</button>
-                <button style="flex: 1; background: #e2e8f0; color: #475569;" onclick="closeUpdateActivityModal()">Cancel</button>
-            </div>
-        </div>
-    </div>
-
     <div id="systemAnnouncementModal" class="modal-overlay hidden" style="z-index: 1000;">
         <div class="modal-content glass-panel" style="max-width: 450px;">
             <h2 style="color: var(--primary); margin-top: 0;">System Announcement</h2>
@@ -682,45 +646,6 @@
                 <button type="submit" id="memoSubmitBtn" style="white-space: nowrap; width: auto; margin-top: 0;">Submit Data</button>
             </form>
             <button onclick="closeMemoModal()" style="margin-top: 25px; background: #e2e8f0; color: #475569; width: 100%;">Close Window</button>
-        </div>
-    </div>
-
-    <div id="activitySubmissionModal" class="modal-overlay hidden">
-        <div class="modal-content glass-panel modal-large">
-            <h2 style="margin-top: 0; color: var(--primary);">Add Scheduled Activity</h2>
-            <form id="activityForm" style="display: flex; flex-direction: column; gap: 10px; margin-top: 12px; margin-bottom: 20px; text-align: left;">
-                
-                <label style="font-size:13px; color:var(--text-muted);">Name of Activity</label>
-                <input type="text" id="actName" required placeholder="e.g. Weekly Coordination Meeting">
-
-                <label style="font-size:13px; color:var(--text-muted);">Select Dates</label>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="date" id="actDateInput" style="margin:0; flex-grow: 1; min-width: 150px; background: white;">
-                    <button type="button" onclick="addActivityDate()" style="width: auto; margin:0; padding: 12px 16px;">Add Date</button>
-                </div>
-                <div id="actDateList" style="display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;"></div>
-
-                <label style="font-size:13px; color:var(--text-muted); margin-top:10px;">Venue</label>
-                <input type="text" id="actVenue" required placeholder="e.g. Main Hall">
-
-                <label style="font-size:13px; color:var(--text-muted);">Requesting Office</label>
-                <input type="text" id="actReqOffice" required placeholder="e.g. RHSU Operations">
-
-                <label style="font-size:13px; color:var(--text-muted);">Office In-Charge</label>
-                <input type="text" id="actInCharge" required placeholder="e.g. PCOL. Santos">
-
-                <label style="font-size:13px; color:var(--text-muted);">Remarks</label>
-                <select id="actRemarks" style="background: white;">
-                    <option value="Pending">Pending</option>
-                    <option value="Approved">Approved</option>
-                    <option value="Disapproved">Disapproved</option>
-                    <option value="Disregard">Disregard</option>
-                    <option value="For Signature">For Signature</option>
-                </select>
-
-                <button type="submit" id="activitySubmitBtn" style="margin-top: 15px;">Submit Activity</button>
-            </form>
-            <button onclick="closeActivityModal()" style="background: #e2e8f0; color: #475569; width: 100%;">Cancel & Close</button>
         </div>
     </div>
 
@@ -772,9 +697,7 @@
         
         let allMemos = [];
         let filteredMemos = [];
-        let allActivities = [];
         let currentMemoPage = 1;
-        let selectedActivityDates = [];
         
         // Dynamic Settings Variables
         let MEMOS_PER_PAGE = 10;
@@ -783,12 +706,11 @@
         let userSettings = {
             theme: 'Light',
             sidebar: 'Expanded',
-            compactMode: false,
+            tableDisplay: 'Comfortable',
             liveNotif: true,
             notifSound: false,
             recordsPerPage: '10',
             rememberSearch: false,
-            autoRefresh: '15',
             showChatbot: true,
             autoOpenChatbot: false,
             autoLogout: 'Never',
@@ -821,14 +743,13 @@
         }
 
         function updateSettingsUI() {
-            document.getElementById('setTheme').value = userSettings.theme;
-            document.getElementById('setSidebar').value = userSettings.sidebar;
-            document.getElementById('setCompact').checked = userSettings.compactMode;
+            document.getElementById('setTheme').value = userSettings.theme || 'Light';
+            document.getElementById('setSidebar').value = userSettings.sidebar || 'Expanded';
+            document.getElementById('setTableDisplay').value = userSettings.tableDisplay || 'Comfortable';
             document.getElementById('setLiveNotif').checked = userSettings.liveNotif;
             document.getElementById('setNotifSound').checked = userSettings.notifSound;
             document.getElementById('setRecordsPage').value = userSettings.recordsPerPage;
             document.getElementById('setRemSearch').checked = userSettings.rememberSearch;
-            document.getElementById('setAutoRef').value = userSettings.autoRefresh;
             document.getElementById('setShowChat').checked = userSettings.showChatbot;
             document.getElementById('setAutoChat').checked = userSettings.autoOpenChatbot;
             document.getElementById('setAutoLogout').value = userSettings.autoLogout;
@@ -838,12 +759,11 @@
         function saveSettings() {
             userSettings.theme = document.getElementById('setTheme').value;
             userSettings.sidebar = document.getElementById('setSidebar').value;
-            userSettings.compactMode = document.getElementById('setCompact').checked;
+            userSettings.tableDisplay = document.getElementById('setTableDisplay').value;
             userSettings.liveNotif = document.getElementById('setLiveNotif').checked;
             userSettings.notifSound = document.getElementById('setNotifSound').checked;
             userSettings.recordsPerPage = document.getElementById('setRecordsPage').value;
             userSettings.rememberSearch = document.getElementById('setRemSearch').checked;
-            userSettings.autoRefresh = document.getElementById('setAutoRef').value;
             userSettings.showChatbot = document.getElementById('setShowChat').checked;
             userSettings.autoOpenChatbot = document.getElementById('setAutoChat').checked;
             userSettings.autoLogout = document.getElementById('setAutoLogout').value;
@@ -860,9 +780,9 @@
             customConfirm("Are you sure you want to reset all preferences to default?", (confirmed) => {
                 if(confirmed) {
                     userSettings = {
-                        theme: 'Light', sidebar: 'Expanded', compactMode: false,
+                        theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable',
                         liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false,
-                        autoRefresh: '15', showChatbot: true, autoOpenChatbot: false,
+                        showChatbot: true, autoOpenChatbot: false,
                         autoLogout: 'Never', confirmLogout: true
                     };
                     updateSettingsUI();
@@ -879,7 +799,7 @@
                 body.classList.remove('dark-mode');
             }
 
-            if (userSettings.compactMode) body.classList.add('compact-mode');
+            if (userSettings.tableDisplay === 'Compact') body.classList.add('compact-mode');
             else body.classList.remove('compact-mode');
 
             const sb = document.getElementById('navSidebar');
@@ -890,16 +810,6 @@
 
             MEMOS_PER_PAGE = parseInt(userSettings.recordsPerPage, 10) || 10;
             if (filteredMemos && filteredMemos.length > 0) renderMemoTable();
-
-            if (activityRefreshTimer) clearInterval(activityRefreshTimer);
-            let sec = parseInt(userSettings.autoRefresh, 10);
-            if (!isNaN(sec) && sec > 0) {
-                activityRefreshTimer = setInterval(() => {
-                    if (!document.getElementById('appLayout').classList.contains('hidden')) {
-                        fetchActivityLogs();
-                    }
-                }, sec * 1000);
-            }
 
             const bot = document.getElementById('chatbot-container');
             if(userSettings.showChatbot) bot.classList.remove('hidden');
@@ -1056,12 +966,11 @@
 
         function getChatbotResponse(query) {
             if (query.includes('memo')) return "To manage memos, go to the Home Page tab. You can create a new memo by clicking the 'Create New Memo' button.";
-            if (query.includes('activity') || query.includes('activities')) return "You can schedule and manage activities in the 'Activities' tab.";
             if (query.includes('admin')) return "Admin Management is strictly available for the Alpha Admin.";
             if (query.includes('profile') || query.includes('password') || query.includes('pin')) return "You can change your PIN, password, or username securely by opening your Profile Settings.";
             if (query.includes('setting') || query.includes('theme') || query.includes('dark mode')) return "You can adjust Theme, Notifications, AI behaviors, Auto Logout inside Settings.";
             if (query.includes('hello') || query.includes('hi')) return "Hello! I am the RHSU System AI. What do you need help with?";
-            return "I am a polite system assistant. I can guide you on creating memos, updating activities, settings, or managing your profile.";
+            return "I am a polite system assistant. I can guide you on creating memos, settings, or managing your profile.";
         }
 
         function toggleAuthViews(viewId) {
@@ -1111,23 +1020,15 @@
             }
             document.getElementById('profTotalMemos').innerText = userMemos;
             document.getElementById('profLastActivity').innerText = lastAct;
-
-            let actCount = 0;
-            if (typeof allActivities !== 'undefined' && allActivities.length > 0) {
-                actCount = allActivities.length;
-            }
-            document.getElementById('profTotalActivities').innerText = actCount;
         }
 
         function switchTab(tabName) {
             document.getElementById('tabHome').classList.add('hidden'); 
-            document.getElementById('tabActivities').classList.add('hidden');
             document.getElementById('tabProfile').classList.add('hidden');
             document.getElementById('tabAdminMgmt').classList.add('hidden');
             document.getElementById('tabSettings').classList.add('hidden');
             
             document.getElementById('btnHome').classList.remove('active'); 
-            document.getElementById('btnActivities').classList.remove('active');
             if(document.getElementById('btnSettings')) document.getElementById('btnSettings').classList.remove('active');
             if(document.getElementById('btnAdminMgmt')) document.getElementById('btnAdminMgmt').classList.remove('active');
 
@@ -1136,11 +1037,6 @@
                 document.getElementById('btnHome').classList.add('active'); 
                 loadData(); 
             } 
-            else if (tabName === 'activities') { 
-                document.getElementById('tabActivities').classList.remove('hidden'); 
-                document.getElementById('btnActivities').classList.add('active'); 
-                loadActivities(); 
-            }
             else if (tabName === 'profile') { 
                 document.getElementById('tabProfile').classList.remove('hidden'); 
                 document.getElementById('newCredential').value = ""; 
@@ -1318,81 +1214,6 @@
         function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
         function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
 
-        function addActivityDate() {
-            const dateVal = document.getElementById('actDateInput').value;
-            if (!dateVal) return;
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const formatted = new Date(dateVal + 'T00:00:00').toLocaleDateString('en-US', options);
-            if (!selectedActivityDates.includes(formatted)) { selectedActivityDates.push(formatted); renderActivityDates(); }
-            document.getElementById('actDateInput').value = '';
-        }
-
-        function renderActivityDates() {
-            const container = document.getElementById('actDateList');
-            container.innerHTML = selectedActivityDates.map((d, index) => 
-                `<span style="background: rgba(0,0,0,0.05); padding: 5px 10px; border-radius: 4px; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-                    ${d} <span style="color: var(--danger); cursor: pointer; font-weight: bold; font-size: 16px; line-height: 1;" onclick="removeActivityDate(${index})">×</span>
-                </span>`
-            ).join('');
-        }
-
-        function removeActivityDate(index) { selectedActivityDates.splice(index, 1); renderActivityDates(); }
-        function openActivityModal() { document.getElementById('activitySubmissionModal').classList.remove('hidden'); selectedActivityDates = []; renderActivityDates(); document.getElementById('activityForm').reset(); document.getElementById('activitySubmitBtn').disabled = false; document.getElementById('activitySubmitBtn').innerText = "Submit Activity"; }
-        function closeActivityModal() { document.getElementById('activitySubmissionModal').classList.add('hidden'); }
-
-        document.getElementById('activityForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            if (selectedActivityDates.length === 0) return customAlert("Please add at least one date.", "Error");
-            const btn = document.getElementById('activitySubmitBtn'); btn.disabled = true; btn.innerText = "Submitting...";
-
-            const payload = { action: 'create_activity', name: document.getElementById('actName').value.trim(), dates: selectedActivityDates.join(', '), venue: document.getElementById('actVenue').value.trim(), reqOffice: document.getElementById('actReqOffice').value.trim(), inCharge: document.getElementById('actInCharge').value.trim(), remarks: document.getElementById('actRemarks').value };
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-                logActivity(`scheduled a new activity: "${payload.name}"`); closeActivityModal(); loadActivities(); customAlert("Activity successfully scheduled!", "Success");
-            } catch (err) { btn.disabled = false; btn.innerText = "Submit Activity"; }
-        });
-
-        function openUpdateActivityModal(name, dates, currentStatus) { document.getElementById('updateActName').value = name; document.getElementById('updateActDates').value = dates; document.getElementById('updateActNameDisplay').innerText = `Updating: ${name}`; document.getElementById('newActStatus').value = currentStatus || "Pending"; document.getElementById('updateActivityModal').classList.remove('hidden'); }
-        function closeUpdateActivityModal() { document.getElementById('updateActivityModal').classList.add('hidden'); }
-
-        async function submitActivityUpdate() {
-            const name = document.getElementById('updateActName').value; const dates = document.getElementById('updateActDates').value; const newStatus = document.getElementById('newActStatus').value;
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_activity_status', name: name, dates: dates, newStatus: newStatus }) });
-                logActivity(`updated status of activity "${name}" to ${newStatus}.`); closeUpdateActivityModal(); setTimeout(loadActivities, 1000); customAlert("Status updated!", "Success");
-            } catch (err) { }
-        }
-
-        function deleteActivity(name, dates) {
-            customConfirm(`Are you sure you want to delete the activity: ${name}?`, async (confirmed) => {
-                if (!confirmed) return;
-                try {
-                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_activity', name: name, dates: dates }) });
-                    logActivity(`deleted activity "${name}".`);
-                    setTimeout(loadActivities, 1000);
-                    customAlert("Activity deleted successfully!", "Success");
-                } catch (err) {
-                    customAlert("Failed to delete activity.", "Error");
-                }
-            });
-        }
-        
-        async function loadActivities() {
-            try {
-                const response = await fetch(API_URL + "?action=get_activities"); const data = await response.json(); 
-                allActivities = data || [];
-                const tbody = document.getElementById('activitiesTableBody'); tbody.innerHTML = "";
-                if (!data || data.length === 0) { tbody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No scheduled activities.</td></tr>"; return; }
-                
-                data.forEach(row => {
-                    let badgeColor = "var(--text-muted)"; let rem = String(row[5] || '');
-                    if (rem === 'Approved') badgeColor = "var(--success)"; else if (rem === 'Disapproved' || rem === 'Disregard') badgeColor = "var(--danger)"; else if (rem === 'Pending' || rem === 'For Signature') badgeColor = "#f59e0b";
-                    const safeName = String(row[0]).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const safeDates = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                    tbody.innerHTML += `<tr><td style="font-weight: 500;">${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td><td>${row[4]}</td><td style="color: ${badgeColor}; font-weight: bold;">${rem}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="openUpdateActivityModal('${safeName}', '${safeDates}', '${rem}')">Update</button> <button class="action-btn delete-btn" onclick="deleteActivity('${safeName}', '${safeDates}')">Delete</button></td></tr>`;
-                });
-            } catch (e) { }
-        }
-
         async function verifyAdmin() {
             const pass = document.getElementById('adminPassInput').value; if (!pass) return; document.getElementById('adminPassInput').value = "Verifying..."; 
             const res = await fetch(`${API_URL}?action=verify_admin&password=${encodeURIComponent(pass)}`); const data = await res.json();
@@ -1432,9 +1253,16 @@
             try {
                 const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
                 const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
-                if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
+                if(data.length === 0) { 
+                    tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; 
+                    document.getElementById('memoPagination').classList.add('hidden'); 
+                    updateDashboard();
+                    return; 
+                }
                 allMemos = data.reverse(); 
                 
+                updateDashboard();
+
                 if (userSettings.rememberSearch) {
                     const savedSearch = localStorage.getItem('rhsuSearch_' + localStorage.getItem('loggedInUser'));
                     if (savedSearch) {
@@ -1446,6 +1274,31 @@
 
                 filteredMemos = [...allMemos]; currentMemoPage = 1; renderMemoTable();
             } catch (err) { }
+        }
+
+        function updateDashboard() {
+            const total = allMemos.length;
+            document.getElementById('dashTotalMemos').innerText = total;
+
+            const categoryCounts = {};
+            const userCounts = {};
+
+            allMemos.forEach(row => {
+                const ctrlNum = row[2] || "";
+                const encodedBy = row[3] || "Unknown";
+
+                const match = ctrlNum.match(/RHSU\((.*?)\)/);
+                const category = match ? match[1] : "Uncategorized";
+
+                categoryCounts[category] = (categoryCounts[category] || 0) + 1;
+                userCounts[encodedBy] = (userCounts[encodedBy] || 0) + 1;
+            });
+
+            const catHtml = Object.keys(categoryCounts).map(k => `<div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;"><span>${k}</span> <strong style="color:var(--primary);">${categoryCounts[k]}</strong></div>`).join('');
+            document.getElementById('dashCategories').innerHTML = catHtml || '<div style="font-size:13px; color:var(--text-muted)">No data</div>';
+
+            const userHtml = Object.keys(userCounts).map(k => `<div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;"><span>${k}</span> <strong style="color:var(--primary);">${userCounts[k]}</strong></div>`).join('');
+            document.getElementById('dashUsers').innerHTML = userHtml || '<div style="font-size:13px; color:var(--text-muted)">No data</div>';
         }
 
         function renderMemoTable() {
