@@ -327,7 +327,7 @@
                 <span class="nav-text">User Management</span>
             </button>
 
-            <!-- New Settings Button -->
+            <!-- Settings Button -->
             <button class="sidebar-btn" id="btnSettings" onclick="switchTab('settings');">
                 <img src="images/Settings.png" alt="Settings" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'12\' cy=\'12\' r=\'3\'></circle><path d=\'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z\'></path></svg>'">
                 <span class="nav-text">Settings</span>
@@ -382,7 +382,7 @@
                 </div>
             </div>
 
-            <!-- NEW ACTIVITIES TAB -->
+            <!-- ACTIVITIES TAB -->
             <div id="tabActivities" class="hidden">
                 <div class="controls">
                     <h2 style="margin:0; color: var(--primary);">Scheduled Activities</h2>
@@ -627,8 +627,6 @@
     </div>
 
     <!-- MODALS -->
-
-    <!-- ACTIVITY UPDATE STATUS MODAL -->
     <div id="updateActivityModal" class="modal-overlay hidden" style="z-index: 2000;">
         <div class="modal-content glass-panel">
             <h3 style="margin-top:0; color: var(--primary);">Update Activity Status</h3>
@@ -687,7 +685,6 @@
         </div>
     </div>
 
-    <!-- NEW ACTIVITY MODAL -->
     <div id="activitySubmissionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel modal-large">
             <h2 style="margin-top: 0; color: var(--primary);">Add Scheduled Activity</h2>
@@ -798,7 +795,6 @@
             confirmLogout: true
         };
 
-        // Track last known activity log count to trigger notifications without rendering a side modal
         let lastLogCount = 0;
 
         document.addEventListener('keypress', function(e) {
@@ -813,7 +809,6 @@
             }
         });
 
-        // Settings Management
         function loadSettings() {
             const user = localStorage.getItem('loggedInUser');
             if(!user) return;
@@ -877,7 +872,6 @@
         }
 
         function applySettingsEffects() {
-            // Theme
             const body = document.body;
             if (userSettings.theme === 'Dark' || (userSettings.theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 body.classList.add('dark-mode');
@@ -885,22 +879,18 @@
                 body.classList.remove('dark-mode');
             }
 
-            // Compact Mode
             if (userSettings.compactMode) body.classList.add('compact-mode');
             else body.classList.remove('compact-mode');
 
-            // Sidebar
             const sb = document.getElementById('navSidebar');
             if (window.innerWidth > 992) {
                 if (userSettings.sidebar === 'Collapsed') sb.classList.add('collapsed');
                 else sb.classList.remove('collapsed');
             }
 
-            // Memo pagination override
             MEMOS_PER_PAGE = parseInt(userSettings.recordsPerPage, 10) || 10;
             if (filteredMemos && filteredMemos.length > 0) renderMemoTable();
 
-            // Activity Auto Refresh Timer
             if (activityRefreshTimer) clearInterval(activityRefreshTimer);
             let sec = parseInt(userSettings.autoRefresh, 10);
             if (!isNaN(sec) && sec > 0) {
@@ -911,12 +901,10 @@
                 }, sec * 1000);
             }
 
-            // AI Assistant Chatbot Display
             const bot = document.getElementById('chatbot-container');
             if(userSettings.showChatbot) bot.classList.remove('hidden');
             else bot.classList.add('hidden');
 
-            // Auto Logout Setup
             resetIdleTimer();
         }
 
@@ -939,7 +927,6 @@
             } catch(e) {}
         }
 
-        // Global Activity Listeners for Auto Logout
         ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
             window.addEventListener(evt, resetIdleTimer);
         });
@@ -958,7 +945,6 @@
             }
         }
 
-        // Toggle Gmail style nav
         function toggleNav() {
             const sidebar = document.getElementById('navSidebar');
             if (window.innerWidth <= 992) {
@@ -1043,7 +1029,6 @@
             } catch (err) {}
         }
 
-        // Chatbot Logic
         function toggleChat() {
             const window = document.getElementById('chatbot-window');
             window.classList.toggle('hidden');
@@ -1070,13 +1055,13 @@
         }
 
         function getChatbotResponse(query) {
-            if (query.includes('memo')) return "To manage memos, go to the Home Page tab. You can create a new memo by clicking the 'Create New Memo' button, which is now indicated by a clear Add icon.";
-            if (query.includes('activity') || query.includes('activities')) return "You can schedule and manage activities in the 'Activities' tab. Use 'Add Activity' to set dates, venues, and status marks.";
-            if (query.includes('admin')) return "Admin Management is strictly available for the Alpha Admin. It lets you approve users and set global system announcements.";
-            if (query.includes('profile') || query.includes('password') || query.includes('pin')) return "You can change your PIN, password, or username securely by clicking the user icon at the top right of the navigation bar to open your Profile Settings.";
-            if (query.includes('setting') || query.includes('theme') || query.includes('dark mode') || query.includes('notification')) return "You can adjust Theme, Notifications, AI behaviors, Auto Logout, and more inside the Settings tab located on the sidebar.";
-            if (query.includes('hello') || query.includes('hi')) return "Hello! I am the RHSU System AI. I am here to politely assist you with navigating and managing the Memo Control panel. What do you need help with?";
-            return "I am a polite system assistant. I can guide you on creating memos, updating activities, settings, or managing your profile. Could you please provide more details about your inquiry?";
+            if (query.includes('memo')) return "To manage memos, go to the Home Page tab. You can create a new memo by clicking the 'Create New Memo' button.";
+            if (query.includes('activity') || query.includes('activities')) return "You can schedule and manage activities in the 'Activities' tab.";
+            if (query.includes('admin')) return "Admin Management is strictly available for the Alpha Admin.";
+            if (query.includes('profile') || query.includes('password') || query.includes('pin')) return "You can change your PIN, password, or username securely by opening your Profile Settings.";
+            if (query.includes('setting') || query.includes('theme') || query.includes('dark mode')) return "You can adjust Theme, Notifications, AI behaviors, Auto Logout inside Settings.";
+            if (query.includes('hello') || query.includes('hi')) return "Hello! I am the RHSU System AI. What do you need help with?";
+            return "I am a polite system assistant. I can guide you on creating memos, updating activities, settings, or managing your profile.";
         }
 
         function toggleAuthViews(viewId) {
@@ -1099,7 +1084,6 @@
             document.getElementById('profUsername').innerText = currentUser;
             document.getElementById('profAccType').innerText = (currentUser === ALPHA_ADMIN_NAME) ? "System Admin" : "Standard User";
             
-            // Fetch Personal Information
             try {
                 const res = await fetch(`${API_URL}?action=get_profile&username=${encodeURIComponent(currentUser)}`);
                 const data = await res.json();
@@ -1116,16 +1100,14 @@
                     updateField('profQlf', data.profile.qlf);
                     updateField('profEmail', data.profile.email);
                 }
-            } catch (err) {
-                console.error("Error fetching profile", err);
-            }
+            } catch (err) {}
 
             let userMemos = 0;
             let lastAct = "Not Available";
             if (allMemos && allMemos.length > 0) {
                 const userMemosArr = allMemos.filter(m => m[3] === currentUser);
                 userMemos = userMemosArr.length;
-                if(userMemos > 0) lastAct = userMemosArr[0][0]; // Assuming reversed array, index 0 is newest
+                if(userMemos > 0) lastAct = userMemosArr[0][0];
             }
             document.getElementById('profTotalMemos').innerText = userMemos;
             document.getElementById('profLastActivity').innerText = lastAct;
@@ -1381,7 +1363,6 @@
             } catch (err) { }
         }
 
-        // New function to process Activity Deletion
         function deleteActivity(name, dates) {
             customConfirm(`Are you sure you want to delete the activity: ${name}?`, async (confirmed) => {
                 if (!confirmed) return;
