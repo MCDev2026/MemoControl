@@ -335,7 +335,6 @@
                 <span class="nav-text">User Management</span>
             </button>
 
-            <!-- Settings Button -->
             <button class="sidebar-btn" id="btnSettings" onclick="switchTab('settings');">
                 <img src="images/Settings.png" alt="Settings" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'12\' cy=\'12\' r=\'3\'></circle><path d=\'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z\'></path></svg>'">
                 <span class="nav-text">Settings</span>
@@ -357,7 +356,6 @@
                     </div>
                 </div>
 
-                <!-- DYNAMIC DASHBOARD -->
                 <div class="settings-grid" style="margin-top: 15px; margin-bottom: 25px;">
                     <div class="settings-section glass-panel" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                         <h3 style="margin-bottom: 5px; border-bottom: none; padding-bottom: 0;">Total Memos Created</h3>
@@ -373,13 +371,47 @@
                     </div>
                 </div>
 
-                <div class="controls" style="margin-top: 20px;">
-                    <div>
-                        <input type="text" id="searchInput" placeholder="Search memos..." onkeyup="searchTable()" style="margin:0; width: 250px; background: white;">
-                        <button class="action-btn delete-btn" onclick="batchDelete()" style="color:white;">
-                            <img src="images/Trash.png" alt="Delete" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Delete Selected
-                        </button>
-                    </div>
+                <!-- ADDED FILTERS AND SEARCH -->
+                <div class="controls" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+                    <input type="text" id="searchInput" placeholder="Search memos..." onkeyup="searchTable()" style="margin:0; width: 220px; background: white;">
+                    
+                    <select id="filterCategory" onchange="searchTable()" style="margin:0; width: auto; background: white; padding: 8px 12px; border-radius: var(--radius-sm);">
+                        <option value="">All Categories</option>
+                        <option value="A">Admin</option>
+                        <option value="S">Supply</option>
+                        <option value="GSS">General Services Section</option>
+                        <option value="BP">Base Police</option>
+                        <option value="SSB">Special Services Band</option>
+                        <option value="RCIA">RCIA</option>
+                    </select>
+
+                    <select id="filterEncoder" onchange="searchTable()" style="margin:0; width: auto; background: white; padding: 8px 12px; border-radius: var(--radius-sm);">
+                        <option value="">All Encoders</option>
+                    </select>
+
+                    <select id="filterMonth" onchange="searchTable()" style="margin:0; width: auto; background: white; padding: 8px 12px; border-radius: var(--radius-sm);">
+                        <option value="">All Months</option>
+                        <option value="01">January</option>
+                        <option value="02">February</option>
+                        <option value="03">March</option>
+                        <option value="04">April</option>
+                        <option value="05">May</option>
+                        <option value="06">June</option>
+                        <option value="07">July</option>
+                        <option value="08">August</option>
+                        <option value="09">September</option>
+                        <option value="10">October</option>
+                        <option value="11">November</option>
+                        <option value="12">December</option>
+                    </select>
+
+                    <select id="filterYear" onchange="searchTable()" style="margin:0; width: auto; background: white; padding: 8px 12px; border-radius: var(--radius-sm);">
+                        <option value="">All Years</option>
+                    </select>
+
+                    <button class="action-btn delete-btn" onclick="batchDelete()" style="color:white; margin-left: auto;">
+                        <img src="images/Trash.png" alt="Delete" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Delete Selected
+                    </button>
                 </div>
 
                 <div class="table-wrapper">
@@ -414,7 +446,6 @@
                     <h2 style="margin:0; color: var(--primary);">My Profile</h2>
                 </div>
                 <div class="settings-grid">
-                    <!-- 1. Personal Information -->
                     <div class="settings-section glass-panel">
                         <h3>Personal Information</h3>
                         <div class="setting-row"><span>Rank</span> <span id="profRank" style="color:var(--text-muted)">Not Available</span></div>
@@ -424,25 +455,17 @@
                         <div class="setting-row"><span>Qualifier</span> <span id="profQlf" style="color:var(--text-muted)">Not Available</span></div>
                         <div class="setting-row"><span>Email Address</span> <span id="profEmail" style="color:var(--text-muted)">Not Available</span></div>
                     </div>
-
-                    <!-- 2. Account Information -->
                     <div class="settings-section glass-panel">
                         <h3>Account Information</h3>
                         <div class="setting-row"><span>Username</span> <span id="profUsername" style="font-weight:500;"></span></div>
                         <div class="setting-row"><span>Account Type</span> <span id="profAccType"></span></div>
                         <div class="setting-row"><span>Account Status</span> <span style="color:var(--success); font-weight:500;">Active</span></div>
-                        <div class="setting-row"><span>Date Registered</span> <span style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>Last Login</span> <span style="color:var(--text-muted)">Not Available</span></div>
                     </div>
-
-                    <!-- 3. Activity Summary -->
                     <div class="settings-section glass-panel">
                         <h3>Activity Summary</h3>
                         <div class="setting-row"><span>Total Memos Created</span> <span id="profTotalMemos" style="font-weight:bold; color:var(--primary);">0</span></div>
                         <div class="setting-row"><span>Last Activity</span> <span id="profLastActivity" style="color:var(--text-muted)">Not Available</span></div>
                     </div>
-
-                    <!-- 4. Security & Actions -->
                     <div class="settings-section glass-panel">
                         <h3>Security & Authentication</h3>
                         <div style="margin-bottom: 15px;">
@@ -453,7 +476,6 @@
                             <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 5px;">Change PIN / Password:</label>
                             <input type="password" id="newCredential" placeholder="Enter new PIN or Password" style="margin:0;">
                         </div>
-                        
                         <div style="display: flex; gap: 10px; margin-top: 15px;">
                             <button style="flex:1; margin:0;" onclick="updateProfile()">Save Changes</button>
                             <button class="delete-btn" style="flex:1; margin:0;" onclick="attemptLogout()">Logout</button>
@@ -468,17 +490,14 @@
                     <h2 style="margin:0; color: var(--danger);">Administration Management</h2>
                     <button class="action-btn approve-btn" onclick="loadAdminUsers()" style="padding: 10px 18px; font-weight: bold; color:white;">Refresh Data</button>
                 </div>
-
                 <div class="glass-panel" style="padding: 20px; margin-top: 20px; background: white;">
                     <h3 style="margin-top:0; color: var(--primary); font-size: 16px;">Global System Announcement Control</h3>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">This message will appear as a popup to all users when they log in.</p>
                     <textarea id="adminAnnouncementText" placeholder="Enter the system announcement here..." style="min-height: 100px;"></textarea>
                     <div style="display: flex; gap: 10px; margin-top:10px;">
                         <button class="approve-btn" style="width: auto; margin:0;" onclick="saveAdminAnnouncement()">Post Announcement</button>
                         <button class="delete-btn" style="width: auto; margin:0;" onclick="deleteAdminAnnouncement()">Remove</button>
                     </div>
                 </div>
-
                 <div class="table-wrapper" style="margin-top: 20px;">
                     <table id="adminUsersTable">
                         <thead>
@@ -498,99 +517,34 @@
             <div id="tabSettings" class="hidden">
                 <div class="controls">
                     <h2 style="margin:0; color: var(--primary);">System Settings</h2>
-                    <button class="action-btn delete-btn" style="color:white;" onclick="resetPreferences()">
-                        Reset Preferences
-                    </button>
+                    <button class="action-btn delete-btn" style="color:white;" onclick="resetPreferences()">Reset Preferences</button>
                 </div>
-
                 <div class="settings-grid">
-                    <!-- Appearance -->
                     <div class="settings-section glass-panel">
                         <h3>Appearance</h3>
-                        <div class="setting-row">
-                            <span>Theme</span>
-                            <select id="setTheme" onchange="saveSettings()">
-                                <option value="Light">Light</option>
-                                <option value="Dark">Dark</option>
-                                <option value="System">System</option>
-                            </select>
-                        </div>
-                        <div class="setting-row">
-                            <span>Sidebar</span>
-                            <select id="setSidebar" onchange="saveSettings()">
-                                <option value="Expanded">Expanded</option>
-                                <option value="Collapsed">Collapsed</option>
-                            </select>
-                        </div>
-                        <div class="setting-row">
-                            <span>Table Display</span>
-                            <select id="setTableDisplay" onchange="saveSettings()">
-                                <option value="Comfortable">Comfortable (Default)</option>
-                                <option value="Compact">Compact</option>
-                            </select>
-                        </div>
+                        <div class="setting-row"><span>Theme</span><select id="setTheme" onchange="saveSettings()"><option value="Light">Light</option><option value="Dark">Dark</option><option value="System">System</option></select></div>
+                        <div class="setting-row"><span>Sidebar</span><select id="setSidebar" onchange="saveSettings()"><option value="Expanded">Expanded</option><option value="Collapsed">Collapsed</option></select></div>
+                        <div class="setting-row"><span>Table Display</span><select id="setTableDisplay" onchange="saveSettings()"><option value="Comfortable">Comfortable (Default)</option><option value="Compact">Compact</option></select></div>
                     </div>
-
-                    <!-- Notifications -->
                     <div class="settings-section glass-panel">
                         <h3>Notifications</h3>
-                        <div class="setting-row">
-                            <span>Live Activity Notifications</span>
-                            <label class="switch"><input type="checkbox" id="setLiveNotif" onchange="saveSettings()"><span class="slider"></span></label>
-                        </div>
-                        <div class="setting-row">
-                            <span>Notification Sound</span>
-                            <label class="switch"><input type="checkbox" id="setNotifSound" onchange="saveSettings()"><span class="slider"></span></label>
-                        </div>
+                        <div class="setting-row"><span>Live Activity Notifications</span><label class="switch"><input type="checkbox" id="setLiveNotif" onchange="saveSettings()"><span class="slider"></span></label></div>
+                        <div class="setting-row"><span>Notification Sound</span><label class="switch"><input type="checkbox" id="setNotifSound" onchange="saveSettings()"><span class="slider"></span></label></div>
                     </div>
-
-                    <!-- Memo -->
                     <div class="settings-section glass-panel">
                         <h3>Memo Settings</h3>
-                        <div class="setting-row">
-                            <span>Records per page</span>
-                            <select id="setRecordsPage" onchange="saveSettings()">
-                                <option value="10">10</option>
-                                <option value="20">20</option>
-                                <option value="30">30</option>
-                                <option value="50">50</option>
-                            </select>
-                        </div>
-                        <div class="setting-row">
-                            <span>Remember Search/Filter</span>
-                            <label class="switch"><input type="checkbox" id="setRemSearch" onchange="saveSettings()"><span class="slider"></span></label>
-                        </div>
+                        <div class="setting-row"><span>Records per page</span><select id="setRecordsPage" onchange="saveSettings()"><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="50">50</option></select></div>
+                        <div class="setting-row"><span>Remember Search/Filter</span><label class="switch"><input type="checkbox" id="setRemSearch" onchange="saveSettings()"><span class="slider"></span></label></div>
                     </div>
-
-                    <!-- AI Assistant -->
                     <div class="settings-section glass-panel">
                         <h3>AI Assistant</h3>
-                        <div class="setting-row">
-                            <span>Show Chatbot</span>
-                            <label class="switch"><input type="checkbox" id="setShowChat" onchange="saveSettings()"><span class="slider"></span></label>
-                        </div>
-                        <div class="setting-row">
-                            <span>Auto Open Chatbot</span>
-                            <label class="switch"><input type="checkbox" id="setAutoChat" onchange="saveSettings()"><span class="slider"></span></label>
-                        </div>
+                        <div class="setting-row"><span>Show Chatbot</span><label class="switch"><input type="checkbox" id="setShowChat" onchange="saveSettings()"><span class="slider"></span></label></div>
+                        <div class="setting-row"><span>Auto Open Chatbot</span><label class="switch"><input type="checkbox" id="setAutoChat" onchange="saveSettings()"><span class="slider"></span></label></div>
                     </div>
-
-                    <!-- Security -->
                     <div class="settings-section glass-panel">
                         <h3>Security</h3>
-                        <div class="setting-row">
-                            <span>Auto Logout (Inactivity)</span>
-                            <select id="setAutoLogout" onchange="saveSettings()">
-                                <option value="Never">Never</option>
-                                <option value="15">15 min</option>
-                                <option value="30">30 min</option>
-                                <option value="60">1 hour</option>
-                            </select>
-                        </div>
-                        <div class="setting-row">
-                            <span>Confirm Before Logout</span>
-                            <label class="switch"><input type="checkbox" id="setConfirmLogout" onchange="saveSettings()"><span class="slider"></span></label>
-                        </div>
+                        <div class="setting-row"><span>Auto Logout (Inactivity)</span><select id="setAutoLogout" onchange="saveSettings()"><option value="Never">Never</option><option value="15">15 min</option><option value="30">30 min</option><option value="60">1 hour</option></select></div>
+                        <div class="setting-row"><span>Confirm Before Logout</span><label class="switch"><input type="checkbox" id="setConfirmLogout" onchange="saveSettings()"><span class="slider"></span></label></div>
                     </div>
                 </div>
             </div>
@@ -721,22 +675,9 @@
         </div>
     </div>
 
-    <div id="editRequestModal" class="modal-overlay hidden">
-        <div class="modal-content glass-panel">
-            <h3 style="color: var(--danger); margin-top: 0;">Real-Time Edit Request</h3>
-            <p style="font-size: 15px;">User <strong id="editRequestUser"></strong> is requesting to edit Memo: <strong id="editRequestControl"></strong></p>
-            <input type="password" id="editRequestAdminPass" placeholder="Enter Alpha-Admin Code to allow" style="margin-bottom: 10px; background: white;">
-            <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button class="approve-btn" style="flex: 1;" onclick="respondToEditRequest(true)">Allow Edit</button>
-                <button class="delete-btn" style="flex: 1;" onclick="respondToEditRequest(false)">Deny</button>
-            </div>
-        </div>
-    </div>
-
     <div id="notificationContainer"></div>
 
     <script>
-        // API Integration
         const API_URL = "https://script.google.com/macros/s/AKfycbx42FXBvP2w42kl5XO9ICUAf04mJqqHLcVfSsEC9Ku8bcYWd5KZ2S1H_zzGWs8zE-kS/exec";
         const ALPHA_ADMIN_NAME = "PCpl Gandia"; 
         let sessionAdminPass = ""; 
@@ -748,24 +689,10 @@
         let filteredMemos = [];
         let currentMemoPage = 1;
         
-        // Dynamic Settings Variables
         let MEMOS_PER_PAGE = 10;
         let activityRefreshTimer = null;
         let autoLogoutTimer = null;
-        let userSettings = {
-            theme: 'Light',
-            sidebar: 'Expanded',
-            tableDisplay: 'Comfortable',
-            liveNotif: true,
-            notifSound: false,
-            recordsPerPage: '10',
-            rememberSearch: false,
-            showChatbot: true,
-            autoOpenChatbot: false,
-            autoLogout: 'Never',
-            confirmLogout: true
-        };
-
+        let userSettings = { theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable', liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false, showChatbot: true, autoOpenChatbot: false, autoLogout: 'Never', confirmLogout: true };
         let lastLogCount = 0;
 
         document.addEventListener('keypress', function(e) {
@@ -776,7 +703,6 @@
                 if (['newUsernameInput', 'newCredential'].includes(activeId)) updateProfile();
                 if (activeId === 'adminPassInput') verifyAdmin();
                 if (['actionAdminPass', 'actionNewSubject'].includes(activeId)) executeAction();
-                if (activeId === 'editRequestAdminPass') respondToEditRequest(true);
             }
         });
 
@@ -784,11 +710,8 @@
             const user = localStorage.getItem('loggedInUser');
             if(!user) return;
             const stored = localStorage.getItem('rhsuSettings_' + user);
-            if(stored) {
-                try { userSettings = { ...userSettings, ...JSON.parse(stored) }; } catch(e) {}
-            }
-            updateSettingsUI();
-            applySettingsEffects();
+            if(stored) { try { userSettings = { ...userSettings, ...JSON.parse(stored) }; } catch(e) {} }
+            updateSettingsUI(); applySettingsEffects();
         }
 
         function updateSettingsUI() {
@@ -828,67 +751,35 @@
         function resetPreferences() {
             customConfirm("Are you sure you want to reset all preferences to default?", (confirmed) => {
                 if(confirmed) {
-                    userSettings = {
-                        theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable',
-                        liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false,
-                        showChatbot: true, autoOpenChatbot: false,
-                        autoLogout: 'Never', confirmLogout: true
-                    };
-                    updateSettingsUI();
-                    saveSettings();
+                    userSettings = { theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable', liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false, showChatbot: true, autoOpenChatbot: false, autoLogout: 'Never', confirmLogout: true };
+                    updateSettingsUI(); saveSettings();
                 }
             });
         }
 
         function applySettingsEffects() {
             const body = document.body;
-            if (userSettings.theme === 'Dark' || (userSettings.theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                body.classList.add('dark-mode');
-            } else {
-                body.classList.remove('dark-mode');
-            }
-
-            if (userSettings.tableDisplay === 'Compact') body.classList.add('compact-mode');
-            else body.classList.remove('compact-mode');
+            if (userSettings.theme === 'Dark' || (userSettings.theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches)) body.classList.add('dark-mode'); else body.classList.remove('dark-mode');
+            if (userSettings.tableDisplay === 'Compact') body.classList.add('compact-mode'); else body.classList.remove('compact-mode');
 
             const sb = document.getElementById('navSidebar');
-            if (window.innerWidth > 992) {
-                if (userSettings.sidebar === 'Collapsed') sb.classList.add('collapsed');
-                else sb.classList.remove('collapsed');
-            }
+            if (window.innerWidth > 992) { if (userSettings.sidebar === 'Collapsed') sb.classList.add('collapsed'); else sb.classList.remove('collapsed'); }
 
             MEMOS_PER_PAGE = parseInt(userSettings.recordsPerPage, 10) || 10;
             if (filteredMemos && filteredMemos.length > 0) renderMemoTable();
 
             const bot = document.getElementById('chatbot-container');
-            if(userSettings.showChatbot) bot.classList.remove('hidden');
-            else bot.classList.add('hidden');
-
+            if(userSettings.showChatbot) bot.classList.remove('hidden'); else bot.classList.add('hidden');
             resetIdleTimer();
         }
 
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-            if (userSettings.theme === 'System') applySettingsEffects();
-        });
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => { if (userSettings.theme === 'System') applySettingsEffects(); });
 
         function playAudioBeep() {
-            try {
-                let ctx = new (window.AudioContext || window.webkitAudioContext)();
-                let osc = ctx.createOscillator();
-                let gainNode = ctx.createGain();
-                osc.connect(gainNode);
-                gainNode.connect(ctx.destination);
-                osc.type = 'sine';
-                osc.frequency.value = 800;
-                gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
-                osc.start();
-                osc.stop(ctx.currentTime + 0.1);
-            } catch(e) {}
+            try { let ctx = new (window.AudioContext || window.webkitAudioContext)(); let osc = ctx.createOscillator(); let gainNode = ctx.createGain(); osc.connect(gainNode); gainNode.connect(ctx.destination); osc.type = 'sine'; osc.frequency.value = 800; gainNode.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.1); } catch(e) {}
         }
 
-        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
-            window.addEventListener(evt, resetIdleTimer);
-        });
+        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => { window.addEventListener(evt, resetIdleTimer); });
 
         function resetIdleTimer() {
             if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
@@ -896,146 +787,69 @@
             if (userSettings.autoLogout !== 'Never') {
                 let minutes = parseInt(userSettings.autoLogout, 10);
                 if (!isNaN(minutes) && minutes > 0) {
-                    autoLogoutTimer = setTimeout(() => {
-                        customAlert("Your session has expired due to inactivity.", "Session Expired");
-                        logoutUser(true);
-                    }, minutes * 60000);
+                    autoLogoutTimer = setTimeout(() => { customAlert("Your session has expired due to inactivity.", "Session Expired"); logoutUser(true); }, minutes * 60000);
                 }
             }
         }
 
         function toggleNav() {
             const sidebar = document.getElementById('navSidebar');
-            if (window.innerWidth <= 992) {
-                sidebar.classList.toggle('open');
-            } else {
-                sidebar.classList.toggle('collapsed');
-                userSettings.sidebar = sidebar.classList.contains('collapsed') ? 'Collapsed' : 'Expanded';
-                const user = localStorage.getItem('loggedInUser');
-                if(user) {
-                    document.getElementById('setSidebar').value = userSettings.sidebar;
-                    localStorage.setItem('rhsuSettings_' + user, JSON.stringify(userSettings));
-                }
-            }
+            if (window.innerWidth <= 992) sidebar.classList.toggle('open');
+            else { sidebar.classList.toggle('collapsed'); userSettings.sidebar = sidebar.classList.contains('collapsed') ? 'Collapsed' : 'Expanded'; const user = localStorage.getItem('loggedInUser'); if(user) { document.getElementById('setSidebar').value = userSettings.sidebar; localStorage.setItem('rhsuSettings_' + user, JSON.stringify(userSettings)); } }
         }
 
-        function updateDateTime() {
-            const now = new Date();
-            const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-            document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options);
-        }
+        function updateDateTime() { const now = new Date(); const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }; document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options); }
         setInterval(updateDateTime, 1000); updateDateTime();
 
         function showNotification(title, message, onClickAction) {
             const container = document.getElementById('notificationContainer');
-            const toast = document.createElement('div');
-            toast.className = 'notification-toast';
+            const toast = document.createElement('div'); toast.className = 'notification-toast';
             toast.innerHTML = `<span class="notification-title">${title}</span><span class="notification-msg">${message}</span>`;
             const timeout = setTimeout(() => { toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300); }, 5000);
-            toast.addEventListener('click', () => {
-                clearTimeout(timeout); toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300);
-                if (onClickAction) onClickAction();
-            });
+            toast.addEventListener('click', () => { clearTimeout(timeout); toast.classList.add('fade-out'); setTimeout(() => toast.remove(), 300); if (onClickAction) onClickAction(); });
             container.appendChild(toast);
         }
 
-        function customAlert(message, title = "System Notification") {
-            showNotification(title, message);
-        }
-
-        function customConfirm(message, callback) {
-            document.getElementById('customConfirmMessage').innerText = message;
-            document.getElementById('customConfirmModal').classList.remove('hidden');
-            
-            document.getElementById('customConfirmYesBtn').onclick = () => {
-                document.getElementById('customConfirmModal').classList.add('hidden');
-                callback(true);
-            };
-            document.getElementById('customConfirmNoBtn').onclick = () => {
-                document.getElementById('customConfirmModal').classList.add('hidden');
-                callback(false);
-            };
-        }
+        function customAlert(message, title = "System Notification") { showNotification(title, message); }
+        function customConfirm(message, callback) { document.getElementById('customConfirmMessage').innerText = message; document.getElementById('customConfirmModal').classList.remove('hidden'); document.getElementById('customConfirmYesBtn').onclick = () => { document.getElementById('customConfirmModal').classList.add('hidden'); callback(true); }; document.getElementById('customConfirmNoBtn').onclick = () => { document.getElementById('customConfirmModal').classList.add('hidden'); callback(false); }; }
 
         async function logActivity(actionText) {
             const user = localStorage.getItem('loggedInUser') || 'Unknown User';
-            try { 
-                await fetch(API_URL, { 
-                    method: 'POST', 
-                    mode: 'no-cors', 
-                    body: JSON.stringify({ action: 'log_activity', user: user, actionText: actionText }) 
-                }); 
-                setTimeout(fetchActivityLogs, 1500);
-            } catch (err) {}
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'log_activity', user: user, actionText: actionText }) }); setTimeout(fetchActivityLogs, 1500); } catch (err) {}
         }
 
         async function fetchActivityLogs() {
             try {
-                const res = await fetch(API_URL + "?action=get_activity_logs");
-                const logs = await res.json();
-                
+                const res = await fetch(API_URL + "?action=get_activity_logs"); const logs = await res.json();
                 if (lastLogCount > 0 && logs.length > lastLogCount) {
                     const newLogs = logs.length - lastLogCount;
                     for (let i = 0; i < Math.min(newLogs, 3); i++) {
                         const log = logs[i]; 
-                        if (userSettings.liveNotif) {
-                            showNotification("Live Activity", `${log.user} ${log.actionText}`);
-                            if (userSettings.notifSound && i === 0) playAudioBeep();
-                        }
+                        if (userSettings.liveNotif) { showNotification("Live Activity", `${log.user} ${log.actionText}`); if (userSettings.notifSound && i === 0) playAudioBeep(); }
                     }
                 }
                 lastLogCount = logs.length;
             } catch (err) {}
         }
 
-        function toggleChat() {
-            const window = document.getElementById('chatbot-window');
-            window.classList.toggle('hidden');
-            if(!window.classList.contains('hidden')) document.getElementById('chatInput').focus();
-        }
-
+        function toggleChat() { const window = document.getElementById('chatbot-window'); window.classList.toggle('hidden'); if(!window.classList.contains('hidden')) document.getElementById('chatInput').focus(); }
         function handleChat(e) {
             if (e.key === 'Enter') {
-                const input = document.getElementById('chatInput');
-                const text = input.value.trim();
-                if (!text) return;
-
-                const chatBox = document.getElementById('chatMessages');
-                chatBox.innerHTML += `<div class="chat-msg user">${text}</div>`;
-                input.value = "";
-                
-                setTimeout(() => {
-                    const response = getChatbotResponse(text.toLowerCase());
-                    chatBox.innerHTML += `<div class="chat-msg bot">${response}</div>`;
-                    chatBox.scrollTop = chatBox.scrollHeight;
-                }, 500);
-                chatBox.scrollTop = chatBox.scrollHeight;
+                const input = document.getElementById('chatInput'); const text = input.value.trim(); if (!text) return;
+                const chatBox = document.getElementById('chatMessages'); chatBox.innerHTML += `<div class="chat-msg user">${text}</div>`; input.value = "";
+                setTimeout(() => { const response = getChatbotResponse(text.toLowerCase()); chatBox.innerHTML += `<div class="chat-msg bot">${response}</div>`; chatBox.scrollTop = chatBox.scrollHeight; }, 500);
             }
         }
-
         function getChatbotResponse(query) {
             if (query.includes('memo')) return "To manage memos, go to the Home Page tab. You can create a new memo by clicking the 'Create New Memo' button.";
             if (query.includes('admin')) return "Admin Management is strictly available for the Alpha Admin.";
             if (query.includes('profile') || query.includes('password') || query.includes('pin')) return "You can change your PIN, password, or username securely by opening your Profile Settings.";
             if (query.includes('setting') || query.includes('theme') || query.includes('dark mode')) return "You can adjust Theme, Notifications, AI behaviors, Auto Logout inside Settings.";
-            if (query.includes('hello') || query.includes('hi')) return "Hello! I am the RHSU System AI. What do you need help with?";
             return "I am a polite system assistant. I can guide you on creating memos, settings, or managing your profile.";
         }
 
-        function toggleAuthViews(viewId) {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('registerPage').classList.add('hidden');
-            document.getElementById('appLayout').classList.add('hidden');
-            document.getElementById('mainTopBar').classList.add('hidden');
-            document.getElementById(viewId).classList.remove('hidden');
-        }
-
-        function toggleInputType(inputId, type) {
-            const input = document.getElementById(inputId);
-            if (type === 'pin') { input.placeholder = "Enter 6-Digit PIN"; input.setAttribute("maxlength", "6"); } 
-            else { input.placeholder = "Enter Password"; input.removeAttribute("maxlength"); }
-            input.value = ""; 
-        }
+        function toggleAuthViews(viewId) { document.getElementById('loginPage').classList.add('hidden'); document.getElementById('registerPage').classList.add('hidden'); document.getElementById('appLayout').classList.add('hidden'); document.getElementById('mainTopBar').classList.add('hidden'); document.getElementById(viewId).classList.remove('hidden'); }
+        function toggleInputType(inputId, type) { const input = document.getElementById(inputId); if (type === 'pin') { input.placeholder = "Enter 6-Digit PIN"; input.setAttribute("maxlength", "6"); } else { input.placeholder = "Enter Password"; input.removeAttribute("maxlength"); } input.value = ""; }
 
         async function populateProfileData() {
             const currentUser = localStorage.getItem('loggedInUser') || 'Unknown';
@@ -1043,341 +857,165 @@
             document.getElementById('profAccType').innerText = (currentUser === ALPHA_ADMIN_NAME) ? "System Admin" : "Standard User";
             
             try {
-                const res = await fetch(`${API_URL}?action=get_profile&username=${encodeURIComponent(currentUser)}`);
-                const data = await res.json();
+                const res = await fetch(`${API_URL}?action=get_profile&username=${encodeURIComponent(currentUser)}`); const data = await res.json();
                 if (data.success && data.profile) {
-                    const updateField = (id, val) => {
-                        const el = document.getElementById(id);
-                        el.innerText = val || 'Not Available';
-                        if(val) el.style.color = 'var(--text-main)';
-                    };
-                    updateField('profRank', data.profile.rank);
-                    updateField('profFirstName', data.profile.firstName);
-                    updateField('profMiddleName', data.profile.middleName);
-                    updateField('profLastName', data.profile.lastName);
-                    updateField('profQlf', data.profile.qlf);
-                    updateField('profEmail', data.profile.email);
+                    const updateField = (id, val) => { const el = document.getElementById(id); el.innerText = val || 'Not Available'; if(val) el.style.color = 'var(--text-main)'; };
+                    updateField('profRank', data.profile.rank); updateField('profFirstName', data.profile.firstName); updateField('profMiddleName', data.profile.middleName); updateField('profLastName', data.profile.lastName); updateField('profQlf', data.profile.qlf); updateField('profEmail', data.profile.email);
                 }
             } catch (err) {}
 
-            let userMemos = 0;
-            let lastAct = "Not Available";
-            if (allMemos && allMemos.length > 0) {
-                const userMemosArr = allMemos.filter(m => m[3] === currentUser);
-                userMemos = userMemosArr.length;
-                if(userMemos > 0) lastAct = userMemosArr[0][0];
-            }
-            document.getElementById('profTotalMemos').innerText = userMemos;
-            document.getElementById('profLastActivity').innerText = lastAct;
+            let userMemos = 0; let lastAct = "Not Available";
+            if (allMemos && allMemos.length > 0) { const userMemosArr = allMemos.filter(m => m[3] === currentUser); userMemos = userMemosArr.length; if(userMemos > 0) lastAct = userMemosArr[0][0]; }
+            document.getElementById('profTotalMemos').innerText = userMemos; document.getElementById('profLastActivity').innerText = lastAct;
         }
 
         function switchTab(tabName) {
-            document.getElementById('tabHome').classList.add('hidden'); 
-            document.getElementById('tabProfile').classList.add('hidden');
-            document.getElementById('tabAdminMgmt').classList.add('hidden');
-            document.getElementById('tabSettings').classList.add('hidden');
-            
-            document.getElementById('btnHome').classList.remove('active'); 
-            if(document.getElementById('btnSettings')) document.getElementById('btnSettings').classList.remove('active');
-            if(document.getElementById('btnAdminMgmt')) document.getElementById('btnAdminMgmt').classList.remove('active');
+            document.getElementById('tabHome').classList.add('hidden'); document.getElementById('tabProfile').classList.add('hidden'); document.getElementById('tabAdminMgmt').classList.add('hidden'); document.getElementById('tabSettings').classList.add('hidden');
+            document.getElementById('btnHome').classList.remove('active'); if(document.getElementById('btnSettings')) document.getElementById('btnSettings').classList.remove('active'); if(document.getElementById('btnAdminMgmt')) document.getElementById('btnAdminMgmt').classList.remove('active');
 
-            if (tabName === 'home') { 
-                document.getElementById('tabHome').classList.remove('hidden'); 
-                document.getElementById('btnHome').classList.add('active'); 
-                loadData(); 
-            } 
-            else if (tabName === 'profile') { 
-                document.getElementById('tabProfile').classList.remove('hidden'); 
-                document.getElementById('newCredential').value = ""; 
-                document.getElementById('newUsernameInput').value = "";
-                populateProfileData();
-            }
-            else if (tabName === 'settings') {
-                document.getElementById('tabSettings').classList.remove('hidden');
-                document.getElementById('btnSettings').classList.add('active');
-            }
+            if (tabName === 'home') { document.getElementById('tabHome').classList.remove('hidden'); document.getElementById('btnHome').classList.add('active'); loadData(); } 
+            else if (tabName === 'profile') { document.getElementById('tabProfile').classList.remove('hidden'); document.getElementById('newCredential').value = ""; document.getElementById('newUsernameInput').value = ""; populateProfileData(); }
+            else if (tabName === 'settings') { document.getElementById('tabSettings').classList.remove('hidden'); document.getElementById('btnSettings').classList.add('active'); }
             else if (tabName === 'adminMgmt') {
-                if (sessionAdminPass === "") { 
-                    pendingAdminAction = 'open_mgmt';
-                    document.getElementById('adminModal').classList.remove('hidden'); 
-                    document.getElementById('adminPassInput').value = ""; 
-                    document.getElementById('adminPassInput').focus(); 
-                } else { 
-                    showAdminMgmtTab(); 
-                }
+                if (sessionAdminPass === "") { pendingAdminAction = 'open_mgmt'; document.getElementById('adminModal').classList.remove('hidden'); document.getElementById('adminPassInput').value = ""; document.getElementById('adminPassInput').focus(); } 
+                else { showAdminMgmtTab(); }
             }
-            if (window.innerWidth <= 992) {
-                document.getElementById('navSidebar').classList.remove('open');
-            }
+            if (window.innerWidth <= 992) document.getElementById('navSidebar').classList.remove('open');
         }
 
-        function showAdminMgmtTab() {
-            document.getElementById('tabAdminMgmt').classList.remove('hidden');
-            document.getElementById('btnAdminMgmt').classList.add('active');
-            loadAdminUsers();
-        }
+        function showAdminMgmtTab() { document.getElementById('tabAdminMgmt').classList.remove('hidden'); document.getElementById('btnAdminMgmt').classList.add('active'); loadAdminUsers(); }
 
         async function fetchSystemAnnouncement() {
             if (sessionStorage.getItem('systemAnnouncementSeen') === 'true') return;
-            try {
-                const res = await fetch(API_URL + "?action=get_announcement");
-                const data = await res.json();
-                if (data.success && data.message) {
-                    document.getElementById('globalAnnouncementMsg').innerText = data.message;
-                    document.getElementById('systemAnnouncementModal').classList.remove('hidden');
-                    sessionStorage.setItem('systemAnnouncementSeen', 'true');
-                }
-            } catch(e) {}
+            try { const res = await fetch(API_URL + "?action=get_announcement"); const data = await res.json(); if (data.success && data.message) { document.getElementById('globalAnnouncementMsg').innerText = data.message; document.getElementById('systemAnnouncementModal').classList.remove('hidden'); sessionStorage.setItem('systemAnnouncementSeen', 'true'); } } catch(e) {}
         }
 
         function closeAnnouncementModal() { document.getElementById('systemAnnouncementModal').classList.add('hidden'); }
 
         async function saveAdminAnnouncement() {
-            const msg = document.getElementById('adminAnnouncementText').value.trim();
-            if (!msg) return customAlert("Announcement message cannot be empty.", "Error");
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_announcement', message: msg, password: sessionAdminPass }) });
-                customAlert("System announcement updated!", "Success");
-                logActivity("updated the global system announcement.");
-            } catch (err) {}
+            const msg = document.getElementById('adminAnnouncementText').value.trim(); if (!msg) return customAlert("Announcement message cannot be empty.", "Error");
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'save_announcement', message: msg, password: sessionAdminPass }) }); customAlert("System announcement updated!", "Success"); logActivity("updated the global system announcement."); } catch (err) {}
         }
 
-        function deleteAdminAnnouncement() {
-            customConfirm("Remove global system announcement?", async (confirmed) => {
-                if(!confirmed) return;
-                try {
-                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_announcement', password: sessionAdminPass }) });
-                    document.getElementById('adminAnnouncementText').value = "";
-                    customAlert("Announcement removed.", "Success");
-                    logActivity("removed the global system announcement.");
-                } catch (err) {}
-            });
-        }
+        function deleteAdminAnnouncement() { customConfirm("Remove global system announcement?", async (confirmed) => { if(!confirmed) return; try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_announcement', password: sessionAdminPass }) }); document.getElementById('adminAnnouncementText').value = ""; customAlert("Announcement removed.", "Success"); logActivity("removed the global system announcement."); } catch (err) {} }); }
 
         function checkAuth() {
             const user = localStorage.getItem('loggedInUser');
             if (user) {
                 document.getElementById('welcomeMsg').innerText = `Welcome, ${user}`;
-                document.getElementById('loginPage').classList.add('hidden');
-                document.getElementById('registerPage').classList.add('hidden');
-                document.getElementById('appLayout').classList.remove('hidden');
-                document.getElementById('mainTopBar').classList.remove('hidden');
-                document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
-                
+                document.getElementById('loginPage').classList.add('hidden'); document.getElementById('registerPage').classList.add('hidden'); document.getElementById('appLayout').classList.remove('hidden'); document.getElementById('mainTopBar').classList.remove('hidden'); document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
                 loadSettings();
-                
-                if (userSettings.autoOpenChatbot && userSettings.showChatbot) {
-                    document.getElementById('chatbot-window').classList.remove('hidden');
-                } else {
-                    document.getElementById('chatbot-window').classList.add('hidden');
-                }
-
-                switchTab('home'); 
-                fetchActivityLogs(); 
-                fetchSystemAnnouncement(); 
+                if (userSettings.autoOpenChatbot && userSettings.showChatbot) document.getElementById('chatbot-window').classList.remove('hidden'); else document.getElementById('chatbot-window').classList.add('hidden');
+                switchTab('home'); fetchActivityLogs(); fetchSystemAnnouncement(); 
             } else { toggleAuthViews('loginPage'); }
         }
 
         async function loginUser() {
-            const user = document.getElementById('loginUsername').value.trim();
-            const cred = document.getElementById('loginCredential').value.trim();
+            const user = document.getElementById('loginUsername').value.trim(); const cred = document.getElementById('loginCredential').value.trim();
             if(!user || !cred) return customAlert("Enter Username and PIN/Password.", "Authentication Error");
             
             document.getElementById('loginCredential').value = "Logging in...";
-            const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&pin=${encodeURIComponent(cred)}`);
-            const data = await res.json();
+            const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&pin=${encodeURIComponent(cred)}`); const data = await res.json();
             
             if (data.success) {
-                localStorage.setItem('loggedInUser', data.name);
-                localStorage.setItem('loggedCred', cred);
-                sessionStorage.removeItem('systemAnnouncementSeen'); 
-                document.getElementById('loginCredential').value = "";
-                logActivity("logged into the system.");
-                checkAuth();
+                localStorage.setItem('loggedInUser', data.name); localStorage.setItem('loggedCred', cred); localStorage.setItem('canEdit', data.canEdit ? 'Yes' : 'No'); sessionStorage.removeItem('systemAnnouncementSeen'); document.getElementById('loginCredential').value = ""; logActivity("logged into the system."); checkAuth();
             } else { customAlert(data.error, "Error"); document.getElementById('loginCredential').value = ""; }
         }
 
         async function registerUser() {
-            const rank = document.getElementById('regRank').value;
-            const firstName = document.getElementById('regFirst').value.trim();
-            const middleName = document.getElementById('regMiddle').value.trim();
-            const lastName = document.getElementById('regLast').value.trim();
-            const qlf = document.getElementById('regQlf').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
-            const cred = document.getElementById('regCredential').value.trim();
-
-            if(!rank || !firstName || !lastName || !email || !username || cred.length < 4) {
-                return customAlert("Please complete all required fields.", "Registration");
-            }
+            const rank = document.getElementById('regRank').value; const firstName = document.getElementById('regFirst').value.trim(); const middleName = document.getElementById('regMiddle').value.trim(); const lastName = document.getElementById('regLast').value.trim(); const qlf = document.getElementById('regQlf').value.trim(); const email = document.getElementById('regEmail').value.trim(); const username = document.getElementById('regUsername').value.trim(); const cred = document.getElementById('regCredential').value.trim();
+            if(!rank || !firstName || !lastName || !email || !username || cred.length < 4) return customAlert("Please complete all required fields.", "Registration");
+            
             const payload = { action: 'register', rank, firstName, middleName, lastName, qlf, email, username, pin: cred };
-            try {
-                const res = await fetch(`${API_URL}?action=register&` + new URLSearchParams(payload));
-                const data = await res.json();
-                if (data.success) {
-                    customAlert("Account created! Pending approval by Admin.", "Success");
-                    toggleAuthViews('loginPage');
-                } else { customAlert(data.error, "Error"); }
-            } catch(e) { customAlert("Network Error", "Error"); }
+            try { const res = await fetch(`${API_URL}?action=register&` + new URLSearchParams(payload)); const data = await res.json(); if (data.success) { customAlert("Account created! Pending approval by Admin.", "Success"); toggleAuthViews('loginPage'); } else { customAlert(data.error, "Error"); } } catch(e) { customAlert("Network Error", "Error"); }
         }
 
-        function attemptLogout() {
-            if (userSettings.confirmLogout) {
-                customConfirm("Are you sure you want to log out of the system?", (confirmed) => {
-                    if (confirmed) logoutUser(false);
-                });
-            } else {
-                logoutUser(false);
-            }
-        }
-
-        function logoutUser(force = false) {
-            if (!force) logActivity("logged out of the system.");
-            localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); sessionAdminPass = ""; pendingAdminAction = null; sessionStorage.removeItem('systemAnnouncementSeen');
-            if (activityRefreshTimer) clearInterval(activityRefreshTimer);
-            if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
-            checkAuth();
-        }
+        function attemptLogout() { if (userSettings.confirmLogout) { customConfirm("Are you sure you want to log out of the system?", (confirmed) => { if (confirmed) logoutUser(false); }); } else { logoutUser(false); } }
+        function logoutUser(force = false) { if (!force) logActivity("logged out of the system."); localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); localStorage.removeItem('canEdit'); sessionAdminPass = ""; pendingAdminAction = null; sessionStorage.removeItem('systemAnnouncementSeen'); if (activityRefreshTimer) clearInterval(activityRefreshTimer); if (autoLogoutTimer) clearTimeout(autoLogoutTimer); checkAuth(); }
 
         async function updateProfile() {
-            const newCred = document.getElementById('newCredential').value.trim();
-            const newUsername = document.getElementById('newUsernameInput').value.trim();
+            const newCred = document.getElementById('newCredential').value.trim(); const newUsername = document.getElementById('newUsernameInput').value.trim();
             if(!newCred && !newUsername) return customAlert("Enter new username or credential.", "Error");
             
-            try {
-                await fetch(API_URL, { 
-                    method: 'POST', mode: 'no-cors', 
-                    body: JSON.stringify({ action: 'update_profile', currentUsername: localStorage.getItem('loggedInUser'), currentCredential: localStorage.getItem('loggedCred'), newUsername: newUsername, newCredential: newCred }) 
-                });
-                if (newCred) localStorage.setItem('loggedCred', newCred); 
-                if (newUsername) localStorage.setItem('loggedInUser', newUsername);
-                customAlert("Profile updated successfully!", "Success"); 
-                document.getElementById('newCredential').value = ""; document.getElementById('newUsernameInput').value = "";
-                document.getElementById('welcomeMsg').innerText = `Welcome, ${localStorage.getItem('loggedInUser')}`;
-                populateProfileData();
-                logActivity("updated their profile information.");
-            } catch (err) { }
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_profile', currentUsername: localStorage.getItem('loggedInUser'), currentCredential: localStorage.getItem('loggedCred'), newUsername: newUsername, newCredential: newCred }) }); if (newCred) localStorage.setItem('loggedCred', newCred); if (newUsername) localStorage.setItem('loggedInUser', newUsername); customAlert("Profile updated successfully!", "Success"); document.getElementById('newCredential').value = ""; document.getElementById('newUsernameInput').value = ""; document.getElementById('welcomeMsg').innerText = `Welcome, ${localStorage.getItem('loggedInUser')}`; populateProfileData(); logActivity("updated their profile information."); } catch (err) { }
         }
 
         const OFFICE_DESTINATIONS = ["RD, PRO1", "DRDA", "DRDO", "CRS", "Msg Center", "RPRMD", "RID", "ROD", "RLRDD", "RCADD", "RCD", "RIDMD", "RETD", "RPSMD", "RICTMD", "RESPO", "RMFB1"];
-
-        function toggleOfficeDestinationOther(selectId, otherInputId) {
-            const select = document.getElementById(selectId);
-            const otherInput = document.getElementById(otherInputId);
-            if (!select || !otherInput) return;
-            const showOther = select.value === "Others";
-            otherInput.classList.toggle('hidden', !showOther);
-            otherInput.required = showOther;
-            if (!showOther) otherInput.value = "";
-        }
-
-        function getSelectedOfficeDestination(selectId, otherInputId) {
-            const select = document.getElementById(selectId);
-            const otherInput = document.getElementById(otherInputId);
-            if (!select) return "";
-            if (select.value === "Others") return otherInput ? otherInput.value.trim() : "";
-            return select.value.trim();
-        }
-
-        function setOfficeDestination(selectId, otherInputId, destination) {
-            const select = document.getElementById(selectId);
-            const otherInput = document.getElementById(otherInputId);
-            if (!select) return;
-            const value = String(destination || "").trim();
-            if (OFFICE_DESTINATIONS.includes(value)) {
-                select.value = value;
-                if (otherInput) { otherInput.value = ""; otherInput.classList.add('hidden'); otherInput.required = false; }
-            } else if (value) {
-                select.value = "Others";
-                if (otherInput) { otherInput.value = value; otherInput.classList.remove('hidden'); otherInput.required = true; }
-            } else {
-                select.value = "";
-                if (otherInput) { otherInput.value = ""; otherInput.classList.add('hidden'); otherInput.required = false; }
-            }
-        }
+        function toggleOfficeDestinationOther(selectId, otherInputId) { const select = document.getElementById(selectId); const otherInput = document.getElementById(otherInputId); if (!select || !otherInput) return; const showOther = select.value === "Others"; otherInput.classList.toggle('hidden', !showOther); otherInput.required = showOther; if (!showOther) otherInput.value = ""; }
+        function getSelectedOfficeDestination(selectId, otherInputId) { const select = document.getElementById(selectId); const otherInput = document.getElementById(otherInputId); if (!select) return ""; if (select.value === "Others") return otherInput ? otherInput.value.trim() : ""; return select.value.trim(); }
+        function setOfficeDestination(selectId, otherInputId, destination) { const select = document.getElementById(selectId); const otherInput = document.getElementById(otherInputId); if (!select) return; const value = String(destination || "").trim(); if (OFFICE_DESTINATIONS.includes(value)) { select.value = value; if (otherInput) { otherInput.value = ""; otherInput.classList.add('hidden'); otherInput.required = false; } } else if (value) { select.value = "Others"; if (otherInput) { otherInput.value = value; otherInput.classList.remove('hidden'); otherInput.required = true; } } else { select.value = ""; if (otherInput) { otherInput.value = ""; otherInput.classList.add('hidden'); otherInput.required = false; } } }
 
         function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); document.getElementById('memoSubmitBtn').disabled = false; document.getElementById('memoSubmitBtn').innerText = "Submit Data"; }
         function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
         function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
 
-        async function verifyAdmin() {
-            const pass = document.getElementById('adminPassInput').value; if (!pass) return; document.getElementById('adminPassInput').value = "Verifying..."; 
-            const res = await fetch(`${API_URL}?action=verify_admin&password=${encodeURIComponent(pass)}`); const data = await res.json();
-            if (data.success) { sessionAdminPass = pass; document.getElementById('adminModal').classList.add('hidden'); if (pendingAdminAction === 'open_mgmt') { showAdminMgmtTab(); pendingAdminAction = null; } } else { customAlert("Incorrect Admin Password.", "Error"); document.getElementById('adminPassInput').value = ""; }
-        }
+        async function verifyAdmin() { const pass = document.getElementById('adminPassInput').value; if (!pass) return; document.getElementById('adminPassInput').value = "Verifying..."; const res = await fetch(`${API_URL}?action=verify_admin&password=${encodeURIComponent(pass)}`); const data = await res.json(); if (data.success) { sessionAdminPass = pass; document.getElementById('adminModal').classList.add('hidden'); if (pendingAdminAction === 'open_mgmt') { showAdminMgmtTab(); pendingAdminAction = null; } } else { customAlert("Incorrect Admin Password.", "Error"); document.getElementById('adminPassInput').value = ""; } }
 
         async function loadAdminUsers() {
-            const res = await fetch(`${API_URL}?action=get_all_users&password=${encodeURIComponent(sessionAdminPass)}`); const data = await res.json();
-            const resAnnounce = await fetch(API_URL + "?action=get_announcement"); const dataAnnounce = await resAnnounce.json();
-            document.getElementById('adminAnnouncementText').value = (dataAnnounce.success && dataAnnounce.message) ? dataAnnounce.message : "";
-
+            const res = await fetch(`${API_URL}?action=get_all_users&password=${encodeURIComponent(sessionAdminPass)}`); const data = await res.json(); const resAnnounce = await fetch(API_URL + "?action=get_announcement"); const dataAnnounce = await resAnnounce.json(); document.getElementById('adminAnnouncementText').value = (dataAnnounce.success && dataAnnounce.message) ? dataAnnounce.message : "";
             const tbody = document.getElementById('adminUsersTableBody'); tbody.innerHTML = "";
             if (data.success) {
                 if(data.users.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No accounts.</td></tr>"; return; }
                 data.users.forEach(u => {
                     const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const safeUser = String(u.username).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const isPending = u.status === 'Pending';
-                    const actionHtml = isPending ? `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button> <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` : `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete</button>`;
+                    const editAction = u.canEdit ? `<button class="action-btn delete-btn" style="margin-top: 4px;" onclick="toggleEditUser('${safeUser}', false)">Revoke Edit</button>` : `<button class="action-btn approve-btn" style="margin-top: 4px;" onclick="toggleEditUser('${safeUser}', true)">Grant Edit</button>`;
+                    const actionHtml = isPending ? `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button> <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` : `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete</button> ${editAction}`;
                     tbody.innerHTML += `<tr><td>${u.rank} ${u.name}</td><td>${u.username}</td><td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td><td>${actionHtml}</td></tr>`;
                 });
             }
         }
 
-        function adminDeleteUser(username) {
-            customConfirm(`Delete user: ${username}?`, async (confirmed) => {
-                if (!confirmed) return;
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) }); logActivity(`deleted user account: ${username}`); setTimeout(loadAdminUsers, 1500);
-            });
-        }
-        function processApproval(pin, actionType) {
-            customConfirm(`Confirm Action?`, async (confirmed) => {
-                if (!confirmed) return;
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) }); logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request."); setTimeout(loadAdminUsers, 1500);
-            });
-        }
+        function toggleEditUser(username, grantStatus) { customConfirm(`Are you sure you want to ${grantStatus ? 'GRANT' : 'REVOKE'} edit permissions for ${username}?`, async (confirmed) => { if (!confirmed) return; try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'toggle_edit', username: username, canEdit: grantStatus, password: sessionAdminPass }) }); logActivity(`${grantStatus ? 'granted' : 'revoked'} edit permissions for ${username}`); customAlert(`Edit permissions ${grantStatus ? 'granted' : 'revoked'} successfully.`, "Success"); setTimeout(loadAdminUsers, 1500); } catch(err) { customAlert("Failed to update permissions.", "Error"); } }); }
+        function adminDeleteUser(username) { customConfirm(`Delete user: ${username}?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) }); logActivity(`deleted user account: ${username}`); setTimeout(loadAdminUsers, 1500); }); }
+        function processApproval(pin, actionType) { customConfirm(`Confirm Action?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) }); logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request."); setTimeout(loadAdminUsers, 1500); }); }
 
         async function loadData() {
             try {
                 const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
                 const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
-                if(data.length === 0) { 
-                    tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No memos found.</td></tr>"; 
-                    document.getElementById('memoPagination').classList.add('hidden'); 
-                    updateDashboard();
-                    return; 
-                }
-                allMemos = data.reverse(); 
                 
+                if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No memos found.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); updateDashboard(); return; }
+                
+                allMemos = data.reverse(); 
+
+                // Populate dynamic filters
+                const encoders = new Set();
+                const years = new Set();
+                allMemos.forEach(row => {
+                    if (row[3]) encoders.add(row[3]);
+                    if (row[0]) {
+                        const d = new Date(row[0]);
+                        if (!isNaN(d.getTime())) years.add(d.getFullYear().toString());
+                    }
+                });
+
+                const encoderSelect = document.getElementById('filterEncoder');
+                encoderSelect.innerHTML = '<option value="">All Encoders</option>';
+                Array.from(encoders).sort().forEach(enc => encoderSelect.innerHTML += `<option value="${enc}">${enc}</option>`);
+
+                const yearSelect = document.getElementById('filterYear');
+                yearSelect.innerHTML = '<option value="">All Years</option>';
+                Array.from(years).sort((a,b) => b-a).forEach(yr => yearSelect.innerHTML += `<option value="${yr}">${yr}</option>`);
+
                 updateDashboard();
 
                 if (userSettings.rememberSearch) {
                     const savedSearch = localStorage.getItem('rhsuSearch_' + localStorage.getItem('loggedInUser'));
-                    if (savedSearch) {
-                        document.getElementById('searchInput').value = savedSearch;
-                        searchTable();
-                        return; 
-                    }
+                    if (savedSearch) document.getElementById('searchInput').value = savedSearch;
                 }
-
-                filteredMemos = [...allMemos]; currentMemoPage = 1; renderMemoTable();
+                
+                searchTable(); // Apply any saved or default filters directly
             } catch (err) { }
         }
 
         function updateDashboard() {
-            const total = allMemos.length;
-            document.getElementById('dashTotalMemos').innerText = total;
-
-            const categoryCounts = {};
-            const userCounts = {};
+            const total = allMemos.length; document.getElementById('dashTotalMemos').innerText = total;
+            const categoryCounts = {}; const userCounts = {};
 
             allMemos.forEach(row => {
-                const ctrlNum = row[2] || "";
-                const encodedBy = row[3] || "Unknown";
-
-                const match = ctrlNum.match(/RHSU\((.*?)\)/);
-                const category = match ? match[1] : "Uncategorized";
-
-                categoryCounts[category] = (categoryCounts[category] || 0) + 1;
-                userCounts[encodedBy] = (userCounts[encodedBy] || 0) + 1;
+                const ctrlNum = row[2] || ""; const encodedBy = row[3] || "Unknown";
+                const match = ctrlNum.match(/RHSU\((.*?)\)/); const category = match ? match[1] : "Uncategorized";
+                categoryCounts[category] = (categoryCounts[category] || 0) + 1; userCounts[encodedBy] = (userCounts[encodedBy] || 0) + 1;
             });
 
             const catHtml = Object.keys(categoryCounts).map(k => `<div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;"><span>${k}</span> <strong style="color:var(--primary);">${categoryCounts[k]}</strong></div>`).join('');
@@ -1395,8 +1033,7 @@
             
             if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
             currentMemos.forEach(row => {
-                const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const safeDestination = String(row[6] || "N/A").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const safeDestination = String(row[6] || "N/A").replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${safeDestination}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
             });
             const pagination = document.getElementById('memoPagination');
@@ -1407,29 +1044,22 @@
 
         document.getElementById('memoForm').addEventListener('submit', async (e) => {
             e.preventDefault(); const submitBtn = document.getElementById('memoSubmitBtn'); const subject = document.getElementById('memoSubject').value.trim(); const officeDestination = getSelectedOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther'); const classification = document.getElementById('memoClassification').value; 
-            if (!subject) return customAlert("Please enter a Memo Subject.", "Error");
-            if (!officeDestination) return customAlert("Please select or enter the Office Destination.", "Error");
+            if (!subject) return customAlert("Please enter a Memo Subject.", "Error"); if (!officeDestination) return customAlert("Please select or enter the Office Destination.", "Error");
             submitBtn.disabled = true; submitBtn.innerText = "Submitting...";
-            try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, officeDestination: officeDestination, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
-                logActivity(`encoded a new memo: "${subject}" for ${officeDestination}`); document.getElementById('memoSubject').value = ""; setOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther', ""); closeMemoModal(); setTimeout(loadData, 1500); customAlert("Memo created!", "Success");
-            } catch (err) { submitBtn.disabled = false; submitBtn.innerText = "Submit Data"; }
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, officeDestination: officeDestination, classification: classification, userName: localStorage.getItem('loggedInUser') }) }); logActivity(`encoded a new memo: "${subject}" for ${officeDestination}`); document.getElementById('memoSubject').value = ""; setOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther', ""); closeMemoModal(); setTimeout(loadData, 1500); customAlert("Memo created!", "Success"); } catch (err) { submitBtn.disabled = false; submitBtn.innerText = "Submit Data"; }
         });
 
-        function initiateEdit(controlNum, currentSubject, currentOfficeDestination = "") { if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) { customAlert("Admin required.", "Error"); } else { triggerActionModal('edit', controlNum, currentSubject, currentOfficeDestination); } }
+        function initiateEdit(controlNum, currentSubject, currentOfficeDestination = "") {
+            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; const canEdit = localStorage.getItem('canEdit') === 'Yes';
+            if (!isAlphaAdmin && !canEdit) { customAlert("You do not have the required permissions to edit memos.", "Permission Denied"); } else { triggerActionModal('edit', controlNum, currentSubject, currentOfficeDestination); } 
+        }
+
         function triggerActionModal(action, controlNum, currentSubject = "", currentOfficeDestination = "") {
             pendingAction = action; actionTargetControl = controlNum; document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject;
             setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', currentOfficeDestination === "N/A" ? "" : currentOfficeDestination);
-            if (action === 'edit') {
-                document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`;
-                document.getElementById('actionNewSubject').classList.remove('hidden');
-                document.getElementById('actionOfficeDestinationWrapper').classList.remove('hidden');
-            } else {
-                document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`;
-                document.getElementById('actionNewSubject').classList.add('hidden');
-                document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden');
-            }
+            if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.remove('hidden'); } else { document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); }
         }
+        
         function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', ""); }
         
         async function executeAction() {
@@ -1443,11 +1073,47 @@
         function batchDelete() { const checked = document.querySelectorAll('.row-checkbox:checked'); if (checked.length === 0) return; pendingAction = 'batch_delete'; actionTargetControl = Array.from(checked).map(cb => cb.value); document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); }
         
         function searchTable() { 
-            const input = document.getElementById("searchInput").value.toUpperCase(); 
-            if (userSettings.rememberSearch) {
-                localStorage.setItem('rhsuSearch_' + localStorage.getItem('loggedInUser'), input);
-            }
-            filteredMemos = input === "" ? [...allMemos] : allMemos.filter(row => row.join(" ").toUpperCase().includes(input)); currentMemoPage = 1; renderMemoTable(); 
+            const searchInput = document.getElementById("searchInput").value.toUpperCase(); 
+            const categoryFilter = document.getElementById("filterCategory").value;
+            const encoderFilter = document.getElementById("filterEncoder").value;
+            const monthFilter = document.getElementById("filterMonth").value;
+            const yearFilter = document.getElementById("filterYear").value;
+
+            if (userSettings.rememberSearch) localStorage.setItem('rhsuSearch_' + localStorage.getItem('loggedInUser'), searchInput);
+
+            filteredMemos = allMemos.filter(row => {
+                const rowText = row.join(" ").toUpperCase();
+                const matchesSearch = searchInput === "" || rowText.includes(searchInput);
+                
+                const timestamp = row[0] || "";
+                const controlNum = row[2] || "";
+                const encodedBy = row[3] || "";
+                
+                const match = controlNum.match(/RHSU\((.*?)\)/);
+                const rowCategory = match ? match[1] : "";
+                
+                const matchesCategory = categoryFilter === "" || rowCategory === categoryFilter;
+                const matchesEncoder = encoderFilter === "" || encodedBy === encoderFilter;
+                
+                let matchesMonth = true;
+                let matchesYear = true;
+
+                if (timestamp) {
+                    const dateObj = new Date(timestamp);
+                    if (!isNaN(dateObj.getTime())) {
+                        const rowMonth = ("0" + (dateObj.getMonth() + 1)).slice(-2);
+                        const rowYear = dateObj.getFullYear().toString();
+                        
+                        matchesMonth = monthFilter === "" || rowMonth === monthFilter;
+                        matchesYear = yearFilter === "" || rowYear === yearFilter;
+                    }
+                }
+
+                return matchesSearch && matchesCategory && matchesEncoder && matchesMonth && matchesYear;
+            });
+            
+            currentMemoPage = 1; 
+            renderMemoTable(); 
         }
         
         function toggleSelectAll() { const isChecked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked); }
