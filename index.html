@@ -389,6 +389,7 @@
                                 <th style="width: 40px;"><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
                                 <th>Timestamp</th>
                                 <th>Memo Subject</th>
+                                <th>Office Destination</th>
                                 <th>Control Number</th>
                                 <th>Encoded By</th>
                                 <th>Actions</th>
@@ -643,6 +644,7 @@
                     <option value="RCIA">Regional Committee on Inspection & Acceptance</option>
                 </select>
                 <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0; flex-grow: 1; min-width: 250px;">
+                <input type="text" id="memoOfficeDestination" placeholder="Enter Office Destination" style="margin:0; flex-grow: 1; min-width: 250px;">
                 <button type="submit" id="memoSubmitBtn" style="white-space: nowrap; width: auto; margin-top: 0;">Submit Data</button>
             </form>
             <button onclick="closeMemoModal()" style="margin-top: 25px; background: #e2e8f0; color: #475569; width: 100%;">Close Window</button>
@@ -1254,7 +1256,7 @@
                 const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
                 const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
                 if(data.length === 0) { 
-                    tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No memos found.</td></tr>"; 
+                    tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No memos found.</td></tr>"; 
                     document.getElementById('memoPagination').classList.add('hidden'); 
                     updateDashboard();
                     return; 
@@ -1307,10 +1309,11 @@
             if (currentMemoPage > totalPages) currentMemoPage = totalPages; if (currentMemoPage < 1) currentMemoPage = 1;
             const currentMemos = filteredMemos.slice((currentMemoPage - 1) * MEMOS_PER_PAGE, ((currentMemoPage - 1) * MEMOS_PER_PAGE) + MEMOS_PER_PAGE);
             
-            if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='6' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
+            if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
             currentMemos.forEach(row => {
                 const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
+                const safeDestination = String(row[6] || "N/A").replace(/'/g, "\'").replace(/"/g, '&quot;');
+                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${safeDestination}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
             });
             const pagination = document.getElementById('memoPagination');
             if (filteredMemos.length > MEMOS_PER_PAGE) { pagination.classList.remove('hidden'); document.getElementById('memoPageInfo').innerText = `Page ${currentMemoPage} of ${totalPages}`; document.getElementById('prevMemoBtn').disabled = (currentMemoPage === 1); document.getElementById('nextMemoBtn').disabled = (currentMemoPage === totalPages); } else { pagination.classList.add('hidden'); }
@@ -1319,11 +1322,13 @@
         function changeMemoPage(direction) { currentMemoPage += direction; renderMemoTable(); }
 
         document.getElementById('memoForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); const submitBtn = document.getElementById('memoSubmitBtn'); const subject = document.getElementById('memoSubject').value.trim(); const classification = document.getElementById('memoClassification').value; 
-            if (!subject) return customAlert("Please enter a Memo Subject.", "Error"); submitBtn.disabled = true; submitBtn.innerText = "Submitting...";
+            e.preventDefault(); const submitBtn = document.getElementById('memoSubmitBtn'); const subject = document.getElementById('memoSubject').value.trim(); const officeDestination = document.getElementById('memoOfficeDestination').value.trim(); const classification = document.getElementById('memoClassification').value; 
+            if (!subject) return customAlert("Please enter a Memo Subject.", "Error");
+            if (!officeDestination) return customAlert("Please enter the Office Destination.", "Error");
+            submitBtn.disabled = true; submitBtn.innerText = "Submitting...";
             try {
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
-                logActivity(`encoded a new memo: "${subject}"`); document.getElementById('memoSubject').value = ""; closeMemoModal(); setTimeout(loadData, 1500); customAlert("Memo created!", "Success");
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, officeDestination: officeDestination, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
+                logActivity(`encoded a new memo: "${subject}" for ${officeDestination}`); document.getElementById('memoSubject').value = ""; document.getElementById('memoOfficeDestination').value = ""; closeMemoModal(); setTimeout(loadData, 1500); customAlert("Memo created!", "Success");
             } catch (err) { submitBtn.disabled = false; submitBtn.innerText = "Submit Data"; }
         });
 
