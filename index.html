@@ -644,7 +644,30 @@
                     <option value="RCIA">Regional Committee on Inspection & Acceptance</option>
                 </select>
                 <input type="text" id="memoSubject" placeholder="Enter Memo Subject" style="margin:0; flex-grow: 1; min-width: 250px;">
-                <input type="text" id="memoOfficeDestination" placeholder="Enter Office Destination" style="margin:0; flex-grow: 1; min-width: 250px;">
+                <div style="flex-grow: 1; min-width: 250px; display: flex; flex-direction: column; gap: 8px; margin: 0;">
+                    <select id="memoOfficeDestination" onchange="toggleOfficeDestinationOther('memoOfficeDestination', 'memoOfficeDestinationOther')" style="margin:0; width:100%;">
+                        <option value="">Select Office Destination</option>
+                        <option value="RD, PRO1">RD, PRO1</option>
+                        <option value="DRDA">DRDA</option>
+                        <option value="DRDO">DRDO</option>
+                        <option value="CRS">CRS</option>
+                        <option value="Msg Center">Msg Center</option>
+                        <option value="RPRMD">R1-RPRMD</option>
+                        <option value="RID">R2-RID</option>
+                        <option value="ROD">R3-ROD</option>
+                        <option value="RLRDD">R4-RLRDD</option>
+                        <option value="RCADD">R5-RCADD</option>
+                        <option value="RCD">R6-RCD</option>
+                        <option value="RIDMD">R7-RIDMD</option>
+                        <option value="RETD">R8-RETD</option>
+                        <option value="RPSMD">R9-RPSMD</option>
+                        <option value="RICTMD">R10-RICTMD</option>
+                        <option value="RESPO">RESPO</option>
+                        <option value="RMFB1">RMFB1</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <input type="text" id="memoOfficeDestinationOther" placeholder="Enter Office Destination" class="hidden" style="margin:0; width:100%; background:white;">
+                </div>
                 <button type="submit" id="memoSubmitBtn" style="white-space: nowrap; width: auto; margin-top: 0;">Submit Data</button>
             </form>
             <button onclick="closeMemoModal()" style="margin-top: 25px; background: #e2e8f0; color: #475569; width: 100%;">Close Window</button>
@@ -667,7 +690,30 @@
             <h3 id="actionModalTitle" style="margin-top:0; color: var(--primary);">Admin Validation Required</h3>
             <input type="password" id="actionAdminPass" placeholder="Master Password" style="margin-bottom: 10px; background: white;">
             <input type="text" id="actionNewSubject" placeholder="New Subject (For Edits Only)" class="hidden" style="background: white; margin-bottom: 10px;">
-            <input type="text" id="actionNewOfficeDestination" placeholder="Office Destination (For Edits Only)" class="hidden" style="background: white;">
+            <div id="actionOfficeDestinationWrapper" class="hidden" style="margin-bottom: 10px;">
+                <select id="actionNewOfficeDestination" onchange="toggleOfficeDestinationOther('actionNewOfficeDestination', 'actionNewOfficeDestinationOther')" style="background: white; margin-bottom: 8px;">
+                    <option value="">Select Office Destination</option>
+                    <option value="RD, PRO1">RD, PRO1</option>
+                    <option value="DRDA">DRDA</option>
+                    <option value="DRDO">DRDO</option>
+                    <option value="CRS">CRS</option>
+                    <option value="Msg Center">Msg Center</option>
+                    <option value="RPRMD">RPRMD</option>
+                    <option value="RID">RID</option>
+                    <option value="ROD">ROD</option>
+                    <option value="RLRDD">RLRDD</option>
+                    <option value="RCADD">RCADD</option>
+                    <option value="RCD">RCD</option>
+                    <option value="RIDMD">RIDMD</option>
+                    <option value="RETD">RETD</option>
+                    <option value="RPSMD">RPSMD</option>
+                    <option value="RICTMD">RICTMD</option>
+                    <option value="RESPO">RESPO</option>
+                    <option value="RMFB1">RMFB1</option>
+                    <option value="Others">Others</option>
+                </select>
+                <input type="text" id="actionNewOfficeDestinationOther" placeholder="Enter Office Destination" class="hidden" style="background: white; margin:0;"> 
+            </div>
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button style="flex: 1;" onclick="executeAction()">Confirm</button>
                 <button style="flex: 1; background: #e2e8f0; color: #475569;" onclick="closeActionModal()">Cancel</button>
@@ -1213,6 +1259,43 @@
             } catch (err) { }
         }
 
+        const OFFICE_DESTINATIONS = ["RD, PRO1", "DRDA", "DRDO", "CRS", "Msg Center", "RPRMD", "RID", "ROD", "RLRDD", "RCADD", "RCD", "RIDMD", "RETD", "RPSMD", "RICTMD", "RESPO", "RMFB1"];
+
+        function toggleOfficeDestinationOther(selectId, otherInputId) {
+            const select = document.getElementById(selectId);
+            const otherInput = document.getElementById(otherInputId);
+            if (!select || !otherInput) return;
+            const showOther = select.value === "Others";
+            otherInput.classList.toggle('hidden', !showOther);
+            otherInput.required = showOther;
+            if (!showOther) otherInput.value = "";
+        }
+
+        function getSelectedOfficeDestination(selectId, otherInputId) {
+            const select = document.getElementById(selectId);
+            const otherInput = document.getElementById(otherInputId);
+            if (!select) return "";
+            if (select.value === "Others") return otherInput ? otherInput.value.trim() : "";
+            return select.value.trim();
+        }
+
+        function setOfficeDestination(selectId, otherInputId, destination) {
+            const select = document.getElementById(selectId);
+            const otherInput = document.getElementById(otherInputId);
+            if (!select) return;
+            const value = String(destination || "").trim();
+            if (OFFICE_DESTINATIONS.includes(value)) {
+                select.value = value;
+                if (otherInput) { otherInput.value = ""; otherInput.classList.add('hidden'); otherInput.required = false; }
+            } else if (value) {
+                select.value = "Others";
+                if (otherInput) { otherInput.value = value; otherInput.classList.remove('hidden'); otherInput.required = true; }
+            } else {
+                select.value = "";
+                if (otherInput) { otherInput.value = ""; otherInput.classList.add('hidden'); otherInput.required = false; }
+            }
+        }
+
         function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); document.getElementById('memoSubmitBtn').disabled = false; document.getElementById('memoSubmitBtn').innerText = "Submit Data"; }
         function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
         function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
@@ -1313,7 +1396,7 @@
             if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
             currentMemos.forEach(row => {
                 const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                const safeDestination = String(row[6] || "N/A").replace(/'/g, "\'").replace(/"/g, '&quot;');
+                const safeDestination = String(row[6] || "N/A").replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${safeDestination}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
             });
             const pagination = document.getElementById('memoPagination');
@@ -1323,29 +1406,41 @@
         function changeMemoPage(direction) { currentMemoPage += direction; renderMemoTable(); }
 
         document.getElementById('memoForm').addEventListener('submit', async (e) => {
-            e.preventDefault(); const submitBtn = document.getElementById('memoSubmitBtn'); const subject = document.getElementById('memoSubject').value.trim(); const officeDestination = document.getElementById('memoOfficeDestination').value.trim(); const classification = document.getElementById('memoClassification').value; 
+            e.preventDefault(); const submitBtn = document.getElementById('memoSubmitBtn'); const subject = document.getElementById('memoSubject').value.trim(); const officeDestination = getSelectedOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther'); const classification = document.getElementById('memoClassification').value; 
             if (!subject) return customAlert("Please enter a Memo Subject.", "Error");
-            if (!officeDestination) return customAlert("Please enter the Office Destination.", "Error");
+            if (!officeDestination) return customAlert("Please select or enter the Office Destination.", "Error");
             submitBtn.disabled = true; submitBtn.innerText = "Submitting...";
             try {
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, officeDestination: officeDestination, classification: classification, userName: localStorage.getItem('loggedInUser') }) });
-                logActivity(`encoded a new memo: "${subject}" for ${officeDestination}`); document.getElementById('memoSubject').value = ""; document.getElementById('memoOfficeDestination').value = ""; closeMemoModal(); setTimeout(loadData, 1500); customAlert("Memo created!", "Success");
+                logActivity(`encoded a new memo: "${subject}" for ${officeDestination}`); document.getElementById('memoSubject').value = ""; setOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther', ""); closeMemoModal(); setTimeout(loadData, 1500); customAlert("Memo created!", "Success");
             } catch (err) { submitBtn.disabled = false; submitBtn.innerText = "Submit Data"; }
         });
 
         function initiateEdit(controlNum, currentSubject, currentOfficeDestination = "") { if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) { customAlert("Admin required.", "Error"); } else { triggerActionModal('edit', controlNum, currentSubject, currentOfficeDestination); } }
-        function triggerActionModal(action, controlNum, currentSubject = "", currentOfficeDestination = "") { pendingAction = action; actionTargetControl = controlNum; document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject; document.getElementById('actionNewOfficeDestination').value = currentOfficeDestination === "N/A" ? "" : currentOfficeDestination; if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); document.getElementById('actionNewOfficeDestination').classList.remove('hidden'); } else { document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionNewOfficeDestination').classList.add('hidden'); } }
-        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionNewOfficeDestination').classList.add('hidden'); }
+        function triggerActionModal(action, controlNum, currentSubject = "", currentOfficeDestination = "") {
+            pendingAction = action; actionTargetControl = controlNum; document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject;
+            setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', currentOfficeDestination === "N/A" ? "" : currentOfficeDestination);
+            if (action === 'edit') {
+                document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`;
+                document.getElementById('actionNewSubject').classList.remove('hidden');
+                document.getElementById('actionOfficeDestinationWrapper').classList.remove('hidden');
+            } else {
+                document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`;
+                document.getElementById('actionNewSubject').classList.add('hidden');
+                document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden');
+            }
+        }
+        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', ""); }
         
         async function executeAction() {
             const pass = document.getElementById('actionAdminPass').value; if (!pass) return;
-            if (pendingAction === 'edit') { const newSubject = document.getElementById('actionNewSubject').value.trim(); const newOfficeDestination = document.getElementById('actionNewOfficeDestination').value.trim(); if (!newSubject) return customAlert("Please enter a Memo Subject.", "Error"); if (!newOfficeDestination) return customAlert("Please enter the Office Destination.", "Error"); await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, officeDestination: newOfficeDestination, password: pass }) }); } 
+            if (pendingAction === 'edit') { const newSubject = document.getElementById('actionNewSubject').value.trim(); const newOfficeDestination = getSelectedOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther'); if (!newSubject) return customAlert("Please enter a Memo Subject.", "Error"); if (!newOfficeDestination) return customAlert("Please select or enter the Office Destination.", "Error"); await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, officeDestination: newOfficeDestination, password: pass }) }); } 
             else if (pendingAction === 'delete') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) }); } 
             else if (pendingAction === 'batch_delete') { for (const c of actionTargetControl) { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: c, password: pass }) }); } }
             closeActionModal(); setTimeout(loadData, 1500);
         }
 
-        function batchDelete() { const checked = document.querySelectorAll('.row-checkbox:checked'); if (checked.length === 0) return; pendingAction = 'batch_delete'; actionTargetControl = Array.from(checked).map(cb => cb.value); document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionNewOfficeDestination').classList.add('hidden'); }
+        function batchDelete() { const checked = document.querySelectorAll('.row-checkbox:checked'); if (checked.length === 0) return; pendingAction = 'batch_delete'; actionTargetControl = Array.from(checked).map(cb => cb.value); document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); }
         
         function searchTable() { 
             const input = document.getElementById("searchInput").value.toUpperCase(); 
