@@ -371,7 +371,7 @@
                     </div>
                 </div>
 
-                <!-- ADDED FILTERS AND SEARCH -->
+                <!-- FILTERS AND SEARCH -->
                 <div class="controls" style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
                     <input type="text" id="searchInput" placeholder="Search memos..." onkeyup="searchTable()" style="margin:0; width: 220px; background: white;">
                     
@@ -458,7 +458,7 @@
                     <div class="settings-section glass-panel">
                         <h3>Account Information</h3>
                         <div class="setting-row"><span>Username</span> <span id="profUsername" style="font-weight:500;"></span></div>
-                        <div class="setting-row"><span>Account Type</span> <span id="profAccType"></span></div>
+                        <div class="setting-row"><span>Assigned Role</span> <span id="profAccType" style="font-weight:600; color:var(--primary);"></span></div>
                         <div class="setting-row"><span>Account Status</span> <span style="color:var(--success); font-weight:500;">Active</span></div>
                     </div>
                     <div class="settings-section glass-panel">
@@ -498,12 +498,15 @@
                         <button class="delete-btn" style="width: auto; margin:0;" onclick="deleteAdminAnnouncement()">Remove</button>
                     </div>
                 </div>
+                
+                <!-- USER MANAGEMENT TABLE WITH ROLE SELECTION -->
                 <div class="table-wrapper" style="margin-top: 20px;">
                     <table id="adminUsersTable">
                         <thead>
                             <tr>
                                 <th>Rank & Name</th>
                                 <th>Username</th>
+                                <th>Assigned Role</th>
                                 <th>Status</th>
                                 <th>Actions</th>
                             </tr>
@@ -641,8 +644,8 @@
 
     <div id="actionModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel">
-            <h3 id="actionModalTitle" style="margin-top:0; color: var(--primary);">Admin Validation Required</h3>
-            <input type="password" id="actionAdminPass" placeholder="Master Password" style="margin-bottom: 10px; background: white;">
+            <h3 id="actionModalTitle" style="margin-top:0; color: var(--primary);">Password Validation Required</h3>
+            <input type="password" id="actionAdminPass" placeholder="Enter Password" style="margin-bottom: 10px; background: white;">
             <input type="text" id="actionNewSubject" placeholder="New Subject (For Edits Only)" class="hidden" style="background: white; margin-bottom: 10px;">
             <div id="actionOfficeDestinationWrapper" class="hidden" style="margin-bottom: 10px;">
                 <select id="actionNewOfficeDestination" onchange="toggleOfficeDestinationOther('actionNewOfficeDestination', 'actionNewOfficeDestinationOther')" style="background: white; margin-bottom: 8px;">
@@ -841,8 +844,8 @@
             }
         }
         function getChatbotResponse(query) {
-            if (query.includes('memo')) return "To manage memos, go to the Home Page tab. You can create a new memo by clicking the 'Create New Memo' button.";
-            if (query.includes('admin')) return "Admin Management is strictly available for the Alpha Admin.";
+            if (query.includes('memo')) return "To manage memos, go to the Home Page tab. Regular users can create and generate control numbers, while Admins can edit and update records.";
+            if (query.includes('admin')) return "Admin Management is strictly accessible to the Alpha Admin to configure user roles.";
             if (query.includes('profile') || query.includes('password') || query.includes('pin')) return "You can change your PIN, password, or username securely by opening your Profile Settings.";
             if (query.includes('setting') || query.includes('theme') || query.includes('dark mode')) return "You can adjust Theme, Notifications, AI behaviors, Auto Logout inside Settings.";
             return "I am a polite system assistant. I can guide you on creating memos, settings, or managing your profile.";
@@ -854,7 +857,14 @@
         async function populateProfileData() {
             const currentUser = localStorage.getItem('loggedInUser') || 'Unknown';
             document.getElementById('profUsername').innerText = currentUser;
-            document.getElementById('profAccType').innerText = (currentUser === ALPHA_ADMIN_NAME) ? "System Admin" : "Standard User";
+            
+            let displayRole = "Regular User";
+            if (currentUser === ALPHA_ADMIN_NAME) {
+                displayRole = "Alpha Admin";
+            } else {
+                displayRole = localStorage.getItem('userRole') || (localStorage.getItem('canEdit') === 'Yes' ? 'Admin' : 'Regular User');
+            }
+            document.getElementById('profAccType').innerText = displayRole;
             
             try {
                 const res = await fetch(`${API_URL}?action=get_profile&username=${encodeURIComponent(currentUser)}`); const data = await res.json();
@@ -918,7 +928,15 @@
             const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&pin=${encodeURIComponent(cred)}`); const data = await res.json();
             
             if (data.success) {
-                localStorage.setItem('loggedInUser', data.name); localStorage.setItem('loggedCred', cred); localStorage.setItem('canEdit', data.canEdit ? 'Yes' : 'No'); sessionStorage.removeItem('systemAnnouncementSeen'); document.getElementById('loginCredential').value = ""; logActivity("logged into the system."); checkAuth();
+                const assignedRole = data.role || (data.canEdit ? 'Admin' : 'Regular User');
+                localStorage.setItem('loggedInUser', data.name); 
+                localStorage.setItem('loggedCred', cred); 
+                localStorage.setItem('userRole', assignedRole);
+                localStorage.setItem('canEdit', assignedRole === 'Admin' ? 'Yes' : 'No'); 
+                sessionStorage.removeItem('systemAnnouncementSeen'); 
+                document.getElementById('loginCredential').value = ""; 
+                logActivity("logged into the system."); 
+                checkAuth();
             } else { customAlert(data.error, "Error"); document.getElementById('loginCredential').value = ""; }
         }
 
@@ -931,7 +949,7 @@
         }
 
         function attemptLogout() { if (userSettings.confirmLogout) { customConfirm("Are you sure you want to log out of the system?", (confirmed) => { if (confirmed) logoutUser(false); }); } else { logoutUser(false); } }
-        function logoutUser(force = false) { if (!force) logActivity("logged out of the system."); localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); localStorage.removeItem('canEdit'); sessionAdminPass = ""; pendingAdminAction = null; sessionStorage.removeItem('systemAnnouncementSeen'); if (activityRefreshTimer) clearInterval(activityRefreshTimer); if (autoLogoutTimer) clearTimeout(autoLogoutTimer); checkAuth(); }
+        function logoutUser(force = false) { if (!force) logActivity("logged out of the system."); localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); localStorage.removeItem('userRole'); localStorage.removeItem('canEdit'); sessionAdminPass = ""; pendingAdminAction = null; sessionStorage.removeItem('systemAnnouncementSeen'); if (activityRefreshTimer) clearInterval(activityRefreshTimer); if (autoLogoutTimer) clearTimeout(autoLogoutTimer); checkAuth(); }
 
         async function updateProfile() {
             const newCred = document.getElementById('newCredential').value.trim(); const newUsername = document.getElementById('newUsernameInput').value.trim();
@@ -955,17 +973,59 @@
             const res = await fetch(`${API_URL}?action=get_all_users&password=${encodeURIComponent(sessionAdminPass)}`); const data = await res.json(); const resAnnounce = await fetch(API_URL + "?action=get_announcement"); const dataAnnounce = await resAnnounce.json(); document.getElementById('adminAnnouncementText').value = (dataAnnounce.success && dataAnnounce.message) ? dataAnnounce.message : "";
             const tbody = document.getElementById('adminUsersTableBody'); tbody.innerHTML = "";
             if (data.success) {
-                if(data.users.length === 0) { tbody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No accounts.</td></tr>"; return; }
+                if(data.users.length === 0) { tbody.innerHTML = "<tr><td colspan='5' style='text-align:center;'>No accounts.</td></tr>"; return; }
                 data.users.forEach(u => {
-                    const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const safeUser = String(u.username).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const isPending = u.status === 'Pending';
-                    const editAction = u.canEdit ? `<button class="action-btn delete-btn" style="margin-top: 4px;" onclick="toggleEditUser('${safeUser}', false)">Revoke Edit</button>` : `<button class="action-btn approve-btn" style="margin-top: 4px;" onclick="toggleEditUser('${safeUser}', true)">Grant Edit</button>`;
-                    const actionHtml = isPending ? `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button> <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` : `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete</button> ${editAction}`;
-                    tbody.innerHTML += `<tr><td>${u.rank} ${u.name}</td><td>${u.username}</td><td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td><td>${actionHtml}</td></tr>`;
+                    const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+                    const safeUser = String(u.username).replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+                    const isPending = u.status === 'Pending';
+                    const userRole = u.role || (u.canEdit ? 'Admin' : 'Regular User');
+                    
+                    const roleSelect = `<select onchange="changeUserRole('${safeUser}', this.value)" style="margin:0; padding: 6px 10px; font-size: 13px; width: auto; border-radius: var(--radius-sm); background: white;">
+                        <option value="Regular User" ${userRole === 'Regular User' ? 'selected' : ''}>Regular User</option>
+                        <option value="Admin" ${userRole === 'Admin' ? 'selected' : ''}>Admin (Add/Edit/Update)</option>
+                    </select>`;
+
+                    const actionHtml = isPending ? 
+                        `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button> <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` : 
+                        `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete</button>`;
+                    
+                    tbody.innerHTML += `<tr>
+                        <td>${u.rank} ${u.name}</td>
+                        <td>${u.username}</td>
+                        <td>${roleSelect}</td>
+                        <td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td>
+                        <td>${actionHtml}</td>
+                    </tr>`;
                 });
             }
         }
 
-        function toggleEditUser(username, grantStatus) { customConfirm(`Are you sure you want to ${grantStatus ? 'GRANT' : 'REVOKE'} edit permissions for ${username}?`, async (confirmed) => { if (!confirmed) return; try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'toggle_edit', username: username, canEdit: grantStatus, password: sessionAdminPass }) }); logActivity(`${grantStatus ? 'granted' : 'revoked'} edit permissions for ${username}`); customAlert(`Edit permissions ${grantStatus ? 'granted' : 'revoked'} successfully.`, "Success"); setTimeout(loadAdminUsers, 1500); } catch(err) { customAlert("Failed to update permissions.", "Error"); } }); }
+        function changeUserRole(username, newRole) {
+            customConfirm(`Set role for ${username} to: ${newRole}?`, async (confirmed) => {
+                if (!confirmed) {
+                    loadAdminUsers();
+                    return;
+                }
+                try {
+                    await fetch(API_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        body: JSON.stringify({
+                            action: 'set_role',
+                            username: username,
+                            role: newRole,
+                            password: sessionAdminPass
+                        })
+                    });
+                    logActivity(`changed role of user "${username}" to ${newRole}`);
+                    customAlert(`Role updated to ${newRole} for ${username}`, "Success");
+                    setTimeout(loadAdminUsers, 1500);
+                } catch(err) {
+                    customAlert("Failed to update user role.", "Error");
+                }
+            });
+        }
+
         function adminDeleteUser(username) { customConfirm(`Delete user: ${username}?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) }); logActivity(`deleted user account: ${username}`); setTimeout(loadAdminUsers, 1500); }); }
         function processApproval(pin, actionType) { customConfirm(`Confirm Action?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) }); logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request."); setTimeout(loadAdminUsers, 1500); }); }
 
@@ -1004,7 +1064,7 @@
                     if (savedSearch) document.getElementById('searchInput').value = savedSearch;
                 }
                 
-                searchTable(); // Apply any saved or default filters directly
+                searchTable(); 
             } catch (err) { }
         }
 
@@ -1034,7 +1094,7 @@
             if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
             currentMemos.forEach(row => {
                 const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const safeDestination = String(row[6] || "N/A").replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${safeDestination}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
+                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${safeDestination}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerDelete('${row[2]}')">Delete</button></td></tr>`;
             });
             const pagination = document.getElementById('memoPagination');
             if (filteredMemos.length > MEMOS_PER_PAGE) { pagination.classList.remove('hidden'); document.getElementById('memoPageInfo').innerText = `Page ${currentMemoPage} of ${totalPages}`; document.getElementById('prevMemoBtn').disabled = (currentMemoPage === 1); document.getElementById('nextMemoBtn').disabled = (currentMemoPage === totalPages); } else { pagination.classList.add('hidden'); }
@@ -1050,27 +1110,100 @@
         });
 
         function initiateEdit(controlNum, currentSubject, currentOfficeDestination = "") {
-            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; const canEdit = localStorage.getItem('canEdit') === 'Yes';
-            if (!isAlphaAdmin && !canEdit) { customAlert("You do not have the required permissions to edit memos.", "Permission Denied"); } else { triggerActionModal('edit', controlNum, currentSubject, currentOfficeDestination); } 
+            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
+            const userRole = localStorage.getItem('userRole');
+            const canEdit = localStorage.getItem('canEdit') === 'Yes' || userRole === 'Admin';
+            
+            if (!isAlphaAdmin && !canEdit) { 
+                customAlert("Regular Users can add and generate control numbers, but only Admins can edit records.", "Permission Denied"); 
+            } else { 
+                triggerActionModal('edit', controlNum, currentSubject, currentOfficeDestination); 
+            } 
+        }
+
+        function triggerDelete(controlNum) {
+            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
+            const userRole = localStorage.getItem('userRole');
+            const canEdit = localStorage.getItem('canEdit') === 'Yes' || userRole === 'Admin';
+
+            if (!isAlphaAdmin && !canEdit) { 
+                return customAlert("Regular Users can add and generate control numbers, but only Admins can delete records.", "Permission Denied"); 
+            }
+            triggerActionModal('delete', controlNum);
         }
 
         function triggerActionModal(action, controlNum, currentSubject = "", currentOfficeDestination = "") {
-            pendingAction = action; actionTargetControl = controlNum; document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject;
+            pendingAction = action; 
+            actionTargetControl = controlNum; 
+            document.getElementById('actionModal').classList.remove('hidden'); 
+            
+            const passInput = document.getElementById('actionAdminPass');
+            passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
+            passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
+            
+            document.getElementById('actionNewSubject').value = currentSubject;
             setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', currentOfficeDestination === "N/A" ? "" : currentOfficeDestination);
-            if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.remove('hidden'); } else { document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); }
+            
+            if (action === 'edit') { 
+                document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`; 
+                document.getElementById('actionNewSubject').classList.remove('hidden'); 
+                document.getElementById('actionOfficeDestinationWrapper').classList.remove('hidden'); 
+            } else { 
+                document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`; 
+                document.getElementById('actionNewSubject').classList.add('hidden'); 
+                document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); 
+            }
         }
         
         function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', ""); }
         
         async function executeAction() {
-            const pass = document.getElementById('actionAdminPass').value; if (!pass) return;
-            if (pendingAction === 'edit') { const newSubject = document.getElementById('actionNewSubject').value.trim(); const newOfficeDestination = getSelectedOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther'); if (!newSubject) return customAlert("Please enter a Memo Subject.", "Error"); if (!newOfficeDestination) return customAlert("Please select or enter the Office Destination.", "Error"); await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, officeDestination: newOfficeDestination, password: pass }) }); } 
-            else if (pendingAction === 'delete') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) }); } 
-            else if (pendingAction === 'batch_delete') { for (const c of actionTargetControl) { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: c, password: pass }) }); } }
+            const pass = document.getElementById('actionAdminPass').value; if (!pass) return customAlert("Please enter password.", "Error");
+            const currentUser = localStorage.getItem('loggedInUser');
+
+            if (pendingAction === 'edit') { 
+                const newSubject = document.getElementById('actionNewSubject').value.trim(); 
+                const newOfficeDestination = getSelectedOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther'); 
+                if (!newSubject) return customAlert("Please enter a Memo Subject.", "Error"); 
+                if (!newOfficeDestination) return customAlert("Please select or enter the Office Destination.", "Error"); 
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, officeDestination: newOfficeDestination, password: pass, userName: currentUser }) }); 
+                logActivity(`updated memo: ${actionTargetControl}`);
+            } else if (pendingAction === 'delete') { 
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass, userName: currentUser }) }); 
+                logActivity(`deleted memo: ${actionTargetControl}`);
+            } else if (pendingAction === 'batch_delete') { 
+                for (const c of actionTargetControl) { 
+                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: c, password: pass, userName: currentUser }) }); 
+                } 
+                logActivity(`batch deleted ${actionTargetControl.length} memos`);
+            }
             closeActionModal(); setTimeout(loadData, 1500);
         }
 
-        function batchDelete() { const checked = document.querySelectorAll('.row-checkbox:checked'); if (checked.length === 0) return; pendingAction = 'batch_delete'; actionTargetControl = Array.from(checked).map(cb => cb.value); document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); }
+        function batchDelete() { 
+            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
+            const userRole = localStorage.getItem('userRole');
+            const canEdit = localStorage.getItem('canEdit') === 'Yes' || userRole === 'Admin';
+
+            if (!isAlphaAdmin && !canEdit) { 
+                return customAlert("Regular Users can add and generate control numbers, but only Admins can delete records.", "Permission Denied"); 
+            }
+
+            const checked = document.querySelectorAll('.row-checkbox:checked'); 
+            if (checked.length === 0) return customAlert("Please select at least one record to delete.", "Notice"); 
+            
+            pendingAction = 'batch_delete'; 
+            actionTargetControl = Array.from(checked).map(cb => cb.value); 
+            document.getElementById('actionModal').classList.remove('hidden'); 
+            document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; 
+            
+            const passInput = document.getElementById('actionAdminPass');
+            passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
+            passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
+            
+            document.getElementById('actionNewSubject').classList.add('hidden'); 
+            document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); 
+        }
         
         function searchTable() { 
             const searchInput = document.getElementById("searchInput").value.toUpperCase(); 
