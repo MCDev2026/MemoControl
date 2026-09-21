@@ -48,20 +48,34 @@
             background: linear-gradient(135deg, #0f172a, #1e293b, #334155);
         }
         body.dark-mode input, body.dark-mode select, body.dark-mode textarea {
-            background-color: rgba(255,255,255,0.05) !important; color: var(--text-main) !important; border-color: var(--border-color);
+            background-color: #0f172a !important; color: var(--text-main) !important; border-color: var(--border-color);
+        }
+        body.dark-mode option {
+            background-color: #0f172a !important; color: var(--text-main) !important;
         }
         body.dark-mode th { background-color: #1e293b; border-bottom-color: rgba(255,255,255,0.1); }
         body.dark-mode tbody tr:hover { background-color: rgba(255,255,255,0.05); }
-        body.dark-mode .modal-content, body.dark-mode #chatbot-window, body.dark-mode .notification-toast, body.dark-mode .chat-messages {
+        
+        /* Dark Mode Modals text visibility fix */
+        body.dark-mode .modal-content, 
+        body.dark-mode #chatbot-window, 
+        body.dark-mode .notification-toast, 
+        body.dark-mode .chat-messages {
             background-color: #1e293b !important;
         }
+        body.dark-mode .modal-content h2, 
+        body.dark-mode .modal-content h3, 
+        body.dark-mode .modal-content p, 
+        body.dark-mode .modal-content label { 
+            color: var(--text-main) !important; 
+        }
+        
         body.dark-mode .chat-input-area { background: #1e293b; border-color: var(--border-color); }
         body.dark-mode #chatInput { background: rgba(255,255,255,0.1); color: white; }
         body.dark-mode .chat-msg.bot { background: #334155; color: white; border-color: rgba(255,255,255,0.1); }
         body.dark-mode .action-btn { background-color: rgba(255,255,255,0.1); color: var(--text-main); border-color: var(--border-color); }
         body.dark-mode .action-btn:hover { background-color: rgba(255,255,255,0.2); }
         body.dark-mode [style*="background: white"], body.dark-mode [style*="background:white"] { background-color: #1e293b !important; }
-        body.dark-mode [style*="color: black"], body.dark-mode [style*="color:black"] { color: var(--text-main) !important; }
         body.dark-mode .page-btn { background: rgba(255,255,255,0.05); color: var(--text-main); }
         body.dark-mode .page-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
 
@@ -424,6 +438,7 @@
                                 <th>Office Destination</th>
                                 <th>Control Number</th>
                                 <th>Encoded By</th>
+                                <th>Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -580,7 +595,7 @@
     <div id="customConfirmModal" class="modal-overlay hidden" style="z-index: 2000;">
         <div class="modal-content glass-panel">
             <h3 id="customConfirmTitle" style="margin-top:0; color: var(--danger);">Confirm Action</h3>
-            <p id="customConfirmMessage" style="font-size: 15px; margin-bottom: 20px; color: var(--text-main);"></p>
+            <p id="customConfirmMessage" style="font-size: 15px; margin-bottom: 20px;"></p>
             <div style="display: flex; gap: 10px;">
                 <button id="customConfirmYesBtn" style="flex: 1;" class="approve-btn">Yes</button>
                 <button id="customConfirmNoBtn" style="flex: 1; background: #e2e8f0; color: #475569;">Cancel</button>
@@ -592,7 +607,7 @@
         <div class="modal-content glass-panel modal-large">
             <h2 style="margin-top: 0; color: var(--primary);">Submit New Memo</h2>
             <form id="memoForm" style="display: flex; gap: 10px; margin-top: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-                <select id="memoClassification" style="padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: white; color: black; margin: 0; min-width: 200px;">
+                <select id="memoClassification" style="padding: 12px; border-radius: 6px; border: 1px solid var(--border-color); background: white; margin: 0; min-width: 200px;">
                     <option value="A">Admin</option>
                     <option value="S">Supply</option>
                     <option value="GSS">General Services Section</option>
@@ -647,6 +662,14 @@
             <h3 id="actionModalTitle" style="margin-top:0; color: var(--primary);">Password Validation Required</h3>
             <input type="password" id="actionAdminPass" placeholder="Enter Password" style="margin-bottom: 10px; background: white;">
             <input type="text" id="actionNewSubject" placeholder="New Subject (For Edits Only)" class="hidden" style="background: white; margin-bottom: 10px;">
+            <select id="actionNewStatus" class="hidden" style="background: white; margin-bottom: 10px;">
+                <option value="For Dispatched">For Dispatched</option>
+                <option value="Pending">Pending</option>
+                <option value="Dispatched">Dispatched</option>
+                <option value="Signed">Signed</option>
+                <option value="Approved">Approved</option>
+                <option value="Disapproved">Disapproved</option>
+            </select>
             <div id="actionOfficeDestinationWrapper" class="hidden" style="margin-bottom: 10px;">
                 <select id="actionNewOfficeDestination" onchange="toggleOfficeDestinationOther('actionNewOfficeDestination', 'actionNewOfficeDestinationOther')" style="background: white; margin-bottom: 8px;">
                     <option value="">Select Office Destination</option>
@@ -1034,7 +1057,7 @@
                 const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
                 const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
                 
-                if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No memos found.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); updateDashboard(); return; }
+                if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No memos found.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); updateDashboard(); return; }
                 
                 allMemos = data.reverse(); 
 
@@ -1091,10 +1114,25 @@
             if (currentMemoPage > totalPages) currentMemoPage = totalPages; if (currentMemoPage < 1) currentMemoPage = 1;
             const currentMemos = filteredMemos.slice((currentMemoPage - 1) * MEMOS_PER_PAGE, ((currentMemoPage - 1) * MEMOS_PER_PAGE) + MEMOS_PER_PAGE);
             
-            if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
+            if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
             currentMemos.forEach(row => {
-                const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;'); const safeDestination = String(row[6] || "N/A").replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${safeDestination}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerDelete('${row[2]}')">Delete</button></td></tr>`;
+                const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+                const safeDestination = String(row[6] || "N/A").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const memoStatus = row[4] || "For Dispatched";
+                
+                tableBody.innerHTML += `<tr>
+                    <td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td>
+                    <td>${row[0]}</td>
+                    <td>${row[1]}</td>
+                    <td>${safeDestination}</td>
+                    <td>${row[2]}</td>
+                    <td>${row[3] || "N/A"}</td>
+                    <td><span style="font-weight: 500; color: var(--primary);">${memoStatus}</span></td>
+                    <td style="white-space: nowrap;">
+                        <button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}', '${memoStatus}')">Edit</button> 
+                        <button class="action-btn delete-btn" onclick="triggerDelete('${row[2]}')">Delete</button>
+                    </td>
+                </tr>`;
             });
             const pagination = document.getElementById('memoPagination');
             if (filteredMemos.length > MEMOS_PER_PAGE) { pagination.classList.remove('hidden'); document.getElementById('memoPageInfo').innerText = `Page ${currentMemoPage} of ${totalPages}`; document.getElementById('prevMemoBtn').disabled = (currentMemoPage === 1); document.getElementById('nextMemoBtn').disabled = (currentMemoPage === totalPages); } else { pagination.classList.add('hidden'); }
@@ -1109,7 +1147,7 @@
             try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, officeDestination: officeDestination, classification: classification, userName: localStorage.getItem('loggedInUser') }) }); logActivity(`encoded a new memo: "${subject}" for ${officeDestination}`); document.getElementById('memoSubject').value = ""; setOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther', ""); closeMemoModal(); setTimeout(loadData, 1500); customAlert("Memo created!", "Success"); } catch (err) { submitBtn.disabled = false; submitBtn.innerText = "Submit Data"; }
         });
 
-        function initiateEdit(controlNum, currentSubject, currentOfficeDestination = "") {
+        function initiateEdit(controlNum, currentSubject, currentOfficeDestination = "", currentStatus = "For Dispatched") {
             const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
             const userRole = localStorage.getItem('userRole');
             const canEdit = localStorage.getItem('canEdit') === 'Yes' || userRole === 'Admin';
@@ -1117,7 +1155,7 @@
             if (!isAlphaAdmin && !canEdit) { 
                 customAlert("Regular Users can add and generate control numbers, but only Admins can edit records.", "Permission Denied"); 
             } else { 
-                triggerActionModal('edit', controlNum, currentSubject, currentOfficeDestination); 
+                triggerActionModal('edit', controlNum, currentSubject, currentOfficeDestination, currentStatus); 
             } 
         }
 
@@ -1132,7 +1170,7 @@
             triggerActionModal('delete', controlNum);
         }
 
-        function triggerActionModal(action, controlNum, currentSubject = "", currentOfficeDestination = "") {
+        function triggerActionModal(action, controlNum, currentSubject = "", currentOfficeDestination = "", currentStatus = "For Dispatched") {
             pendingAction = action; 
             actionTargetControl = controlNum; 
             document.getElementById('actionModal').classList.remove('hidden'); 
@@ -1142,20 +1180,23 @@
             passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
             
             document.getElementById('actionNewSubject').value = currentSubject;
+            document.getElementById('actionNewStatus').value = currentStatus;
             setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', currentOfficeDestination === "N/A" ? "" : currentOfficeDestination);
             
             if (action === 'edit') { 
                 document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`; 
                 document.getElementById('actionNewSubject').classList.remove('hidden'); 
+                document.getElementById('actionNewStatus').classList.remove('hidden');
                 document.getElementById('actionOfficeDestinationWrapper').classList.remove('hidden'); 
             } else { 
                 document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`; 
                 document.getElementById('actionNewSubject').classList.add('hidden'); 
+                document.getElementById('actionNewStatus').classList.add('hidden');
                 document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); 
             }
         }
         
-        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', ""); }
+        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionNewStatus').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', ""); }
         
         async function executeAction() {
             const pass = document.getElementById('actionAdminPass').value; if (!pass) return customAlert("Please enter password.", "Error");
@@ -1163,10 +1204,13 @@
 
             if (pendingAction === 'edit') { 
                 const newSubject = document.getElementById('actionNewSubject').value.trim(); 
+                const newStatus = document.getElementById('actionNewStatus').value;
                 const newOfficeDestination = getSelectedOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther'); 
+                
                 if (!newSubject) return customAlert("Please enter a Memo Subject.", "Error"); 
                 if (!newOfficeDestination) return customAlert("Please select or enter the Office Destination.", "Error"); 
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, officeDestination: newOfficeDestination, password: pass, userName: currentUser }) }); 
+                
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, newStatus: newStatus, officeDestination: newOfficeDestination, password: pass, userName: currentUser }) }); 
                 logActivity(`updated memo: ${actionTargetControl}`);
             } else if (pendingAction === 'delete') { 
                 await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass, userName: currentUser }) }); 
@@ -1202,6 +1246,7 @@
             passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
             
             document.getElementById('actionNewSubject').classList.add('hidden'); 
+            document.getElementById('actionNewStatus').classList.add('hidden');
             document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); 
         }
         
