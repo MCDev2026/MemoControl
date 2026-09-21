@@ -666,7 +666,8 @@
         <div class="modal-content glass-panel">
             <h3 id="actionModalTitle" style="margin-top:0; color: var(--primary);">Admin Validation Required</h3>
             <input type="password" id="actionAdminPass" placeholder="Master Password" style="margin-bottom: 10px; background: white;">
-            <input type="text" id="actionNewSubject" placeholder="New Subject (For Edits Only)" class="hidden" style="background: white;">
+            <input type="text" id="actionNewSubject" placeholder="New Subject (For Edits Only)" class="hidden" style="background: white; margin-bottom: 10px;">
+            <input type="text" id="actionNewOfficeDestination" placeholder="Office Destination (For Edits Only)" class="hidden" style="background: white;">
             <div style="display: flex; gap: 10px; margin-top: 15px;">
                 <button style="flex: 1;" onclick="executeAction()">Confirm</button>
                 <button style="flex: 1; background: #e2e8f0; color: #475569;" onclick="closeActionModal()">Cancel</button>
@@ -1313,7 +1314,7 @@
             currentMemos.forEach(row => {
                 const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const safeDestination = String(row[6] || "N/A").replace(/'/g, "\'").replace(/"/g, '&quot;');
-                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${safeDestination}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
+                tableBody.innerHTML += `<tr><td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td><td>${row[0]}</td><td>${row[1]}</td><td>${safeDestination}</td><td>${row[2]}</td><td>${row[3] || "N/A"}</td><td style="white-space: nowrap;"><button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}')">Edit</button> <button class="action-btn delete-btn" onclick="triggerActionModal('delete', '${row[2]}')">Delete</button></td></tr>`;
             });
             const pagination = document.getElementById('memoPagination');
             if (filteredMemos.length > MEMOS_PER_PAGE) { pagination.classList.remove('hidden'); document.getElementById('memoPageInfo').innerText = `Page ${currentMemoPage} of ${totalPages}`; document.getElementById('prevMemoBtn').disabled = (currentMemoPage === 1); document.getElementById('nextMemoBtn').disabled = (currentMemoPage === totalPages); } else { pagination.classList.add('hidden'); }
@@ -1332,19 +1333,19 @@
             } catch (err) { submitBtn.disabled = false; submitBtn.innerText = "Submit Data"; }
         });
 
-        function initiateEdit(controlNum, currentSubject) { if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) { customAlert("Admin required.", "Error"); } else { triggerActionModal('edit', controlNum, currentSubject); } }
-        function triggerActionModal(action, controlNum, currentSubject = "") { pendingAction = action; actionTargetControl = controlNum; document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject; if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); } else { document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); } }
-        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; }
+        function initiateEdit(controlNum, currentSubject, currentOfficeDestination = "") { if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) { customAlert("Admin required.", "Error"); } else { triggerActionModal('edit', controlNum, currentSubject, currentOfficeDestination); } }
+        function triggerActionModal(action, controlNum, currentSubject = "", currentOfficeDestination = "") { pendingAction = action; actionTargetControl = controlNum; document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').value = currentSubject; document.getElementById('actionNewOfficeDestination').value = currentOfficeDestination === "N/A" ? "" : currentOfficeDestination; if (action === 'edit') { document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`; document.getElementById('actionNewSubject').classList.remove('hidden'); document.getElementById('actionNewOfficeDestination').classList.remove('hidden'); } else { document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionNewOfficeDestination').classList.add('hidden'); } }
+        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionNewOfficeDestination').classList.add('hidden'); }
         
         async function executeAction() {
             const pass = document.getElementById('actionAdminPass').value; if (!pass) return;
-            if (pendingAction === 'edit') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: document.getElementById('actionNewSubject').value.trim(), password: pass }) }); } 
+            if (pendingAction === 'edit') { const newSubject = document.getElementById('actionNewSubject').value.trim(); const newOfficeDestination = document.getElementById('actionNewOfficeDestination').value.trim(); if (!newSubject) return customAlert("Please enter a Memo Subject.", "Error"); if (!newOfficeDestination) return customAlert("Please enter the Office Destination.", "Error"); await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, officeDestination: newOfficeDestination, password: pass }) }); } 
             else if (pendingAction === 'delete') { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass }) }); } 
             else if (pendingAction === 'batch_delete') { for (const c of actionTargetControl) { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: c, password: pass }) }); } }
             closeActionModal(); setTimeout(loadData, 1500);
         }
 
-        function batchDelete() { const checked = document.querySelectorAll('.row-checkbox:checked'); if (checked.length === 0) return; pendingAction = 'batch_delete'; actionTargetControl = Array.from(checked).map(cb => cb.value); document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden'); }
+        function batchDelete() { const checked = document.querySelectorAll('.row-checkbox:checked'); if (checked.length === 0) return; pendingAction = 'batch_delete'; actionTargetControl = Array.from(checked).map(cb => cb.value); document.getElementById('actionModal').classList.remove('hidden'); document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; document.getElementById('actionAdminPass').value = sessionAdminPass; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionNewOfficeDestination').classList.add('hidden'); }
         
         function searchTable() { 
             const input = document.getElementById("searchInput").value.toUpperCase(); 
