@@ -505,29 +505,33 @@
                     <h2 style="margin:0; color: var(--danger);">Administration Management</h2>
                     <button class="action-btn approve-btn" onclick="loadAdminUsers()" style="padding: 10px 18px; font-weight: bold; color:white;">Refresh Data</button>
                 </div>
-                <div class="glass-panel" style="padding: 20px; margin-top: 20px; background: white;">
-                    <h3 style="margin-top:0; color: var(--primary); font-size: 16px;">Global System Announcement Control</h3>
-                    <textarea id="adminAnnouncementText" placeholder="Enter the system announcement here..." style="min-height: 100px;"></textarea>
-                    <div style="display: flex; gap: 10px; margin-top:10px;">
-                        <button class="approve-btn" style="width: auto; margin:0;" onclick="saveAdminAnnouncement()">Post Announcement</button>
-                        <button class="delete-btn" style="width: auto; margin:0;" onclick="deleteAdminAnnouncement()">Remove</button>
-                    </div>
-                </div>
                 
-                <!-- USER MANAGEMENT TABLE WITH ROLE SELECTION -->
-                <div class="table-wrapper" style="margin-top: 20px;">
-                    <table id="adminUsersTable">
-                        <thead>
-                            <tr>
-                                <th>Rank & Name</th>
-                                <th>Username</th>
-                                <th>Assigned Role</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminUsersTableBody"></tbody>
-                    </table>
+                <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-top: 20px;">
+                    <!-- USER MANAGEMENT TABLE WITH ROLE SELECTION -->
+                    <div class="table-wrapper" style="flex: 2; margin-top: 0; min-width: 300px;">
+                        <table id="adminUsersTable">
+                            <thead>
+                                <tr>
+                                    <th>Rank & Name</th>
+                                    <th>Username</th>
+                                    <th>Assigned Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody"></tbody>
+                        </table>
+                    </div>
+
+                    <!-- GLOBAL SYSTEM ANNOUNCEMENT CONTROL -->
+                    <div class="glass-panel" style="flex: 1; padding: 20px; background: white; min-width: 250px;">
+                        <h3 style="margin-top:0; color: var(--primary); font-size: 16px;">Global System Announcement Control</h3>
+                        <textarea id="adminAnnouncementText" placeholder="Enter the system announcement here..." style="min-height: 100px; width: 100%;"></textarea>
+                        <div style="display: flex; gap: 10px; margin-top:10px;">
+                            <button class="approve-btn" style="flex: 1; margin:0;" onclick="saveAdminAnnouncement()">Post Announcement</button>
+                            <button class="delete-btn" style="flex: 1; margin:0;" onclick="deleteAdminAnnouncement()">Remove</button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1035,7 +1039,7 @@
                 data.users.forEach(u => {
                     const safePin = String(u.pin).replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
                     const safeUser = String(u.username).replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
-                    const isPending = u.status === 'Pending';
+                    const isPending = String(u.status || '').trim().toLowerCase() === 'pending';
                     const userRole = u.role || (u.canEdit ? 'Admin' : 'Regular User');
                     
                     const roleSelect = `<select onchange="changeUserRole('${safeUser}', this.value)" style="margin:0; padding: 6px 10px; font-size: 13px; width: auto; border-radius: var(--radius-sm); background: white;">
@@ -1044,14 +1048,14 @@
                     </select>`;
 
                     const actionHtml = isPending ? 
-                        `<button class="action-btn approve-btn" onclick="processApproval('${safePin}', 'approve_user')">Approve</button> <button class="action-btn delete-btn" onclick="processApproval('${safePin}', 'reject_user')">Reject</button>` : 
+                        `<button class="action-btn approve-btn" onclick="processApproval('${safeUser}', 'approve_user')">Approve</button> <button class="action-btn delete-btn" onclick="processApproval('${safeUser}', 'reject_user')">Reject</button>` : 
                         `<button class="action-btn delete-btn" onclick="adminDeleteUser('${safeUser}')">Delete</button>`;
                     
                     tbody.innerHTML += `<tr>
-                        <td>${u.rank} ${u.name}</td>
+                        <td>${u.rank || ''} ${u.name || ''}</td>
                         <td>${u.username}</td>
                         <td>${roleSelect}</td>
-                        <td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status}</td>
+                        <td style="color:${isPending ? '#f59e0b' : 'var(--success)'}">${u.status || 'Active'}</td>
                         <td>${actionHtml}</td>
                     </tr>`;
                 });
@@ -1085,14 +1089,14 @@
         }
 
         function adminDeleteUser(username) { customConfirm(`Delete user: ${username}?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) }); logActivity(`deleted user account: ${username}`); setTimeout(loadAdminUsers, 1500); }); }
-        function processApproval(pin, actionType) { customConfirm(`Confirm Action?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, userPin: pin, password: sessionAdminPass }) }); logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request."); setTimeout(loadAdminUsers, 1500); }); }
+        function processApproval(userIdentifier, actionType) { customConfirm(`Confirm Action?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, username: userIdentifier, userPin: userIdentifier, password: sessionAdminPass }) }); logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request."); setTimeout(loadAdminUsers, 1500); }); }
 
         async function loadData() {
             try {
                 const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
                 const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
                 
-                if(data.length === 0) { tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No memos found.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); updateDashboard(); return; }
+                if(!data || data.length === 0) { tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No memos found.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); updateDashboard(); return; }
                 
                 allMemos = data.reverse(); 
 
@@ -1151,8 +1155,8 @@
             
             if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
             currentMemos.forEach(row => {
-                const safeSubject = String(row[1]).replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
-                const safeDestination = String(row[6] || "N/A").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const safeSubject = String(row[1] || "").replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+                const safeDestination = String(row[5] || "N/A").replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const memoStatus = row[4] || "For Dispatched";
                 
                 tableBody.innerHTML += `<tr>
@@ -1196,11 +1200,9 @@
 
         function triggerDelete(controlNum) {
             const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
-            const userRole = localStorage.getItem('userRole');
-            const canEdit = localStorage.getItem('canEdit') === 'Yes' || userRole === 'Admin';
 
-            if (!isAlphaAdmin && !canEdit) { 
-                return customAlert("Regular Users can add and generate control numbers, but only Admins can delete records.", "Permission Denied"); 
+            if (!isAlphaAdmin) { 
+                return customAlert("Regular Users and Admins are unable to delete existing entries. Only Alpha Admin can delete records.", "Permission Denied"); 
             }
             triggerActionModal('delete', controlNum);
         }
@@ -1261,11 +1263,9 @@
 
         function batchDelete() { 
             const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
-            const userRole = localStorage.getItem('userRole');
-            const canEdit = localStorage.getItem('canEdit') === 'Yes' || userRole === 'Admin';
 
-            if (!isAlphaAdmin && !canEdit) { 
-                return customAlert("Regular Users can add and generate control numbers, but only Admins can delete records.", "Permission Denied"); 
+            if (!isAlphaAdmin) { 
+                return customAlert("Regular Users and Admins are unable to delete existing entries. Only Alpha Admin can delete records.", "Permission Denied"); 
             }
 
             const checked = document.querySelectorAll('.row-checkbox:checked'); 
