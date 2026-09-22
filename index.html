@@ -944,23 +944,58 @@
         }
 
         async function loginUser() {
-            const user = document.getElementById('loginUsername').value.trim(); const cred = document.getElementById('loginCredential').value.trim();
+            const user = document.getElementById('loginUsername').value.trim();
+            const cred = document.getElementById('loginCredential').value.trim();
             if(!user || !cred) return customAlert("Enter Username and PIN/Password.", "Authentication Error");
             
             document.getElementById('loginCredential').value = "Logging in...";
-            const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&pin=${encodeURIComponent(cred)}`); const data = await res.json();
             
-            if (data.success) {
-                const assignedRole = data.role || (data.canEdit ? 'Admin' : 'Regular User');
-                localStorage.setItem('loggedInUser', data.name); 
-                localStorage.setItem('loggedCred', cred); 
-                localStorage.setItem('userRole', assignedRole);
-                localStorage.setItem('canEdit', assignedRole === 'Admin' ? 'Yes' : 'No'); 
-                sessionStorage.removeItem('systemAnnouncementSeen'); 
-                document.getElementById('loginCredential').value = ""; 
-                logActivity("logged into the system."); 
-                checkAuth();
-            } else { customAlert(data.error, "Error"); document.getElementById('loginCredential').value = ""; }
+            // Alpha Admin Authentication Bypass Route
+            if (user === ALPHA_ADMIN_NAME) {
+                try {
+                    const adminRes = await fetch(`${API_URL}?action=verify_admin&password=${encodeURIComponent(cred)}`);
+                    const adminData = await adminRes.json();
+                    if (adminData.success) {
+                        localStorage.setItem('loggedInUser', ALPHA_ADMIN_NAME);
+                        localStorage.setItem('loggedCred', cred);
+                        localStorage.setItem('userRole', 'Admin');
+                        localStorage.setItem('canEdit', 'Yes');
+                        sessionAdminPass = cred;
+                        sessionStorage.removeItem('systemAnnouncementSeen');
+                        document.getElementById('loginCredential').value = "";
+                        logActivity("logged into the system as Alpha Admin.");
+                        checkAuth();
+                        return;
+                    }
+                } catch (err) {
+                    console.error("Admin verification bypass failed:", err);
+                }
+            }
+            
+            try {
+                const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(user)}&pin=${encodeURIComponent(cred)}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    const assignedRole = data.role || (data.canEdit ? 'Admin' : 'Regular User');
+                    const storedUser = (user === ALPHA_ADMIN_NAME) ? ALPHA_ADMIN_NAME : (data.username || data.name || user);
+                    
+                    localStorage.setItem('loggedInUser', storedUser); 
+                    localStorage.setItem('loggedCred', cred); 
+                    localStorage.setItem('userRole', assignedRole);
+                    localStorage.setItem('canEdit', assignedRole === 'Admin' ? 'Yes' : 'No'); 
+                    sessionStorage.removeItem('systemAnnouncementSeen'); 
+                    document.getElementById('loginCredential').value = ""; 
+                    logActivity("logged into the system."); 
+                    checkAuth();
+                } else {
+                    customAlert(data.error || "Invalid credentials", "Error");
+                    document.getElementById('loginCredential').value = "";
+                }
+            } catch (err) {
+                customAlert("Network error during login.", "Error");
+                document.getElementById('loginCredential').value = "";
+            }
         }
 
         async function registerUser() {
