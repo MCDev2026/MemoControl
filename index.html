@@ -78,6 +78,7 @@
         body.dark-mode [style*="background: white"], body.dark-mode [style*="background:white"] { background-color: #1e293b !important; }
         body.dark-mode .page-btn { background: rgba(255,255,255,0.05); color: var(--text-main); }
         body.dark-mode .page-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
+        body.dark-mode .sidebar { background: #0f172a !important; border-right: 1px solid rgba(255,255,255,0.05); }
 
         /* --- COMPACT MODE OVERRIDES --- */
         body.compact-mode td, body.compact-mode th { padding: 8px 14px; font-size: 13px; }
@@ -100,21 +101,22 @@
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* Top Bar */
+        /* Top Bar - Modified to Dark Blue */
         .top-bar {
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 10px 20px;
-            background: rgba(255, 255, 255, 0.9);
-            border-bottom: 1px solid var(--border-color);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            background: #1e3a8a;
+            border-bottom: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: sticky;
             top: 0;
             z-index: 50;
+            height: 60px;
         }
-        body.dark-mode .top-bar { background: rgba(30, 41, 59, 0.95); }
+        body.dark-mode .top-bar { background: #0f172a; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
         .top-bar-left {
             display: flex;
@@ -129,19 +131,18 @@
         }
 
         #datetime-display {
-            font-size: 13px; font-weight: 500; color: var(--text-muted);
+            font-size: 13px; font-weight: 500; color: #cbd5e1 !important;
         }
 
         .profile-btn {
-            background: transparent; border: 1px solid var(--border-color);
+            background: transparent; border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 50%; width: 40px; height: 40px; display: flex;
             align-items: center; justify-content: center; cursor: pointer;
             padding: 5px;
         }
-        .profile-btn:hover { background: rgba(0,0,0,0.05); }
-        body.dark-mode .profile-btn:hover { background: rgba(255,255,255,0.1); }
+        .profile-btn:hover { background: rgba(255, 255, 255, 0.1); }
+        body.dark-mode .profile-btn:hover { background: rgba(255,255,255,0.15); }
         .profile-btn img { width: 20px; height: 20px; }
-        body.dark-mode .profile-btn img, body.dark-mode .top-bar-left button img { filter: invert(0.8) !important; }
 
         .hidden { display: none !important; }
         
@@ -175,25 +176,36 @@
 
         .app-layout { display: flex; width: 100%; flex-grow: 1; align-items: flex-start; }
         
-        /* Gmail-style Collapsible Sidebar */
-        .sidebar { width: 280px; padding: 15px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; transition: width 0.3s ease; height: calc(100vh - 60px); background: transparent; overflow-x: hidden; border-right: 1px solid var(--border-color); }
+        /* Gmail-style Collapsible Sidebar - Modified to Dark Blue & Sticky */
+        .sidebar { 
+            width: 280px; 
+            padding: 15px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            flex-shrink: 0; 
+            transition: width 0.3s ease; 
+            height: calc(100vh - 60px); 
+            background: #1e3a8a; 
+            overflow-y: auto;
+            overflow-x: hidden; 
+            border-right: none;
+            position: sticky;
+            top: 60px;
+        }
         .sidebar.collapsed { width: 80px; padding: 15px 10px; align-items: center; }
-        .sidebar.collapsed .nav-text, .sidebar.collapsed .sidebar-header { display: none; }
+        .sidebar.collapsed .nav-text, .sidebar.collapsed .sidebar-header h1 { display: none; }
         
         .sidebar-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; padding: 0 10px; }
         .sidebar-header img { width: 45px; height: 45px; object-fit: contain; }
-        .sidebar-header h1 { font-size: 16px; margin: 0; color: var(--text-main); font-weight: 700; line-height: 1.2;}
+        .sidebar-header h1 { font-size: 16px; margin: 0; color: #ffffff !important; font-weight: 700; line-height: 1.2;}
 
-        .sidebar-btn { background: transparent; border: 1px solid transparent; color: var(--text-main); text-align: left; padding: 12px 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center; border-radius: 20px; margin-bottom: 4px; width: 100%; white-space: nowrap; overflow: hidden; }
-        .sidebar-btn:hover { background: rgba(0, 0, 0, 0.05); }
-        body.dark-mode .sidebar-btn:hover { background: rgba(255, 255, 255, 0.05); }
-        .sidebar-btn.active { background: rgba(79, 70, 229, 0.1); color: var(--primary); font-weight: 600; }
-        body.dark-mode .sidebar-btn.active { background: rgba(129, 140, 248, 0.2); color: var(--primary); }
+        .sidebar-btn { background: transparent; border: 1px solid transparent; color: #cbd5e1 !important; text-align: left; padding: 12px 16px; font-size: 14px; font-weight: 500; display: flex; align-items: center; border-radius: 20px; margin-bottom: 4px; width: 100%; white-space: nowrap; overflow: hidden; }
+        .sidebar-btn:hover { background: rgba(255, 255, 255, 0.1) !important; }
+        .sidebar-btn.active { background: rgba(255, 255, 255, 0.2) !important; color: #ffffff !important; font-weight: 600; }
         
-        .nav-icon { width: 20px; height: 20px; margin-right: 16px; flex-shrink: 0; object-fit: contain; opacity: 0.7; }
-        body.dark-mode .nav-icon { filter: invert(0.8); }
-        .sidebar-btn.active .nav-icon { opacity: 1; filter: invert(28%) sepia(91%) saturate(2333%) hue-rotate(228deg) brightness(97%) contrast(92%); }
-        body.dark-mode .sidebar-btn.active .nav-icon { filter: invert(60%) sepia(80%) saturate(1000%) hue-rotate(200deg) brightness(100%) contrast(100%); }
+        .nav-icon { width: 20px; height: 20px; margin-right: 16px; flex-shrink: 0; object-fit: contain; filter: brightness(0) invert(1) !important; opacity: 0.8 !important; }
+        .sidebar-btn.active .nav-icon { opacity: 1 !important; filter: brightness(0) invert(1) !important; }
         .sidebar.collapsed .nav-icon { margin-right: 0; }
 
         .main-content { flex-grow: 1; padding: 30px; width: 100%; max-width: 1400px; margin: 0 auto;}
@@ -263,8 +275,8 @@
 
         @media (max-width: 992px) {
             .app-layout { flex-direction: column; }
-            .sidebar { position: fixed; z-index: 1000; left: -100%; width: 250px; background: white; transition: left 0.3s; }
-            body.dark-mode .sidebar { background: #1e293b; }
+            .sidebar { position: fixed; z-index: 1000; left: -100%; width: 250px; background: #1e3a8a; transition: left 0.3s; top: 60px; height: calc(100vh - 60px); }
+            body.dark-mode .sidebar { background: #0f172a !important; }
             .sidebar.open { left: 0; }
             .main-content { padding: 15px; }
             .top-bar-left button { display: block; }
@@ -293,14 +305,14 @@
     <div class="top-bar hidden" id="mainTopBar">
         <div class="top-bar-left">
             <button onclick="toggleNav()" style="background: transparent; border: none; cursor: pointer; padding: 5px;">
-                <img src="images/Menu.png" alt="Menu" style="width: 24px; height: 24px; filter: invert(0.3);" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><line x1=\'3\' y1=\'12\' x2=\'21\' y2=\'12\'></line><line x1=\'3\' y1=\'6\' x2=\'21\' y2=\'6\'></line><line x1=\'3\' y1=\'18\' x2=\'21\' y2=\'18\'></line></svg>'">
+                <img src="images/Menu.png" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><line x1=\'3\' y1=\'12\' x2=\'21\' y2=\'12\'></line><line x1=\'3\' y1=\'6\' x2=\'21\' y2=\'6\'></line><line x1=\'3\' y1=\'18\' x2=\'21\' y2=\'18\'></line></svg>'">
             </button>
-            <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 15px;"></span>
+            <span id="welcomeMsg" style="font-weight: 600; color: #ffffff; font-size: 15px;"></span>
         </div>
         <div class="top-bar-right">
             <div id="datetime-display"></div>
             <button class="profile-btn" onclick="switchTab('profile')" title="My Profile">
-                <img src="images/User.png" alt="Profile" style="filter: invert(0.3);" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'></path><circle cx=\'12\' cy=\'7\' r=\'4\'></circle></svg>'">
+                <img src="images/User.png" alt="Profile" style="filter: invert(1);" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'></path><circle cx=\'12\' cy=\'7\' r=\'4\'></circle></svg>'">
             </button>
         </div>
     </div>
@@ -596,17 +608,7 @@
                     <button class="action-btn" onclick="loadPersonnel()">↻ Refresh</button>
                 </div>
 
-                <div class="table-wrapper">
-                    <table id="personnelTable">
-                        <thead>
-                            <tr>
-                                <th>No.</th><th>Rank</th><th>Last Name</th><th>First Name</th><th>Middle Name</th>
-                                <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th><th id="personnelActionHeader">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="personnelTableBody"></tbody>
-                    </table>
-                </div>
+                <div id="personnelTablesContainer"></div>
             </div>
 
             <!-- SETTINGS TAB -->
@@ -1046,6 +1048,7 @@
                 loadPersonnel();
             }
             if (window.innerWidth <= 992) document.getElementById('navSidebar').classList.remove('open');
+            sessionStorage.setItem('activeTab', tabName);
         }
 
         function showAdminMgmtTab() {
@@ -1077,7 +1080,11 @@
                 document.getElementById('btnPersonnel').classList.remove('hidden');
                 loadSettings();
                 if (userSettings.autoOpenChatbot && userSettings.showChatbot) document.getElementById('chatbot-window').classList.remove('hidden'); else document.getElementById('chatbot-window').classList.add('hidden');
-                switchTab('home'); fetchActivityLogs(); fetchSystemAnnouncement(); 
+                
+                const savedTab = sessionStorage.getItem('activeTab') || 'home';
+                switchTab(savedTab);
+                
+                fetchActivityLogs(); fetchSystemAnnouncement(); 
             } else { toggleAuthViews('loginPage'); }
         }
 
@@ -1254,8 +1261,10 @@
                 filterPersonnel();
             } catch (err) {
                 console.error(err);
-                document.getElementById('personnelTableBody').innerHTML =
-                    `<tr><td colspan="10" style="text-align:center;color:var(--danger);">Unable to load personnel records.</td></tr>`;
+                const container = document.getElementById('personnelTablesContainer');
+                if (container) {
+                    container.innerHTML = `<div style="text-align:center;color:var(--danger);padding:20px;">Unable to load personnel records.</div>`;
+                }
                 customAlert("Unable to load the Personnel sheet.", "Error");
             }
         }
@@ -1311,22 +1320,94 @@
         }
 
         function renderPersonnelTable(rows) {
-            const body=document.getElementById('personnelTableBody'), can=canManagePersonnel();
-            document.getElementById('personnelActionHeader').style.display=can?'':'none';
-            if (!rows.length) {
-                body.innerHTML=`<tr><td colspan="${can?10:9}" style="text-align:center;color:var(--text-muted);">No personnel records found.</td></tr>`; return;
-            }
-            body.innerHTML=rows.map(p=>{
-                const action=can?`<td style="white-space:nowrap;">
-                    <button class="action-btn" onclick="editPersonnel(${Number(p.no)})">Edit</button>
-                    <button class="action-btn delete-btn" style="color:white;" onclick="archivePersonnel(${Number(p.no)})">Archive</button>
-                </td>`:'';
-                return `<tr>
-                    <td>${escapeHtml(p.no)}</td><td>${escapeHtml(p.rank)}</td><td>${escapeHtml(p.lastName)}</td>
-                    <td>${escapeHtml(p.firstName)}</td><td>${escapeHtml(p.middleName)}</td><td>${escapeHtml(p.qualifiers)}</td>
-                    <td>${escapeHtml(p.designation)}</td><td>${escapeHtml(p.section)}</td><td>${escapeHtml(p.status)}</td>${action}
-                </tr>`;
-            }).join('');
+            const can = canManagePersonnel();
+            const container = document.getElementById('personnelTablesContainer');
+            if (!container) return;
+
+            const rankOrder = {
+                "PBGEN": 1, "PCOL": 2, "PLTCOL": 3, "PMAJ": 4, "PCPT": 5, "PLT": 6,
+                "PEMS": 7, "PCMS": 8, "PSMS": 9, "PMSG": 10, "PSSG": 11, "PCPL": 12,
+                "PAT": 13, "NUP": 14
+            };
+
+            rows.sort((a, b) => {
+                const rA = String(a.rank || '').trim().toUpperCase();
+                const rB = String(b.rank || '').trim().toUpperCase();
+                const valA = rankOrder[rA] || 99;
+                const valB = rankOrder[rB] || 99;
+                return valA - valB;
+            });
+
+            const targetSections = ["Admin Section", "General Services Section", "Special Services Band", "Base Police"];
+            const grouped = {
+                "Admin Section": [],
+                "General Services Section": [],
+                "Special Services Band": [],
+                "Base Police": [],
+                "Other Sections": []
+            };
+
+            rows.forEach(p => {
+                const sec = String(p.section || '').trim().toLowerCase();
+                let matched = false;
+                for (let s of targetSections) {
+                    if (sec === s.toLowerCase() || sec.includes(s.toLowerCase())) {
+                        grouped[s].push(p);
+                        matched = true;
+                        break;
+                    }
+                }
+                if (!matched) grouped["Other Sections"].push(p);
+            });
+
+            let html = '';
+
+            const buildTable = (title, dataRows) => {
+                if (dataRows.length === 0 && title === "Other Sections") return ''; 
+
+                let bodyHtml = '';
+                if (!dataRows.length) {
+                    bodyHtml = `<tr><td colspan="${can ? 10 : 9}" style="text-align:center;color:var(--text-muted);">No personnel records found.</td></tr>`;
+                } else {
+                    bodyHtml = dataRows.map((p, index) => {
+                        const autoNo = index + 1;
+                        const action = can ? `<td style="white-space:nowrap;">
+                            <button class="action-btn" onclick="editPersonnel(${Number(p.no)})">Edit</button>
+                            <button class="action-btn delete-btn" style="color:white;" onclick="archivePersonnel(${Number(p.no)})">Archive</button>
+                        </td>` : '';
+                        return `<tr>
+                            <td>${autoNo}</td><td>${escapeHtml(p.rank)}</td><td>${escapeHtml(p.lastName)}</td>
+                            <td>${escapeHtml(p.firstName)}</td><td>${escapeHtml(p.middleName)}</td><td>${escapeHtml(p.qualifiers)}</td>
+                            <td>${escapeHtml(p.designation)}</td><td>${escapeHtml(p.section)}</td><td>${escapeHtml(p.status)}</td>${action}
+                        </tr>`;
+                    }).join('');
+                }
+
+                return `
+                <h3 style="margin-top: 25px; margin-bottom: 10px; color: var(--primary); font-size: 16px;">${title}</h3>
+                <div class="table-wrapper" style="margin-bottom: 20px; margin-top: 0;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>No.</th><th>Rank</th><th>Last Name</th><th>First Name</th><th>Middle Name</th>
+                                <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th>
+                                ${can ? '<th>Actions</th>' : ''}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${bodyHtml}
+                        </tbody>
+                    </table>
+                </div>`;
+            };
+
+            html += buildTable("Admin Section", grouped["Admin Section"]);
+            html += buildTable("General Services Section", grouped["General Services Section"]);
+            html += buildTable("Special Services Band", grouped["Special Services Band"]);
+            html += buildTable("Base Police", grouped["Base Police"]);
+            html += buildTable("Other Sections", grouped["Other Sections"]);
+
+            container.innerHTML = html;
         }
 
         function clearPersonnelFilters() {
@@ -1582,80 +1663,74 @@
                 } 
                 logActivity(`batch deleted ${actionTargetControl.length} memos`);
             }
-            closeActionModal(); setTimeout(loadData, 1500);
         }
 
-        function batchDelete() { 
-            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
+        function searchTable() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const categoryFilter = document.getElementById('filterCategory').value;
+            const encoderFilter = document.getElementById('filterEncoder').value;
+            const monthFilter = document.getElementById('filterMonth').value;
+            const yearFilter = document.getElementById('filterYear').value;
 
-            if (!isAlphaAdmin) { 
-                return customAlert("Regular Users and Admins are unable to delete existing entries. Only Alpha Admin can delete records.", "Permission Denied"); 
+            if (userSettings.rememberSearch) {
+                const user = localStorage.getItem('loggedInUser');
+                if (user) localStorage.setItem('rhsuSearch_' + user, input);
             }
 
-            const checked = document.querySelectorAll('.row-checkbox:checked'); 
-            if (checked.length === 0) return customAlert("Please select at least one record to delete.", "Notice"); 
-            
-            pendingAction = 'batch_delete'; 
-            actionTargetControl = Array.from(checked).map(cb => cb.value); 
-            document.getElementById('actionModal').classList.remove('hidden'); 
-            document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; 
-            
-            const passInput = document.getElementById('actionAdminPass');
-            passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
-            passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
-            
-            document.getElementById('actionNewSubject').classList.add('hidden'); 
-            document.getElementById('actionNewStatus').classList.add('hidden');
-            document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); 
-        }
-        
-        function searchTable() { 
-            const searchInput = document.getElementById("searchInput").value.toUpperCase(); 
-            const categoryFilter = document.getElementById("filterCategory").value;
-            const encoderFilter = document.getElementById("filterEncoder").value;
-            const monthFilter = document.getElementById("filterMonth").value;
-            const yearFilter = document.getElementById("filterYear").value;
-
-            if (userSettings.rememberSearch) localStorage.setItem('rhsuSearch_' + localStorage.getItem('loggedInUser'), searchInput);
-
             filteredMemos = allMemos.filter(row => {
-                const rowText = row.join(" ").toUpperCase();
-                const matchesSearch = searchInput === "" || rowText.includes(searchInput);
-                
-                const timestamp = row[0] || "";
+                const text = (row.join(" ")).toLowerCase();
                 const controlNum = row[2] || "";
-                const encodedBy = row[3] || "";
                 
-                const match = controlNum.match(/RHSU\((.*?)\)/);
-                const rowCategory = match ? match[1] : "";
-                
-                const matchesCategory = categoryFilter === "" || rowCategory === categoryFilter;
-                const matchesEncoder = encoderFilter === "" || encodedBy === encoderFilter;
+                let matchesSearch = text.includes(input);
+                let matchesCategory = categoryFilter === "" || controlNum.includes(`RHSU(${categoryFilter})`);
+                let matchesEncoder = encoderFilter === "" || row[3] === encoderFilter;
                 
                 let matchesMonth = true;
                 let matchesYear = true;
-
-                if (timestamp) {
-                    const dateObj = new Date(timestamp);
-                    if (!isNaN(dateObj.getTime())) {
-                        const rowMonth = ("0" + (dateObj.getMonth() + 1)).slice(-2);
-                        const rowYear = dateObj.getFullYear().toString();
-                        
-                        matchesMonth = monthFilter === "" || rowMonth === monthFilter;
-                        matchesYear = yearFilter === "" || rowYear === yearFilter;
+                
+                if (row[0]) {
+                    const d = new Date(row[0]);
+                    if (!isNaN(d.getTime())) {
+                        const m = ("0" + (d.getMonth() + 1)).slice(-2);
+                        const y = d.getFullYear().toString();
+                        if (monthFilter !== "" && m !== monthFilter) matchesMonth = false;
+                        if (yearFilter !== "" && y !== yearFilter) matchesYear = false;
                     }
                 }
 
                 return matchesSearch && matchesCategory && matchesEncoder && matchesMonth && matchesYear;
             });
-            
-            currentMemoPage = 1; 
-            renderMemoTable(); 
+            currentMemoPage = 1;
+            renderMemoTable();
         }
-        
-        function toggleSelectAll() { const isChecked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked); }
 
-        checkAuth();
+        function toggleSelectAll() {
+            const isChecked = document.getElementById('selectAll').checked;
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = isChecked);
+        }
+
+        function batchDelete() {
+            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
+            if (!isAlphaAdmin) return customAlert("Permission Denied.", "Error");
+
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            if (checked.length === 0) return customAlert("No memos selected for deletion.", "Error");
+            
+            const toDelete = Array.from(checked).map(cb => cb.value);
+            actionTargetControl = toDelete;
+            pendingAction = 'batch_delete';
+            
+            document.getElementById('actionModal').classList.remove('hidden');
+            document.getElementById('actionModalTitle').innerText = `Batch Delete (${toDelete.length} items)`;
+            document.getElementById('actionNewSubject').classList.add('hidden');
+            document.getElementById('actionNewStatus').classList.add('hidden');
+            document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden');
+            
+            const passInput = document.getElementById('actionAdminPass');
+            passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
+            passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
+        }
     </script>
 </body>
 </html>
