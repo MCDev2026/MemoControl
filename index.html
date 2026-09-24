@@ -269,6 +269,24 @@
             .main-content { padding: 15px; }
             .top-bar-left button { display: block; }
         }
+
+        /* --- PERSONNEL MANAGEMENT --- */
+        .personnel-dashboard { display:grid; grid-template-columns: repeat(auto-fit,minmax(150px,1fr)); gap:12px; margin:15px 0 20px; }
+        .personnel-card { padding:16px; border-radius:var(--radius-md); background:rgba(255,255,255,.72); border:1px solid var(--border-color); text-align:center; box-shadow:0 2px 10px rgba(0,0,0,.03); }
+        body.dark-mode .personnel-card { background:rgba(30,41,59,.85); }
+        .personnel-card h4 { margin:0 0 7px; font-size:12px; color:var(--text-muted); text-transform:uppercase; }
+        .personnel-card .count { font-size:28px; font-weight:700; color:var(--primary); }
+        .rank-recap { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; max-height:180px; overflow:auto; padding:5px; }
+        .rank-chip { display:flex; justify-content:space-between; gap:10px; padding:8px 10px; border:1px solid var(--border-color); border-radius:8px; font-size:12px; background:rgba(0,0,0,.02); }
+        body.dark-mode .rank-chip { background:rgba(255,255,255,.03); }
+        .personnel-toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+        .personnel-toolbar input, .personnel-toolbar select { margin:0; background:white; }
+        body.dark-mode .personnel-toolbar input, body.dark-mode .personnel-toolbar select { background:#0f172a; }
+        .personnel-actions { display:flex; gap:6px; flex-wrap:wrap; }
+        .personnel-form-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; text-align:left; }
+        .personnel-form-grid .full-width { grid-column:1/-1; }
+        @media(max-width:700px){ .personnel-form-grid{grid-template-columns:1fr;} .personnel-form-grid .full-width{grid-column:auto;} }
+
     </style>
 </head>
 <body>
@@ -344,6 +362,11 @@
                 <span class="nav-text">Home Page</span>
             </button>
             
+            <button class="sidebar-btn" id="btnPersonnel" onclick="switchTab('personnel');">
+                <img src="images/Users.png" alt="Personnel" class="nav-icon" onerror="this.style.display='none'">
+                <span class="nav-text">Personnel Management</span>
+            </button>
+
             <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt');">
                 <img src="images/Users.png" alt="Admin" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\'></path><circle cx=\'9\' cy=\'7\' r=\'4\'></circle><path d=\'M23 21v-2a4 4 0 0 0-3-3.87\'></path><path d=\'M16 3.13a4 4 0 0 1 0 7.75\'></path></svg>'">
                 <span class="nav-text">User Management</span>
@@ -535,6 +558,57 @@
                 </div>
             </div>
 
+
+            <!-- PERSONNEL MANAGEMENT TAB -->
+            <div id="tabPersonnel" class="hidden">
+                <div class="controls">
+                    <div>
+                        <h2 style="margin:0; color:var(--primary);">Personnel Management</h2>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Personnel database from the Google Sheets <strong>Personnel</strong> sheet</div>
+                    </div>
+                    <div id="personnelAdminControls" class="personnel-actions">
+                        <button class="action-btn approve-btn" onclick="openPersonnelModal()" style="color:white;font-weight:bold;">＋ Add Personnel</button>
+                    </div>
+                </div>
+
+                <div class="personnel-dashboard">
+                    <div class="personnel-card"><h4>Total Personnel</h4><div class="count" id="personnelTotal">0</div></div>
+                    <div class="personnel-card"><h4>PNCO (Pat–PEMS)</h4><div class="count" id="personnelPNCO">0</div></div>
+                    <div class="personnel-card"><h4>PCO (PLT–PCOL)</h4><div class="count" id="personnelPCO">0</div></div>
+                    <div class="personnel-card"><h4>NUP</h4><div class="count" id="personnelNUP">0</div></div>
+                    <div class="personnel-card"><h4>Other</h4><div class="count" id="personnelOther">0</div></div>
+                </div>
+
+                <div class="settings-section glass-panel" style="margin-bottom:15px;">
+                    <h3 style="margin-bottom:10px;">Recap by Rank</h3>
+                    <div id="personnelRankRecap" class="rank-recap"></div>
+                </div>
+
+                <div class="personnel-toolbar">
+                    <input type="text" id="personnelSearch" placeholder="Search personnel..." oninput="filterPersonnel()" style="flex:1;min-width:220px;">
+                    <select id="personnelRankFilter" onchange="filterPersonnel()" style="width:auto;min-width:170px;">
+                        <option value="">All Ranks</option>
+                    </select>
+                    <select id="personnelStatusFilter" onchange="filterPersonnel()" style="width:auto;min-width:150px;">
+                        <option value="">All Status</option>
+                    </select>
+                    <button class="action-btn" onclick="clearPersonnelFilters()">Clear Filters</button>
+                    <button class="action-btn" onclick="loadPersonnel()">↻ Refresh</button>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="personnelTable">
+                        <thead>
+                            <tr>
+                                <th>No.</th><th>Rank</th><th>Last Name</th><th>First Name</th><th>Middle Name</th>
+                                <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th><th id="personnelActionHeader">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="personnelTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- SETTINGS TAB -->
             <div id="tabSettings" class="hidden">
                 <div class="controls">
@@ -706,6 +780,32 @@
         </div>
     </div>
 
+
+    <div id="personnelModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel modal-large">
+            <h2 id="personnelModalTitle" style="margin-top:0;color:var(--primary);">Add Personnel</h2>
+            <div class="personnel-form-grid">
+                <input id="pNo" type="text" placeholder="No. (auto)" disabled>
+                <select id="pRank">
+                    <option value="">Select Rank...</option>
+                    <option>PBGEN</option><option>PCOL</option><option>PLTCOL</option><option>PMAJ</option><option>PCPT</option><option>PLT</option>
+                    <option>PEMS</option><option>PCMS</option><option>PSMS</option><option>PMSg</option><option>PSSg</option><option>PCpl</option><option>Pat</option><option>NUP</option>
+                </select>
+                <input id="pLastName" type="text" placeholder="Last Name">
+                <input id="pFirstName" type="text" placeholder="First Name">
+                <input id="pMiddleName" type="text" placeholder="Middle Name">
+                <input id="pQualifiers" type="text" placeholder="Qualifiers">
+                <input id="pDesignation" type="text" placeholder="Designation">
+                <input id="pSection" type="text" placeholder="Section">
+                <input id="pStatus" type="text" placeholder="Status" value="Active">
+            </div>
+            <div style="display:flex;gap:10px;margin-top:18px;">
+                <button id="personnelSaveBtn" class="approve-btn" style="flex:1;margin:0;color:white;" onclick="savePersonnel()">Save</button>
+                <button style="flex:1;margin:0;background:#e2e8f0;color:#475569;" onclick="closePersonnelModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div id="notificationContainer"></div>
 
     <script>
@@ -725,6 +825,8 @@
         let autoLogoutTimer = null;
         let userSettings = { theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable', liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false, showChatbot: true, autoOpenChatbot: false, autoLogout: 'Never', confirmLogout: true };
         let lastLogCount = 0;
+        let allPersonnel = [];
+        let personnelEditNo = null;
 
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -908,20 +1010,50 @@
         }
 
         function switchTab(tabName) {
-            document.getElementById('tabHome').classList.add('hidden'); document.getElementById('tabProfile').classList.add('hidden'); document.getElementById('tabAdminMgmt').classList.add('hidden'); document.getElementById('tabSettings').classList.add('hidden');
-            document.getElementById('btnHome').classList.remove('active'); if(document.getElementById('btnSettings')) document.getElementById('btnSettings').classList.remove('active'); if(document.getElementById('btnAdminMgmt')) document.getElementById('btnAdminMgmt').classList.remove('active');
+            ['tabHome','tabProfile','tabAdminMgmt','tabSettings','tabPersonnel'].forEach(id => {
+                const el=document.getElementById(id); if(el) el.classList.add('hidden');
+            });
+            ['btnHome','btnSettings','btnAdminMgmt','btnPersonnel'].forEach(id => {
+                const el=document.getElementById(id); if(el) el.classList.remove('active');
+            });
 
-            if (tabName === 'home') { document.getElementById('tabHome').classList.remove('hidden'); document.getElementById('btnHome').classList.add('active'); loadData(); } 
-            else if (tabName === 'profile') { document.getElementById('tabProfile').classList.remove('hidden'); document.getElementById('newCredential').value = ""; document.getElementById('newUsernameInput').value = ""; populateProfileData(); }
-            else if (tabName === 'settings') { document.getElementById('tabSettings').classList.remove('hidden'); document.getElementById('btnSettings').classList.add('active'); }
-            else if (tabName === 'adminMgmt') {
-                if (sessionAdminPass === "") { pendingAdminAction = 'open_mgmt'; document.getElementById('adminModal').classList.remove('hidden'); document.getElementById('adminPassInput').value = ""; document.getElementById('adminPassInput').focus(); } 
-                else { showAdminMgmtTab(); }
+            if (tabName === 'home') {
+                document.getElementById('tabHome').classList.remove('hidden');
+                document.getElementById('btnHome').classList.add('active');
+                loadData();
+            } else if (tabName === 'profile') {
+                document.getElementById('tabProfile').classList.remove('hidden');
+                document.getElementById('newCredential').value = "";
+                document.getElementById('newUsernameInput').value = "";
+                populateProfileData();
+            } else if (tabName === 'settings') {
+                document.getElementById('tabSettings').classList.remove('hidden');
+                document.getElementById('btnSettings').classList.add('active');
+            } else if (tabName === 'adminMgmt') {
+                if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) {
+                    customAlert("Only the Alpha Admin can access User Management.", "Permission Denied"); return;
+                }
+                if (sessionAdminPass === "") {
+                    pendingAdminAction = 'open_mgmt';
+                    document.getElementById('adminModal').classList.remove('hidden');
+                    document.getElementById('adminPassInput').value = "";
+                    document.getElementById('adminPassInput').focus();
+                } else showAdminMgmtTab();
+            } else if (tabName === 'personnel') {
+                document.getElementById('tabPersonnel').classList.remove('hidden');
+                document.getElementById('btnPersonnel').classList.add('active');
+                updatePersonnelPermissions();
+                loadPersonnel();
             }
             if (window.innerWidth <= 992) document.getElementById('navSidebar').classList.remove('open');
         }
 
-        function showAdminMgmtTab() { document.getElementById('tabAdminMgmt').classList.remove('hidden'); document.getElementById('btnAdminMgmt').classList.add('active'); loadAdminUsers(); }
+        function showAdminMgmtTab() {
+            document.getElementById('tabAdminMgmt').classList.remove('hidden');
+            document.getElementById('btnAdminMgmt').classList.add('active');
+            loadAdminUsers();
+        }
+
 
         async function fetchSystemAnnouncement() {
             if (sessionStorage.getItem('systemAnnouncementSeen') === 'true') return;
@@ -942,6 +1074,7 @@
             if (user) {
                 document.getElementById('welcomeMsg').innerText = `Welcome, ${user}`;
                 document.getElementById('loginPage').classList.add('hidden'); document.getElementById('registerPage').classList.add('hidden'); document.getElementById('appLayout').classList.remove('hidden'); document.getElementById('mainTopBar').classList.remove('hidden'); document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
+                document.getElementById('btnPersonnel').classList.remove('hidden');
                 loadSettings();
                 if (userSettings.autoOpenChatbot && userSettings.showChatbot) document.getElementById('chatbot-window').classList.remove('hidden'); else document.getElementById('chatbot-window').classList.add('hidden');
                 switchTab('home'); fetchActivityLogs(); fetchSystemAnnouncement(); 
@@ -1018,7 +1151,7 @@
             const newCred = document.getElementById('newCredential').value.trim(); const newUsername = document.getElementById('newUsernameInput').value.trim();
             if(!newCred && !newUsername) return customAlert("Enter new username or credential.", "Error");
             
-            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_profile', currentUsername: localStorage.getItem('loggedInUser'), currentCredential: localStorage.getItem('loggedCred'), newUsername: newUsername, newCredential: newCred }) }); if (newCred) localStorage.setItem('loggedCred', newCred); if (newUsername) localStorage.setItem('loggedInUser', newUsername); customAlert("Profile updated successfully!", "Success"); document.getElementById('newCredential').value = ""; document.getElementById('newUsernameInput').value = ""; document.getElementById('welcomeMsg').innerText = `Welcome, ${localStorage.getItem('loggedInUser')}`; populateProfileData(); logActivity("updated their profile information."); } catch (err) { }
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_profile', username: localStorage.getItem('loggedInUser'), currentCredential: localStorage.getItem('loggedCred'), newUsername: newUsername, newCredential: newCred }) }); if (newCred) localStorage.setItem('loggedCred', newCred); if (newUsername) localStorage.setItem('loggedInUser', newUsername); customAlert("Profile updated successfully!", "Success"); document.getElementById('newCredential').value = ""; document.getElementById('newUsernameInput').value = ""; document.getElementById('welcomeMsg').innerText = `Welcome, ${localStorage.getItem('loggedInUser')}`; populateProfileData(); logActivity("updated their profile information."); } catch (err) { }
         }
 
         const OFFICE_DESTINATIONS = ["RD, PRO1", "DRDA", "DRDO", "CRS", "Msg Center", "RPRMD", "RID", "ROD", "RLRDD", "RCADD", "RCD", "RIDMD", "RETD", "RPSMD", "RICTMD", "RESPO", "RMFB1"];
@@ -1091,6 +1224,196 @@
 
         function adminDeleteUser(username) { customConfirm(`Delete user: ${username}?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) }); logActivity(`deleted user account: ${username}`); setTimeout(loadAdminUsers, 1500); }); }
         function processApproval(userIdentifier, actionType) { customConfirm(`Confirm Action?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, username: userIdentifier, userPin: userIdentifier, password: sessionAdminPass }) }); logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request."); setTimeout(loadAdminUsers, 1500); }); }
+
+
+        function isAlphaAdmin() {
+            return localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME;
+        }
+
+        function canManagePersonnel() {
+            const role = localStorage.getItem('userRole') || '';
+            return isAlphaAdmin() || role === 'Admin' || localStorage.getItem('canEdit') === 'Yes';
+        }
+
+        function updatePersonnelPermissions() {
+            const can = canManagePersonnel();
+            const controls = document.getElementById('personnelAdminControls');
+            const header = document.getElementById('personnelActionHeader');
+            if (controls) controls.classList.toggle('hidden', !can);
+            if (header) header.style.display = can ? '' : 'none';
+        }
+
+        async function loadPersonnel() {
+            try {
+                const res = await fetch(API_URL + "?action=get_personnel");
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Unable to load personnel');
+                allPersonnel = Array.isArray(data.personnel) ? data.personnel : [];
+                updatePersonnelDashboard();
+                populatePersonnelFilters();
+                filterPersonnel();
+            } catch (err) {
+                console.error(err);
+                document.getElementById('personnelTableBody').innerHTML =
+                    `<tr><td colspan="10" style="text-align:center;color:var(--danger);">Unable to load personnel records.</td></tr>`;
+                customAlert("Unable to load the Personnel sheet.", "Error");
+            }
+        }
+
+        function rankGroup(rank) {
+            const r = String(rank || '').trim().toUpperCase();
+            const pnco = ['PAT','PCPL','PSSG','PMSG','PSMS','PCMS','PEMS'];
+            const pco = ['PLT','PCPT','PMAJ','PLTCOL','PCOL'];
+            if (pnco.includes(r)) return 'PNCO';
+            if (pco.includes(r)) return 'PCO';
+            if (r === 'NUP') return 'NUP';
+            return 'Other';
+        }
+
+        function updatePersonnelDashboard() {
+            const counts = {PNCO:0,PCO:0,NUP:0,Other:0};
+            const rankCounts = {};
+            allPersonnel.forEach(p => {
+                const g=rankGroup(p.rank); counts[g]++;
+                const r=p.rank || 'Unspecified'; rankCounts[r]=(rankCounts[r]||0)+1;
+            });
+            document.getElementById('personnelTotal').innerText = allPersonnel.length;
+            document.getElementById('personnelPNCO').innerText = counts.PNCO;
+            document.getElementById('personnelPCO').innerText = counts.PCO;
+            document.getElementById('personnelNUP').innerText = counts.NUP;
+            document.getElementById('personnelOther').innerText = counts.Other;
+            const recap=document.getElementById('personnelRankRecap');
+            recap.innerHTML=Object.keys(rankCounts).sort((a,b)=>a.localeCompare(b)).map(r =>
+                `<div class="rank-chip"><span>${escapeHtml(r)}</span><strong>${rankCounts[r]}</strong></div>`).join('') ||
+                '<div style="color:var(--text-muted);font-size:13px;">No personnel records.</div>';
+        }
+
+        function populatePersonnelFilters() {
+            const ranks=[...new Set(allPersonnel.map(p=>String(p.rank||'').trim()).filter(Boolean))].sort();
+            const statuses=[...new Set(allPersonnel.map(p=>String(p.status||'').trim()).filter(Boolean))].sort();
+            const rs=document.getElementById('personnelRankFilter'), ss=document.getElementById('personnelStatusFilter');
+            const oldR=rs.value, oldS=ss.value;
+            rs.innerHTML='<option value="">All Ranks</option>'+ranks.map(r=>`<option value="${escapeAttr(r)}">${escapeHtml(r)}</option>`).join('');
+            ss.innerHTML='<option value="">All Status</option>'+statuses.map(x=>`<option value="${escapeAttr(x)}">${escapeHtml(x)}</option>`).join('');
+            rs.value=ranks.includes(oldR)?oldR:'';
+            ss.value=statuses.includes(oldS)?oldS:'';
+        }
+
+        function filterPersonnel() {
+            const q=document.getElementById('personnelSearch').value.trim().toLowerCase();
+            const rank=document.getElementById('personnelRankFilter').value;
+            const status=document.getElementById('personnelStatusFilter').value;
+            const rows=allPersonnel.filter(p=>{
+                const text=[p.no,p.rank,p.lastName,p.firstName,p.middleName,p.qualifiers,p.designation,p.section,p.status].join(' ').toLowerCase();
+                return (!q || text.includes(q)) && (!rank || p.rank===rank) && (!status || p.status===status);
+            });
+            renderPersonnelTable(rows);
+        }
+
+        function renderPersonnelTable(rows) {
+            const body=document.getElementById('personnelTableBody'), can=canManagePersonnel();
+            document.getElementById('personnelActionHeader').style.display=can?'':'none';
+            if (!rows.length) {
+                body.innerHTML=`<tr><td colspan="${can?10:9}" style="text-align:center;color:var(--text-muted);">No personnel records found.</td></tr>`; return;
+            }
+            body.innerHTML=rows.map(p=>{
+                const action=can?`<td style="white-space:nowrap;">
+                    <button class="action-btn" onclick="editPersonnel(${Number(p.no)})">Edit</button>
+                    <button class="action-btn delete-btn" style="color:white;" onclick="archivePersonnel(${Number(p.no)})">Archive</button>
+                </td>`:'';
+                return `<tr>
+                    <td>${escapeHtml(p.no)}</td><td>${escapeHtml(p.rank)}</td><td>${escapeHtml(p.lastName)}</td>
+                    <td>${escapeHtml(p.firstName)}</td><td>${escapeHtml(p.middleName)}</td><td>${escapeHtml(p.qualifiers)}</td>
+                    <td>${escapeHtml(p.designation)}</td><td>${escapeHtml(p.section)}</td><td>${escapeHtml(p.status)}</td>${action}
+                </tr>`;
+            }).join('');
+        }
+
+        function clearPersonnelFilters() {
+            document.getElementById('personnelSearch').value='';
+            document.getElementById('personnelRankFilter').value='';
+            document.getElementById('personnelStatusFilter').value='';
+            filterPersonnel();
+        }
+
+        function openPersonnelModal() {
+            if(!canManagePersonnel()) return customAlert("Only the Alpha Admin and designated Admin users can modify personnel records.","Permission Denied");
+            personnelEditNo=null;
+            document.getElementById('personnelModalTitle').innerText='Add Personnel';
+            ['pLastName','pFirstName','pMiddleName','pQualifiers','pDesignation','pSection'].forEach(id=>document.getElementById(id).value='');
+            document.getElementById('pRank').value='';
+            document.getElementById('pStatus').value='Active';
+            document.getElementById('pNo').value='Auto';
+            document.getElementById('personnelSaveBtn').innerText='Add Personnel';
+            document.getElementById('personnelModal').classList.remove('hidden');
+        }
+
+        function editPersonnel(no) {
+            if(!canManagePersonnel()) return customAlert("Permission denied.","Error");
+            const p=allPersonnel.find(x=>Number(x.no)===Number(no)); if(!p) return;
+            personnelEditNo=Number(no);
+            document.getElementById('personnelModalTitle').innerText='Edit Personnel';
+            document.getElementById('pNo').value=p.no;
+            document.getElementById('pRank').value=p.rank||'';
+            document.getElementById('pLastName').value=p.lastName||'';
+            document.getElementById('pFirstName').value=p.firstName||'';
+            document.getElementById('pMiddleName').value=p.middleName||'';
+            document.getElementById('pQualifiers').value=p.qualifiers||'';
+            document.getElementById('pDesignation').value=p.designation||'';
+            document.getElementById('pSection').value=p.section||'';
+            document.getElementById('pStatus').value=p.status||'';
+            document.getElementById('personnelSaveBtn').innerText='Update Personnel';
+            document.getElementById('personnelModal').classList.remove('hidden');
+        }
+
+        function closePersonnelModal(){ document.getElementById('personnelModal').classList.add('hidden'); personnelEditNo=null; }
+
+        async function savePersonnel() {
+            if(!canManagePersonnel()) return customAlert("Permission denied.","Error");
+            const payload={
+                action: personnelEditNo===null?'add_personnel':'update_personnel',
+                userName:localStorage.getItem('loggedInUser'),
+                credential:localStorage.getItem('loggedCred')||'',
+                no:personnelEditNo,
+                rank:document.getElementById('pRank').value.trim(),
+                lastName:document.getElementById('pLastName').value.trim(),
+                firstName:document.getElementById('pFirstName').value.trim(),
+                middleName:document.getElementById('pMiddleName').value.trim(),
+                qualifiers:document.getElementById('pQualifiers').value.trim(),
+                designation:document.getElementById('pDesignation').value.trim(),
+                section:document.getElementById('pSection').value.trim(),
+                status:document.getElementById('pStatus').value.trim()
+            };
+            if(!payload.rank||!payload.lastName||!payload.firstName) return customAlert("Rank, Last Name and First Name are required.","Validation Error");
+            const btn=document.getElementById('personnelSaveBtn'); btn.disabled=true; btn.innerText='Saving...';
+            try {
+                const res=await fetch(API_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
+                const data=await res.json();
+                if(!data.success) throw new Error(data.error||'Save failed');
+                logActivity(`${payload.action==='add_personnel'?'added':'updated'} personnel record: ${payload.rank} ${payload.lastName}, ${payload.firstName}`);
+                closePersonnelModal(); customAlert(payload.action==='add_personnel'?'Personnel added successfully.':'Personnel updated successfully.','Success'); await loadPersonnel();
+            } catch(e) {
+                customAlert(e.message||'Unable to save personnel record.','Error');
+            } finally { btn.disabled=false; btn.innerText=personnelEditNo===null?'Add Personnel':'Update Personnel'; }
+        }
+
+        function archivePersonnel(no) {
+            if(!canManagePersonnel()) return customAlert("Permission denied.","Error");
+            const p=allPersonnel.find(x=>Number(x.no)===Number(no)); if(!p) return;
+            customConfirm(`Archive ${p.rank} ${p.lastName}, ${p.firstName}? The record will be moved to the Archive sheet.`, async confirmed=>{
+                if(!confirmed) return;
+                try {
+                    const res=await fetch(API_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain;charset=utf-8'},
+                        body:JSON.stringify({action:'archive_personnel',no:Number(no),userName:localStorage.getItem('loggedInUser'),credential:localStorage.getItem('loggedCred')||''})});
+                    const data=await res.json(); if(!data.success) throw new Error(data.error||'Archive failed');
+                    logActivity(`archived personnel record: ${p.rank} ${p.lastName}, ${p.firstName}`);
+                    customAlert('Personnel record archived successfully.','Success'); await loadPersonnel();
+                } catch(e){ customAlert(e.message||'Unable to archive personnel record.','Error'); }
+            });
+        }
+
+        function escapeHtml(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+        function escapeAttr(v){ return escapeHtml(v); }
 
         async function loadData() {
             try {
