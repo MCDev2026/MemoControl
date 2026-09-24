@@ -293,14 +293,14 @@
     <div class="top-bar hidden" id="mainTopBar">
         <div class="top-bar-left">
             <button onclick="toggleNav()" style="background: transparent; border: none; cursor: pointer; padding: 5px;">
-                <img src="images/Menu.png" alt="Menu" style="width: 24px; height: 24px; filter: invert(0.3);" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><line x1=\'3\' y1=\'12\' x2=\'21\' y2=\'12\'></line><line x1=\'3\' y1=\'6\' x2=\'21\' y2=\'6\'></line><line x1=\'3\' y1=\'18\' x2=\'21\' y2=\'18\'></line></svg>';">
+                <img src="images/Menu.png" alt="Menu" style="width: 24px; height: 24px; filter: invert(0.3);" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><line x1=\'3\' y1=\'12\' x2=\'21\' y2=\'12\'></line><line x1=\'3\' y1=\'6\' x2=\'21\' y2=\'6\'></line><line x1=\'3\' y1=\'18\' x2=\'21\' y2=\'18\'></line></svg>'">
             </button>
             <span id="welcomeMsg" style="font-weight: 600; color: var(--primary); font-size: 15px;"></span>
         </div>
         <div class="top-bar-right">
             <div id="datetime-display"></div>
             <button class="profile-btn" onclick="switchTab('profile')" title="My Profile">
-                <img src="images/User.png" alt="Profile" style="filter: invert(0.3);" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'></path><circle cx=\'12\' cy=\'7\' r=\'4\'></circle></svg>';">
+                <img src="images/User.png" alt="Profile" style="filter: invert(0.3);" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2\'></path><circle cx=\'12\' cy=\'7\' r=\'4\'></circle></svg>'">
             </button>
         </div>
     </div>
@@ -358,22 +358,22 @@
             </div>
             
             <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home');">
-                <img src="images/Home.png" alt="Home" class="nav-icon" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\'></path><polyline points=\'9 22 9 12 15 12 15 22\'></polyline></svg>';">
+                <img src="images/Home.png" alt="Home" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\'></path><polyline points=\'9 22 9 12 15 12 15 22\'></polyline></svg>'">
                 <span class="nav-text">Home Page</span>
             </button>
             
             <button class="sidebar-btn" id="btnPersonnel" onclick="switchTab('personnel');">
-                <img src="images/Users.png" alt="Personnel" class="nav-icon" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\'></path><circle cx=\'9\' cy=\'7\' r=\'4\'></circle><path d=\'M23 21v-2a4 4 0 0 0-3-3.87\'></path><path d=\'M16 3.13a4 4 0 0 1 0 7.75\'></path></svg>';">
+                <img src="images/Users.png" alt="Personnel" class="nav-icon" onerror="this.style.display='none'">
                 <span class="nav-text">Personnel Management</span>
             </button>
 
             <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt');">
-                <img src="images/Activity.png" alt="Admin" class="nav-icon" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><polyline points=\'22 12 18 12 15 21 9 3 6 12 2 12\'></polyline></svg>';">
+                <img src="images/Activity.png" alt="Admin" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\'></path><circle cx=\'9\' cy=\'7\' r=\'4\'></circle><path d=\'M23 21v-2a4 4 0 0 0-3-3.87\'></path><path d=\'M16 3.13a4 4 0 0 1 0 7.75\'></path></svg>'">
                 <span class="nav-text">User Management</span>
             </button>
 
             <button class="sidebar-btn" id="btnSettings" onclick="switchTab('settings');">
-                <img src="images/Settings.png" alt="Settings" class="nav-icon" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'12\' cy=\'12\' r=\'3\'></circle><path d=\'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z\'></path></svg>';">
+                <img src="images/Settings.png" alt="Settings" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><circle cx=\'12\' cy=\'12\' r=\'3\'></circle><path d=\'M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z\'></path></svg>'">
                 <span class="nav-text">Settings</span>
             </button>
             
@@ -388,7 +388,7 @@
                     <h2 style="margin:0; color: var(--primary);">Memo Database</h2>
                     <div>
                         <button class="action-btn approve-btn" onclick="openMemoModalUser()" style="padding: 10px 18px; font-weight: bold; color:white;">
-                            <img src="images/Add.png" alt="Add" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><line x1=\'12\' y1=\'5\' x2=\'12\' y2=\'19\'></line><line x1=\'5\' y1=\'12\' x2=\'19\' y2=\'12\'></line></svg>';"> Create New Memo
+                            <img src="images/Add.png" alt="Add" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Create New Memo
                         </button>
                     </div>
                 </div>
@@ -447,7 +447,7 @@
                     </select>
 
                     <button class="action-btn delete-btn" onclick="batchDelete()" style="color:white; margin-left: auto;">
-                        <img src="images/Trash.png" alt="Delete" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><polyline points=\'3 6 5 6 21 6\'></polyline><path d=\'M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\'></path></svg>';"> Delete Selected
+                        <img src="images/Trash.png" alt="Delete" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Delete Selected
                     </button>
                 </div>
 
@@ -558,6 +558,7 @@
                 </div>
             </div>
 
+
             <!-- PERSONNEL MANAGEMENT TAB -->
             <div id="tabPersonnel" class="hidden">
                 <div class="controls">
@@ -595,8 +596,17 @@
                     <button class="action-btn" onclick="loadPersonnel()">↻ Refresh</button>
                 </div>
 
-                <!-- Separated Tables by Sections Container -->
-                <div id="personnelSectionsContainer"></div>
+                <div class="table-wrapper">
+                    <table id="personnelTable">
+                        <thead>
+                            <tr>
+                                <th>No.</th><th>Rank</th><th>Last Name</th><th>First Name</th><th>Middle Name</th>
+                                <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th><th id="personnelActionHeader">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="personnelTableBody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <!-- SETTINGS TAB -->
@@ -769,6 +779,7 @@
             </div>
         </div>
     </div>
+
 
     <div id="personnelModal" class="modal-overlay hidden">
         <div class="modal-content glass-panel modal-large">
@@ -1043,6 +1054,7 @@
             loadAdminUsers();
         }
 
+
         async function fetchSystemAnnouncement() {
             if (sessionStorage.getItem('systemAnnouncementSeen') === 'true') return;
             try { const res = await fetch(API_URL + "?action=get_announcement"); const data = await res.json(); if (data.success && data.message) { document.getElementById('globalAnnouncementMsg').innerText = data.message; document.getElementById('systemAnnouncementModal').classList.remove('hidden'); sessionStorage.setItem('systemAnnouncementSeen', 'true'); } } catch(e) {}
@@ -1213,6 +1225,7 @@
         function adminDeleteUser(username) { customConfirm(`Delete user: ${username}?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_user_admin', username: username, password: sessionAdminPass }) }); logActivity(`deleted user account: ${username}`); setTimeout(loadAdminUsers, 1500); }); }
         function processApproval(userIdentifier, actionType) { customConfirm(`Confirm Action?`, async (confirmed) => { if (!confirmed) return; await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: actionType, username: userIdentifier, userPin: userIdentifier, password: sessionAdminPass }) }); logActivity(actionType === 'approve_user' ? "approved a new user account." : "rejected an account request."); setTimeout(loadAdminUsers, 1500); }); }
 
+
         function isAlphaAdmin() {
             return localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME;
         }
@@ -1225,7 +1238,9 @@
         function updatePersonnelPermissions() {
             const can = canManagePersonnel();
             const controls = document.getElementById('personnelAdminControls');
+            const header = document.getElementById('personnelActionHeader');
             if (controls) controls.classList.toggle('hidden', !can);
+            if (header) header.style.display = can ? '' : 'none';
         }
 
         async function loadPersonnel() {
@@ -1239,8 +1254,8 @@
                 filterPersonnel();
             } catch (err) {
                 console.error(err);
-                document.getElementById('personnelSectionsContainer').innerHTML =
-                    `<div class="glass-panel" style="padding: 20px; text-align: center; color: var(--danger);">Unable to load personnel records.</div>`;
+                document.getElementById('personnelTableBody').innerHTML =
+                    `<tr><td colspan="10" style="text-align:center;color:var(--danger);">Unable to load personnel records.</td></tr>`;
                 customAlert("Unable to load the Personnel sheet.", "Error");
             }
         }
@@ -1248,37 +1263,11 @@
         function rankGroup(rank) {
             const r = String(rank || '').trim().toUpperCase();
             const pnco = ['PAT','PCPL','PSSG','PMSG','PSMS','PCMS','PEMS'];
-            const pco = ['PLT','PCPT','PMAJ','PLTCOL','PCOL','PBGEN'];
+            const pco = ['PLT','PCPT','PMAJ','PLTCOL','PCOL'];
             if (pnco.includes(r)) return 'PNCO';
             if (pco.includes(r)) return 'PCO';
             if (r === 'NUP') return 'NUP';
             return 'Other';
-        }
-
-        const rankOrder = {
-            'PBGEN': 1,
-            'PCOL': 2,
-            'PLTCOL': 3,
-            'PMAJ': 4,
-            'PCPT': 5,
-            'PLT': 6,
-            'PEMS': 7,
-            'PCMS': 8,
-            'PSMS': 9,
-            'PMSg': 10,
-            'PMSG': 10,
-            'PSSg': 11,
-            'PCpl': 12,
-            'PAT': 13,
-            'Pat': 13,
-            'NUP': 14
-        };
-
-        function getRankWeight(rank) {
-            const r = String(rank || '').trim();
-            if (rankOrder[r] !== undefined) return rankOrder[r];
-            if (rankOrder[r.toUpperCase()] !== undefined) return rankOrder[r.toUpperCase()];
-            return 99;
         }
 
         function updatePersonnelDashboard() {
@@ -1294,13 +1283,13 @@
             document.getElementById('personnelNUP').innerText = counts.NUP;
             document.getElementById('personnelOther').innerText = counts.Other;
             const recap=document.getElementById('personnelRankRecap');
-            recap.innerHTML=Object.keys(rankCounts).sort((a,b)=>getRankWeight(a)-getRankWeight(b)).map(r =>
+            recap.innerHTML=Object.keys(rankCounts).sort((a,b)=>a.localeCompare(b)).map(r =>
                 `<div class="rank-chip"><span>${escapeHtml(r)}</span><strong>${rankCounts[r]}</strong></div>`).join('') ||
                 '<div style="color:var(--text-muted);font-size:13px;">No personnel records.</div>';
         }
 
         function populatePersonnelFilters() {
-            const ranks=[...new Set(allPersonnel.map(p=>String(p.rank||'').trim()).filter(Boolean))].sort((a,b)=>getRankWeight(a)-getRankWeight(b));
+            const ranks=[...new Set(allPersonnel.map(p=>String(p.rank||'').trim()).filter(Boolean))].sort();
             const statuses=[...new Set(allPersonnel.map(p=>String(p.status||'').trim()).filter(Boolean))].sort();
             const rs=document.getElementById('personnelRankFilter'), ss=document.getElementById('personnelStatusFilter');
             const oldR=rs.value, oldS=ss.value;
@@ -1318,106 +1307,26 @@
                 const text=[p.no,p.rank,p.lastName,p.firstName,p.middleName,p.qualifiers,p.designation,p.section,p.status].join(' ').toLowerCase();
                 return (!q || text.includes(q)) && (!rank || p.rank===rank) && (!status || p.status===status);
             });
-            renderPersonnelSections(rows);
+            renderPersonnelTable(rows);
         }
 
-        function renderPersonnelSections(rows) {
-            const container = document.getElementById('personnelSectionsContainer');
-            const can = canManagePersonnel();
-            
-            if (!rows || rows.length === 0) {
-                container.innerHTML = `<div class="glass-panel" style="padding: 25px; text-align: center; color: var(--text-muted); margin-top: 15px;">No personnel records found.</div>`;
-                return;
+        function renderPersonnelTable(rows) {
+            const body=document.getElementById('personnelTableBody'), can=canManagePersonnel();
+            document.getElementById('personnelActionHeader').style.display=can?'':'none';
+            if (!rows.length) {
+                body.innerHTML=`<tr><td colspan="${can?10:9}" style="text-align:center;color:var(--text-muted);">No personnel records found.</td></tr>`; return;
             }
-
-            // Group rows by Section
-            const sectionsMap = {};
-            rows.forEach(p => {
-                const sec = String(p.section || '').trim() || 'Unassigned Section';
-                if (!sectionsMap[sec]) {
-                    sectionsMap[sec] = [];
-                }
-                sectionsMap[sec].push(p);
-            });
-
-            // Sort section names alphabetically, keeping "Unassigned Section" at the end
-            const sortedSections = Object.keys(sectionsMap).sort((a, b) => {
-                if (a === 'Unassigned Section') return 1;
-                if (b === 'Unassigned Section') return -1;
-                return a.localeCompare(b);
-            });
-
-            let html = '';
-            sortedSections.forEach(secName => {
-                let secRows = sectionsMap[secName];
-                
-                // Reorganize / sort rows by rank hierarchy (highest rank first) then last name
-                secRows.sort((a, b) => {
-                    const wA = getRankWeight(a.rank);
-                    const wB = getRankWeight(b.rank);
-                    if (wA !== wB) return wA - wB;
-                    const lnA = String(a.lastName || '').toLowerCase();
-                    const lnB = String(b.lastName || '').toLowerCase();
-                    if (lnA !== lnB) return lnA.localeCompare(lnB);
-                    const fnA = String(a.firstName || '').toLowerCase();
-                    const fnB = String(b.firstName || '').toLowerCase();
-                    return fnA.localeCompare(fnB);
-                });
-
-                html += `
-                    <div style="margin-top: 25px; margin-bottom: 25px;">
-                        <h3 style="margin: 0 0 10px 0; color: var(--primary); font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--border-color); padding-bottom: 8px;">
-                            <span>📁 ${escapeHtml(secName)}</span>
-                            <span style="font-size: 13px; font-weight: 500; color: var(--text-muted); background: rgba(0,0,0,0.04); padding: 3px 12px; border-radius: 12px;">${secRows.length} Personnel</span>
-                        </h3>
-                        <div class="table-wrapper" style="margin-top: 0;">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>No.</th>
-                                        <th>Rank</th>
-                                        <th>Last Name</th>
-                                        <th>First Name</th>
-                                        <th>Middle Name</th>
-                                        <th>Qualifiers</th>
-                                        <th>Designation</th>
-                                        <th>Status</th>
-                                        ${can ? '<th>Actions</th>' : ''}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                `;
-
-                secRows.forEach(p => {
-                    const actionTd = can ? `<td style="white-space:nowrap;">
-                        <button class="action-btn" onclick="editPersonnel(${Number(p.no)})">Edit</button>
-                        <button class="action-btn delete-btn" style="color:white;" onclick="archivePersonnel(${Number(p.no)})">Archive</button>
-                    </td>` : '';
-                    
-                    html += `
-                        <tr>
-                            <td>${escapeHtml(p.no)}</td>
-                            <td><strong>${escapeHtml(p.rank)}</strong></td>
-                            <td>${escapeHtml(p.lastName)}</td>
-                            <td>${escapeHtml(p.firstName)}</td>
-                            <td>${escapeHtml(p.middleName)}</td>
-                            <td>${escapeHtml(p.qualifiers)}</td>
-                            <td>${escapeHtml(p.designation)}</td>
-                            <td>${escapeHtml(p.status)}</td>
-                            ${actionTd}
-                        </tr>
-                    `;
-                });
-
-                html += `
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                `;
-            });
-
-            container.innerHTML = html;
+            body.innerHTML=rows.map(p=>{
+                const action=can?`<td style="white-space:nowrap;">
+                    <button class="action-btn" onclick="editPersonnel(${Number(p.no)})">Edit</button>
+                    <button class="action-btn delete-btn" style="color:white;" onclick="archivePersonnel(${Number(p.no)})">Archive</button>
+                </td>`:'';
+                return `<tr>
+                    <td>${escapeHtml(p.no)}</td><td>${escapeHtml(p.rank)}</td><td>${escapeHtml(p.lastName)}</td>
+                    <td>${escapeHtml(p.firstName)}</td><td>${escapeHtml(p.middleName)}</td><td>${escapeHtml(p.qualifiers)}</td>
+                    <td>${escapeHtml(p.designation)}</td><td>${escapeHtml(p.section)}</td><td>${escapeHtml(p.status)}</td>${action}
+                </tr>`;
+            }).join('');
         }
 
         function clearPersonnelFilters() {
@@ -1515,6 +1424,7 @@
                 
                 allMemos = data.reverse(); 
 
+                // Populate dynamic filters
                 const encoders = new Set();
                 const years = new Set();
                 allMemos.forEach(row => {
@@ -1555,240 +1465,197 @@
             });
 
             const catHtml = Object.keys(categoryCounts).map(k => `<div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;"><span>${k}</span> <strong style="color:var(--primary);">${categoryCounts[k]}</strong></div>`).join('');
-            document.getElementById('dashCategories').innerHTML = catHtml || '<span style="font-size:13px; color:var(--text-muted);">No categories</span>';
+            document.getElementById('dashCategories').innerHTML = catHtml || '<div style="font-size:13px; color:var(--text-muted)">No data</div>';
 
             const userHtml = Object.keys(userCounts).map(k => `<div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;"><span>${k}</span> <strong style="color:var(--primary);">${userCounts[k]}</strong></div>`).join('');
-            document.getElementById('dashUsers').innerHTML = userHtml || '<span style="font-size:13px; color:var(--text-muted);">No users</span>';
-        }
-
-        function searchTable() {
-            const keyword = document.getElementById('searchInput').value.toLowerCase();
-            const catFilter = document.getElementById('filterCategory').value;
-            const encFilter = document.getElementById('filterEncoder').value;
-            const monthFilter = document.getElementById('filterMonth').value;
-            const yearFilter = document.getElementById('filterYear').value;
-
-            if (userSettings.rememberSearch) {
-                localStorage.setItem('rhsuSearch_' + localStorage.getItem('loggedInUser'), document.getElementById('searchInput').value);
-            }
-
-            filteredMemos = allMemos.filter(row => {
-                const timestamp = row[0] || ""; const subject = row[1] || ""; const destination = row[4] || "";
-                const ctrlNum = row[2] || ""; const encodedBy = row[3] || ""; const status = row[5] || "";
-                
-                const matchKeyword = !keyword || timestamp.toLowerCase().includes(keyword) || subject.toLowerCase().includes(keyword) || destination.toLowerCase().includes(keyword) || ctrlNum.toLowerCase().includes(keyword) || encodedBy.toLowerCase().includes(keyword) || status.toLowerCase().includes(keyword);
-                
-                const matchCat = !catFilter || ctrlNum.includes(`RHSU(${catFilter})`);
-                const matchEnc = !encFilter || encodedBy === encFilter;
-
-                let matchMonth = true; let matchYear = true;
-                if (timestamp) {
-                    const d = new Date(timestamp);
-                    if (!isNaN(d.getTime())) {
-                        const m = String(d.getMonth() + 1).padStart(2, '0');
-                        const y = d.getFullYear().toString();
-                        if (monthFilter && m !== monthFilter) matchMonth = false;
-                        if (yearFilter && y !== yearFilter) matchYear = false;
-                    }
-                } else {
-                    if (monthFilter) matchMonth = false;
-                    if (yearFilter) matchYear = false;
-                }
-
-                return matchKeyword && matchCat && matchEnc && matchMonth && matchYear;
-            });
-
-            currentMemoPage = 1;
-            renderMemoTable();
+            document.getElementById('dashUsers').innerHTML = userHtml || '<div style="font-size:13px; color:var(--text-muted)">No data</div>';
         }
 
         function renderMemoTable() {
             const tableBody = document.getElementById('dataTable'); tableBody.innerHTML = "";
             const totalPages = Math.ceil(filteredMemos.length / MEMOS_PER_PAGE) || 1;
-            if (currentMemoPage > totalPages) currentMemoPage = totalPages;
-
-            const start = (currentMemoPage - 1) * MEMOS_PER_PAGE;
-            const end = start + MEMOS_PER_PAGE;
-            const paginatedRows = filteredMemos.slice(start, end);
-
-            if (paginatedRows.length === 0) {
-                tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No matching memos found.</td></tr>";
-                document.getElementById('memoPagination').classList.add('hidden');
-                return;
-            }
-
-            paginatedRows.forEach(row => {
-                const ctrlNum = row[2]; const subject = row[1]; const destination = row[4]; const encodedBy = row[3]; const status = row[5] || "Pending"; const timestamp = row[0];
-                const safeCtrl = String(ctrlNum).replace(/'/g, "\\'").replace(/"/g, '&quot;');
+            if (currentMemoPage > totalPages) currentMemoPage = totalPages; if (currentMemoPage < 1) currentMemoPage = 1;
+            const currentMemos = filteredMemos.slice((currentMemoPage - 1) * MEMOS_PER_PAGE, ((currentMemoPage - 1) * MEMOS_PER_PAGE) + MEMOS_PER_PAGE);
+            
+            if (currentMemos.length === 0) { tableBody.innerHTML = "<tr><td colspan='8' style='text-align:center;'>No match.</td></tr>"; document.getElementById('memoPagination').classList.add('hidden'); return; }
+            currentMemos.forEach(row => {
+                const safeSubject = String(row[1] || "").replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+                const safeDestination = String(row[5] || "N/A").replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const memoStatus = row[4] || "For Dispatched";
                 
-                let statusColor = "#f59e0b";
-                if (["Signed", "Approved", "Dispatched"].includes(status)) statusColor = "var(--success)";
-                else if (["Disapproved"].includes(status)) statusColor = "var(--danger)";
-
-                let actionsHtml = `<button class="action-btn" onclick="openActionModal('view', '${safeCtrl}')">View</button>`;
-                const currentUser = localStorage.getItem('loggedInUser');
-                const canEditRole = localStorage.getItem('canEdit') === 'Yes' || currentUser === ALPHA_ADMIN_NAME;
-
-                if (canEditRole) {
-                    actionsHtml += `<button class="action-btn" onclick="openActionModal('edit', '${safeCtrl}')">Edit</button>`;
-                    actionsHtml += `<button class="action-btn delete-btn" onclick="openActionModal('delete', '${safeCtrl}')">Delete</button>`;
-                }
-
                 tableBody.innerHTML += `<tr>
-                    <td><input type="checkbox" class="memo-checkbox" value="${safeCtrl}"></td>
-                    <td>${timestamp}</td>
-                    <td><strong>${subject}</strong></td>
-                    <td>${destination}</td>
-                    <td><code>${ctrlNum}</code></td>
-                    <td>${encodedBy}</td>
-                    <td><span style="color: ${statusColor}; font-weight: 600;">${status}</span></td>
-                    <td style="white-space: nowrap;">${actionsHtml}</td>
+                    <td><input type="checkbox" class="row-checkbox" value="${row[2]}"></td>
+                    <td>${row[0]}</td>
+                    <td>${row[1]}</td>
+                    <td>${safeDestination}</td>
+                    <td>${row[2]}</td>
+                    <td>${row[3] || "N/A"}</td>
+                    <td><span style="font-weight: 500; color: var(--primary);">${memoStatus}</span></td>
+                    <td style="white-space: nowrap;">
+                        <button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}', '${memoStatus}')">Edit</button> 
+                        <button class="action-btn delete-btn" onclick="triggerDelete('${row[2]}')">Delete</button>
+                    </td>
                 </tr>`;
             });
-
-            const pagContainer = document.getElementById('memoPagination');
-            if (filteredMemos.length > MEMOS_PER_PAGE) {
-                pagContainer.classList.remove('hidden');
-                document.getElementById('memoPageInfo').innerText = `Page ${currentMemoPage} of ${totalPages} (${filteredMemos.length} total records)`;
-                document.getElementById('prevMemoBtn').disabled = currentMemoPage === 1;
-                document.getElementById('nextMemoBtn').disabled = currentMemoPage === totalPages;
-            } else {
-                pagContainer.classList.add('hidden');
-            }
+            const pagination = document.getElementById('memoPagination');
+            if (filteredMemos.length > MEMOS_PER_PAGE) { pagination.classList.remove('hidden'); document.getElementById('memoPageInfo').innerText = `Page ${currentMemoPage} of ${totalPages}`; document.getElementById('prevMemoBtn').disabled = (currentMemoPage === 1); document.getElementById('nextMemoBtn').disabled = (currentMemoPage === totalPages); } else { pagination.classList.add('hidden'); }
         }
 
-        function changeMemoPage(direction) {
-            currentMemoPage += direction;
-            renderMemoTable();
-        }
+        function changeMemoPage(direction) { currentMemoPage += direction; renderMemoTable(); }
 
-        function toggleSelectAll() {
-            const selectAll = document.getElementById('selectAll').checked;
-            document.querySelectorAll('.memo-checkbox').forEach(cb => cb.checked = selectAll);
-        }
-
-        async function batchDelete() {
-            const checkedBoxes = document.querySelectorAll('.memo-checkbox:checked');
-            if (checkedBoxes.length === 0) return customAlert("Please select at least one memo to delete.", "Batch Delete");
-            
-            customConfirm(`Are you sure you want to delete ${checkedBoxes.length} selected memo(s)?`, async (confirmed) => {
-                if(!confirmed) return;
-                const ctrlNums = Array.from(checkedBoxes).map(cb => cb.value);
-                for(let ctrlNum of ctrlNums) {
-                    try {
-                        await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_memo', controlNumber: ctrlNum, username: localStorage.getItem('loggedInUser'), credential: localStorage.getItem('loggedCred') }) });
-                    } catch(e) {}
-                }
-                logActivity(`deleted ${ctrlNums.length} memo(s) in batch.`);
-                customAlert("Selected memos deleted successfully.", "Success");
-                setTimeout(loadData, 1500);
-            });
-        }
-
-        function openActionModal(mode, ctrlNum) {
-            pendingAction = mode; actionTargetControl = ctrlNum;
-            const modal = document.getElementById('actionModal');
-            document.getElementById('actionAdminPass').value = "";
-            document.getElementById('actionNewSubject').value = "";
-            
-            const titleEl = document.getElementById('actionModalTitle');
-            const subInput = document.getElementById('actionNewSubject');
-            const statusSelect = document.getElementById('actionNewStatus');
-            const destWrapper = document.getElementById('actionOfficeDestinationWrapper');
-
-            subInput.classList.add('hidden'); statusSelect.classList.add('hidden'); destWrapper.classList.add('hidden');
-
-            const memo = allMemos.find(m => m[2] === ctrlNum);
-
-            if (mode === 'view') {
-                titleEl.innerText = `Memo Details: ${ctrlNum}`;
-                customAlert(`Subject: ${memo[1]}\nDestination: ${memo[4]}\nStatus: ${memo[5] || 'Pending'}\nEncoded By: ${memo[3]}\nTimestamp: ${memo[0]}`, ctrlNum);
-                modal.classList.add('hidden'); return;
-            } else if (mode === 'edit') {
-                titleEl.innerText = `Edit Memo: ${ctrlNum}`;
-                subInput.classList.remove('hidden'); subInput.value = memo ? memo[1] : "";
-                statusSelect.classList.remove('hidden'); statusSelect.value = memo ? (memo[5] || 'Pending') : 'Pending';
-                destWrapper.classList.remove('hidden');
-                setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', memo ? memo[4] : '');
-            } else if (mode === 'delete') {
-                titleEl.innerText = `Confirm Deletion: ${ctrlNum}`;
-            }
-            modal.classList.remove('hidden');
-            document.getElementById('actionAdminPass').focus();
-        }
-
-        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; }
-
-        async function executeAction() {
-            const pass = document.getElementById('actionAdminPass').value.trim();
-            if (!pass) return customAlert("Enter your password or PIN.", "Error");
-
-            const mode = pendingAction; const ctrlNum = actionTargetControl;
-            const currentUser = localStorage.getItem('loggedInUser');
-
-            if (mode === 'delete') {
-                try {
-                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete_memo', controlNumber: ctrlNum, username: currentUser, credential: pass }) });
-                    logActivity(`deleted memo: ${ctrlNum}`);
-                    customAlert("Memo deleted successfully.", "Success"); closeActionModal(); setTimeout(loadData, 1500);
-                } catch(e) { customAlert("Failed to delete memo.", "Error"); }
-            } else if (mode === 'edit') {
-                const newSubject = document.getElementById('actionNewSubject').value.trim();
-                const newStatus = document.getElementById('actionNewStatus').value;
-                const newDestination = getSelectedOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther');
-                if(!newSubject) return customAlert("Subject cannot be empty.", "Error");
-                if(!newDestination) return customAlert("Office destination is required.", "Error");
-
-                try {
-                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'edit_memo', controlNumber: ctrlNum, newSubject: newSubject, newStatus: newStatus, newOfficeDestination: newDestination, username: currentUser, credential: pass }) });
-                    logActivity(`edited memo record: ${ctrlNum}`);
-                    customAlert("Memo updated successfully.", "Success"); closeActionModal(); setTimeout(loadData, 1500);
-                } catch(e) { customAlert("Failed to update memo.", "Error"); }
-            }
-        }
-
-        document.getElementById('memoForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            const classification = document.getElementById('memoClassification').value;
-            const subject = document.getElementById('memoSubject').value.trim();
-            const officeDestination = getSelectedOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther');
-            const currentUser = localStorage.getItem('loggedInUser');
-
-            if(!subject || !officeDestination) return customAlert("Please fill in all memo fields.", "Validation Error");
-
-            const submitBtn = document.getElementById('memoSubmitBtn');
-            submitBtn.disabled = true; submitBtn.innerText = "Generating Control Number...";
-
-            try {
-                const res = await fetch(API_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: JSON.stringify({
-                        action: 'create_memo',
-                        classification: classification,
-                        subject: subject,
-                        officeDestination: officeDestination,
-                        encodedBy: currentUser
-                    })
-                });
-                
-                logActivity(`created a new memo with subject: "${subject}"`);
-                customAlert("New memo successfully created and registered!", "Success");
-                closeMemoModal();
-                document.getElementById('memoSubject').value = "";
-                setOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther', '');
-                setTimeout(loadData, 1500);
-            } catch(err) {
-                customAlert("Failed to submit memo.", "Error");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = "Submit Data";
-            }
+        document.getElementById('memoForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); const submitBtn = document.getElementById('memoSubmitBtn'); const subject = document.getElementById('memoSubject').value.trim(); const officeDestination = getSelectedOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther'); const classification = document.getElementById('memoClassification').value; 
+            if (!subject) return customAlert("Please enter a Memo Subject.", "Error"); if (!officeDestination) return customAlert("Please select or enter the Office Destination.", "Error");
+            submitBtn.disabled = true; submitBtn.innerText = "Submitting...";
+            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'create', memoSubject: subject, officeDestination: officeDestination, classification: classification, userName: localStorage.getItem('loggedInUser') }) }); logActivity(`encoded a new memo: "${subject}" for ${officeDestination}`); document.getElementById('memoSubject').value = ""; setOfficeDestination('memoOfficeDestination', 'memoOfficeDestinationOther', ""); closeMemoModal(); setTimeout(loadData, 1500); customAlert("Memo created!", "Success"); } catch (err) { submitBtn.disabled = false; submitBtn.innerText = "Submit Data"; }
         });
 
-        window.onload = function() {
-            checkAuth();
-        };
+        function initiateEdit(controlNum, currentSubject, currentOfficeDestination = "", currentStatus = "For Dispatched") {
+            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
+            const userRole = localStorage.getItem('userRole');
+            const canEdit = localStorage.getItem('canEdit') === 'Yes' || userRole === 'Admin';
+            
+            if (!isAlphaAdmin && !canEdit) { 
+                customAlert("Regular Users can add and generate control numbers, but only Admins can edit records.", "Permission Denied"); 
+            } else { 
+                triggerActionModal('edit', controlNum, currentSubject, currentOfficeDestination, currentStatus); 
+            } 
+        }
+
+        function triggerDelete(controlNum) {
+            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
+
+            if (!isAlphaAdmin) { 
+                return customAlert("Regular Users and Admins are unable to delete existing entries. Only Alpha Admin can delete records.", "Permission Denied"); 
+            }
+            triggerActionModal('delete', controlNum);
+        }
+
+        function triggerActionModal(action, controlNum, currentSubject = "", currentOfficeDestination = "", currentStatus = "For Dispatched") {
+            pendingAction = action; 
+            actionTargetControl = controlNum; 
+            document.getElementById('actionModal').classList.remove('hidden'); 
+            
+            const passInput = document.getElementById('actionAdminPass');
+            passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
+            passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
+            
+            document.getElementById('actionNewSubject').value = currentSubject;
+            document.getElementById('actionNewStatus').value = currentStatus;
+            setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', currentOfficeDestination === "N/A" ? "" : currentOfficeDestination);
+            
+            if (action === 'edit') { 
+                document.getElementById('actionModalTitle').innerText = `Edit: ${controlNum}`; 
+                document.getElementById('actionNewSubject').classList.remove('hidden'); 
+                document.getElementById('actionNewStatus').classList.remove('hidden');
+                document.getElementById('actionOfficeDestinationWrapper').classList.remove('hidden'); 
+            } else { 
+                document.getElementById('actionModalTitle').innerText = `Delete: ${controlNum}`; 
+                document.getElementById('actionNewSubject').classList.add('hidden'); 
+                document.getElementById('actionNewStatus').classList.add('hidden');
+                document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); 
+            }
+        }
+        
+        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionNewStatus').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', ""); }
+        
+        async function executeAction() {
+            const pass = document.getElementById('actionAdminPass').value; if (!pass) return customAlert("Please enter password.", "Error");
+            const currentUser = localStorage.getItem('loggedInUser');
+
+            if (pendingAction === 'edit') { 
+                const newSubject = document.getElementById('actionNewSubject').value.trim(); 
+                const newStatus = document.getElementById('actionNewStatus').value;
+                const newOfficeDestination = getSelectedOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther'); 
+                
+                if (!newSubject) return customAlert("Please enter a Memo Subject.", "Error"); 
+                if (!newOfficeDestination) return customAlert("Please select or enter the Office Destination.", "Error"); 
+                
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, newStatus: newStatus, officeDestination: newOfficeDestination, password: pass, userName: currentUser }) }); 
+                logActivity(`updated memo: ${actionTargetControl}`);
+            } else if (pendingAction === 'delete') { 
+                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass, userName: currentUser }) }); 
+                logActivity(`deleted memo: ${actionTargetControl}`);
+            } else if (pendingAction === 'batch_delete') { 
+                for (const c of actionTargetControl) { 
+                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: c, password: pass, userName: currentUser }) }); 
+                } 
+                logActivity(`batch deleted ${actionTargetControl.length} memos`);
+            }
+            closeActionModal(); setTimeout(loadData, 1500);
+        }
+
+        function batchDelete() { 
+            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME; 
+
+            if (!isAlphaAdmin) { 
+                return customAlert("Regular Users and Admins are unable to delete existing entries. Only Alpha Admin can delete records.", "Permission Denied"); 
+            }
+
+            const checked = document.querySelectorAll('.row-checkbox:checked'); 
+            if (checked.length === 0) return customAlert("Please select at least one record to delete.", "Notice"); 
+            
+            pendingAction = 'batch_delete'; 
+            actionTargetControl = Array.from(checked).map(cb => cb.value); 
+            document.getElementById('actionModal').classList.remove('hidden'); 
+            document.getElementById('actionModalTitle').innerText = `Delete ${checked.length} Selected`; 
+            
+            const passInput = document.getElementById('actionAdminPass');
+            passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
+            passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
+            
+            document.getElementById('actionNewSubject').classList.add('hidden'); 
+            document.getElementById('actionNewStatus').classList.add('hidden');
+            document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); 
+        }
+        
+        function searchTable() { 
+            const searchInput = document.getElementById("searchInput").value.toUpperCase(); 
+            const categoryFilter = document.getElementById("filterCategory").value;
+            const encoderFilter = document.getElementById("filterEncoder").value;
+            const monthFilter = document.getElementById("filterMonth").value;
+            const yearFilter = document.getElementById("filterYear").value;
+
+            if (userSettings.rememberSearch) localStorage.setItem('rhsuSearch_' + localStorage.getItem('loggedInUser'), searchInput);
+
+            filteredMemos = allMemos.filter(row => {
+                const rowText = row.join(" ").toUpperCase();
+                const matchesSearch = searchInput === "" || rowText.includes(searchInput);
+                
+                const timestamp = row[0] || "";
+                const controlNum = row[2] || "";
+                const encodedBy = row[3] || "";
+                
+                const match = controlNum.match(/RHSU\((.*?)\)/);
+                const rowCategory = match ? match[1] : "";
+                
+                const matchesCategory = categoryFilter === "" || rowCategory === categoryFilter;
+                const matchesEncoder = encoderFilter === "" || encodedBy === encoderFilter;
+                
+                let matchesMonth = true;
+                let matchesYear = true;
+
+                if (timestamp) {
+                    const dateObj = new Date(timestamp);
+                    if (!isNaN(dateObj.getTime())) {
+                        const rowMonth = ("0" + (dateObj.getMonth() + 1)).slice(-2);
+                        const rowYear = dateObj.getFullYear().toString();
+                        
+                        matchesMonth = monthFilter === "" || rowMonth === monthFilter;
+                        matchesYear = yearFilter === "" || rowYear === yearFilter;
+                    }
+                }
+
+                return matchesSearch && matchesCategory && matchesEncoder && matchesMonth && matchesYear;
+            });
+            
+            currentMemoPage = 1; 
+            renderMemoTable(); 
+        }
+        
+        function toggleSelectAll() { const isChecked = document.getElementById('selectAll').checked; document.querySelectorAll('.row-checkbox').forEach(cb => cb.checked = isChecked); }
+
+        checkAuth();
     </script>
 </body>
 </html>
