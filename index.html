@@ -24,6 +24,13 @@
 
         * { box-sizing: border-box; transition: background-color 0.2s, border-color 0.2s, color 0.2s; }
         
+        /* Hide scrollbars while preserving scrolling */
+        html, body, *, *::before, *::after {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        html::-webkit-scrollbar, body::-webkit-scrollbar, *::-webkit-scrollbar { width: 0 !important; height: 0 !important; display: none !important; }
+
         body { 
             font-family: 'Inter', sans-serif; 
             background: linear-gradient(135deg, #ffffff, #f1f5f9, #e2e8f0);
@@ -458,6 +465,8 @@
                         <option value="">All Years</option>
                     </select>
 
+                    <input type="date" id="filterDay" onchange="searchTable()" title="Filter by exact day" style="margin:0; width:auto; background:white; padding:8px 12px; border-radius:var(--radius-sm);">
+
                     <button class="action-btn delete-btn" onclick="batchDelete()" style="color:white; margin-left: auto;">
                         <img src="images/Trash.png" alt="Delete" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Delete Selected
                     </button>
@@ -592,8 +601,18 @@
                 </div>
 
                 <div class="settings-section glass-panel" style="margin-bottom:15px;">
-                    <h3 style="margin-bottom:10px;">Recap by Rank</h3>
+                    <h3 style="margin-bottom:10px;">Recapitulation By Rank</h3>
                     <div id="personnelRankRecap" class="rank-recap"></div>
+                </div>
+
+                <div class="settings-section glass-panel" style="margin-bottom:15px;">
+                    <h3 style="margin-bottom:10px;">Recapitulation By Section</h3>
+                    <div id="personnelSectionRecap" class="rank-recap"></div>
+                </div>
+
+                <div class="settings-section glass-panel" style="margin-bottom:15px;">
+                    <h3 style="margin-bottom:10px;">Detached Service Recapitulation</h3>
+                    <div id="detachedServiceRecap" class="rank-recap"></div>
                 </div>
 
                 <div class="personnel-toolbar">
@@ -798,7 +817,14 @@
                 <input id="pMiddleName" type="text" placeholder="Middle Name">
                 <input id="pQualifiers" type="text" placeholder="Qualifiers">
                 <input id="pDesignation" type="text" placeholder="Designation">
-                <input id="pSection" type="text" placeholder="Section">
+                <select id="pSection">
+                    <option value="">Select Section...</option>
+                    <option value="Admin Section">Admin Section</option>
+                    <option value="General Services Section">General Services Section</option>
+                    <option value="Special Services Band">Special Services Band</option>
+                    <option value="Base Police">Base Police</option>
+                    <option value="Detached Service">Detached Service</option>
+                </select>
                 <input id="pStatus" type="text" placeholder="Status" value="Active">
             </div>
             <div style="display:flex;gap:10px;margin-top:18px;">
@@ -1252,13 +1278,22 @@
 
         async function loadPersonnel() {
             try {
+                // Keep the original single backend request. All summaries, filters and
+                // table data are derived from this one in-memory dataset.
                 const res = await fetch(API_URL + "?action=get_personnel");
                 const data = await res.json();
                 if (!data.success) throw new Error(data.error || 'Unable to load personnel');
+
                 allPersonnel = Array.isArray(data.personnel) ? data.personnel : [];
+
+                // Do lightweight preparation first so the data is available immediately.
                 updatePersonnelDashboard();
                 populatePersonnelFilters();
-                filterPersonnel();
+                populatePersonnelSections();
+
+                // Defer the potentially heavier table DOM rendering until the browser has
+                // painted the Personnel page. This keeps the page responsive with larger sheets.
+                requestAnimationFrame(() => filterPersonnel());
             } catch (err) {
                 console.error(err);
                 const container = document.getElementById('personnelTablesContainer');
@@ -1282,21 +1317,52 @@
         function updatePersonnelDashboard() {
             const counts = {PNCO:0,PCO:0,NUP:0,Other:0};
             const rankCounts = {};
+            const sectionCounts = {};
+            const detachedRankCounts = {};
+            const isDetached = p => String(p.section || '').trim().toLowerCase() === 'detached service';
+
+            // Detached Service personnel are intentionally excluded from the main totals/recapitulations.
             allPersonnel.forEach(p => {
-                const g=rankGroup(p.rank); counts[g]++;
-                const r=p.rank || 'Unspecified'; rankCounts[r]=(rankCounts[r]||0)+1;
+                if (isDetached(p)) {
+                    const r = p.rank || 'Unspecified';
+                    detachedRankCounts[r] = (detachedRankCounts[r] || 0) + 1;
+                    return;
+                }
+
+                const g=rankGroup(p.rank);
+                counts[g]++;
+                const r=p.rank || 'Unspecified';
+                rankCounts[r]=(rankCounts[r]||0)+1;
+
+                const section = String(p.section || '').trim() || 'Unspecified';
+                sectionCounts[section]=(sectionCounts[section]||0)+1;
             });
-            document.getElementById('personnelTotal').innerText = allPersonnel.length;
+
+            const mainTotal = Object.values(counts).reduce((a,b)=>a+b,0);
+            document.getElementById('personnelTotal').innerText = mainTotal;
             document.getElementById('personnelPNCO').innerText = counts.PNCO;
             document.getElementById('personnelPCO').innerText = counts.PCO;
             document.getElementById('personnelNUP').innerText = counts.NUP;
             document.getElementById('personnelOther').innerText = counts.Other;
+
             const recap=document.getElementById('personnelRankRecap');
             recap.innerHTML=Object.keys(rankCounts).sort((a,b)=>a.localeCompare(b)).map(r =>
                 `<div class="rank-chip"><span>${escapeHtml(r)}</span><strong>${rankCounts[r]}</strong></div>`).join('') ||
                 '<div style="color:var(--text-muted);font-size:13px;">No personnel records.</div>';
-        }
 
+            const sectionRecap=document.getElementById('personnelSectionRecap');
+            sectionRecap.innerHTML=Object.keys(sectionCounts).sort((a,b)=>a.localeCompare(b)).map(section =>
+                `<div class="rank-chip"><span>${escapeHtml(section)}</span><strong>${sectionCounts[section]}</strong></div>`).join('') ||
+                '<div style="color:var(--text-muted);font-size:13px;">No personnel records.</div>';
+
+            const detachedRecap=document.getElementById('detachedServiceRecap');
+            const detachedTotal=Object.values(detachedRankCounts).reduce((a,b)=>a+b,0);
+            detachedRecap.innerHTML = detachedTotal
+                ? `<div class="rank-chip"><span>Total Detached Service</span><strong>${detachedTotal}</strong></div>` +
+                  Object.keys(detachedRankCounts).sort((a,b)=>a.localeCompare(b)).map(r =>
+                    `<div class="rank-chip"><span>${escapeHtml(r)}</span><strong>${detachedRankCounts[r]}</strong></div>`).join('')
+                : '<div style="color:var(--text-muted);font-size:13px;">No Detached Service personnel.</div>';
+        }
         function populatePersonnelFilters() {
             const ranks=[...new Set(allPersonnel.map(p=>String(p.rank||'').trim()).filter(Boolean))].sort();
             const statuses=[...new Set(allPersonnel.map(p=>String(p.status||'').trim()).filter(Boolean))].sort();
@@ -1308,14 +1374,45 @@
             ss.value=statuses.includes(oldS)?oldS:'';
         }
 
+        function populatePersonnelSections() {
+            const select = document.getElementById('pSection');
+            if (!select) return;
+
+            // Preserve the existing/current section values from the backend while also
+            // ensuring Detached Service is always available as a selectable option.
+            const current = String(select.value || '').trim();
+            const sections = [...new Set(
+                allPersonnel
+                    .map(p => String(p.section || '').trim())
+                    .filter(Boolean)
+            )].sort((a, b) => a.localeCompare(b));
+
+            if (!sections.some(s => s.toLowerCase() === 'detached service')) {
+                sections.push('Detached Service');
+            }
+
+            select.innerHTML = '<option value="">Select Section...</option>' +
+                sections.map(s => `<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`).join('');
+
+            if (current && sections.some(s => s.toLowerCase() === current.toLowerCase())) {
+                const match = sections.find(s => s.toLowerCase() === current.toLowerCase());
+                select.value = match || current;
+            }
+        }
+
         function filterPersonnel() {
-            const q=document.getElementById('personnelSearch').value.trim().toLowerCase();
-            const rank=document.getElementById('personnelRankFilter').value;
-            const status=document.getElementById('personnelStatusFilter').value;
-            const rows=allPersonnel.filter(p=>{
-                const text=[p.no,p.rank,p.lastName,p.firstName,p.middleName,p.qualifiers,p.designation,p.section,p.status].join(' ').toLowerCase();
-                return (!q || text.includes(q)) && (!rank || p.rank===rank) && (!status || p.status===status);
+            const q = document.getElementById('personnelSearch').value.trim().toLowerCase();
+            const rank = document.getElementById('personnelRankFilter').value;
+            const status = document.getElementById('personnelStatusFilter').value;
+
+            const rows = allPersonnel.filter(p => {
+                const text = [p.no,p.rank,p.lastName,p.firstName,p.middleName,p.qualifiers,p.designation,p.section,p.status]
+                    .join(' ').toLowerCase();
+                return (!q || text.includes(q)) &&
+                       (!rank || String(p.rank || '') === rank) &&
+                       (!status || String(p.status || '') === status);
             });
+
             renderPersonnelTable(rows);
         }
 
@@ -1330,86 +1427,85 @@
                 "PAT": 13, "NUP": 14
             };
 
-            rows.sort((a, b) => {
+            // Work on a copy so the master backend-loaded array is never reordered.
+            const sortedRows = rows.slice().sort((a, b) => {
                 const rA = String(a.rank || '').trim().toUpperCase();
                 const rB = String(b.rank || '').trim().toUpperCase();
                 const valA = rankOrder[rA] || 99;
                 const valB = rankOrder[rB] || 99;
-                return valA - valB;
+                if (valA !== valB) return valA - valB;
+                return String(a.lastName || '').localeCompare(String(b.lastName || ''));
             });
 
-            const targetSections = ["Admin Section", "General Services Section", "Special Services Band", "Base Police"];
-            const grouped = {
-                "Admin Section": [],
-                "General Services Section": [],
-                "Special Services Band": [],
-                "Base Police": [],
-                "Other Sections": []
-            };
-
-            rows.forEach(p => {
-                const sec = String(p.section || '').trim().toLowerCase();
-                let matched = false;
-                for (let s of targetSections) {
-                    if (sec === s.toLowerCase() || sec.includes(s.toLowerCase())) {
-                        grouped[s].push(p);
-                        matched = true;
-                        break;
-                    }
+            // Build section groups dynamically from the loaded data. Detached Service
+            // remains separate and is never mixed into the regular sections.
+            const groups = new Map();
+            let detached = [];
+            sortedRows.forEach(p => {
+                const section = String(p.section || '').trim() || 'Unspecified';
+                if (section.toLowerCase() === 'detached service') {
+                    detached.push(p);
+                    return;
                 }
-                if (!matched) grouped["Other Sections"].push(p);
+                if (!groups.has(section)) groups.set(section, []);
+                groups.get(section).push(p);
             });
+
+            const preferredOrder = [
+                'Admin Section',
+                'General Services Section',
+                'Special Services Band',
+                'Base Police'
+            ];
+
+            const orderedSections = [];
+            preferredOrder.forEach(name => {
+                const actual = [...groups.keys()].find(k => k.toLowerCase() === name.toLowerCase());
+                if (actual) orderedSections.push(actual);
+            });
+            [...groups.keys()]
+                .filter(k => !orderedSections.some(x => x.toLowerCase() === k.toLowerCase()))
+                .sort((a,b) => a.localeCompare(b))
+                .forEach(k => orderedSections.push(k));
 
             let html = '';
 
             const buildTable = (title, dataRows) => {
-                if (dataRows.length === 0 && title === "Other Sections") return ''; 
+                if (!dataRows.length) return '';
 
-                let bodyHtml = '';
-                if (!dataRows.length) {
-                    bodyHtml = `<tr><td colspan="${can ? 10 : 9}" style="text-align:center;color:var(--text-muted);">No personnel records found.</td></tr>`;
-                } else {
-                    bodyHtml = dataRows.map((p, index) => {
-                        const autoNo = index + 1;
-                        const action = can ? `<td style="white-space:nowrap;">
-                            <button class="action-btn" onclick="editPersonnel(${Number(p.no)})">Edit</button>
-                            <button class="action-btn delete-btn" style="color:white;" onclick="archivePersonnel(${Number(p.no)})">Archive</button>
-                        </td>` : '';
-                        return `<tr>
-                            <td>${autoNo}</td><td>${escapeHtml(p.rank)}</td><td>${escapeHtml(p.lastName)}</td>
-                            <td>${escapeHtml(p.firstName)}</td><td>${escapeHtml(p.middleName)}</td><td>${escapeHtml(p.qualifiers)}</td>
-                            <td>${escapeHtml(p.designation)}</td><td>${escapeHtml(p.section)}</td><td>${escapeHtml(p.status)}</td>${action}
-                        </tr>`;
-                    }).join('');
-                }
+                const bodyHtml = dataRows.map((p, index) => {
+                    const action = can ? `<td style="white-space:nowrap;">
+                        <button class="action-btn" onclick="editPersonnel(${Number(p.no)})">Edit</button>
+                        <button class="action-btn delete-btn" style="color:white;" onclick="archivePersonnel(${Number(p.no)})">Archive</button>
+                    </td>` : '';
 
-                return `
-                <h3 style="margin-top: 25px; margin-bottom: 10px; color: var(--primary); font-size: 16px;">${title}</h3>
-                <div class="table-wrapper" style="margin-bottom: 20px; margin-top: 0;">
+                    return `<tr>
+                        <td>${index + 1}</td><td>${escapeHtml(p.rank)}</td><td>${escapeHtml(p.lastName)}</td>
+                        <td>${escapeHtml(p.firstName)}</td><td>${escapeHtml(p.middleName)}</td><td>${escapeHtml(p.qualifiers)}</td>
+                        <td>${escapeHtml(p.designation)}</td><td>${escapeHtml(p.section)}</td><td>${escapeHtml(p.status)}</td>${action}
+                    </tr>`;
+                }).join('');
+
+                return `<h3 style="margin-top:25px;margin-bottom:10px;color:var(--primary);font-size:16px;">${escapeHtml(title)}</h3>
+                <div class="table-wrapper" style="margin-bottom:20px;margin-top:0;">
                     <table>
-                        <thead>
-                            <tr>
-                                <th>No.</th><th>Rank</th><th>Last Name</th><th>First Name</th><th>Middle Name</th>
-                                <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th>
-                                ${can ? '<th>Actions</th>' : ''}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${bodyHtml}
-                        </tbody>
+                        <thead><tr>
+                            <th>No.</th><th>Rank</th><th>Last Name</th><th>First Name</th><th>Middle Name</th>
+                            <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th>
+                            ${can ? '<th>Actions</th>' : ''}
+                        </tr></thead>
+                        <tbody>${bodyHtml}</tbody>
                     </table>
                 </div>`;
             };
 
-            html += buildTable("Admin Section", grouped["Admin Section"]);
-            html += buildTable("General Services Section", grouped["General Services Section"]);
-            html += buildTable("Special Services Band", grouped["Special Services Band"]);
-            html += buildTable("Base Police", grouped["Base Police"]);
-            html += buildTable("Other Sections", grouped["Other Sections"]);
+            orderedSections.forEach(section => {
+                html += buildTable(section, groups.get(section));
+            });
+            html += buildTable('Detached Service', detached);
 
-            container.innerHTML = html;
+            container.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);padding:20px;">No personnel records found.</div>';
         }
-
         function clearPersonnelFilters() {
             document.getElementById('personnelSearch').value='';
             document.getElementById('personnelRankFilter').value='';
@@ -1475,7 +1571,7 @@
                 closePersonnelModal(); customAlert(payload.action==='add_personnel'?'Personnel added successfully.':'Personnel updated successfully.','Success'); await loadPersonnel();
             } catch(e) {
                 customAlert(e.message||'Unable to save personnel record.','Error');
-            } finally { btn.disabled=false; btn.innerText=personnelEditNo===null?'Add Personnel':'Update Personnel'; }
+            } finally { btn.disabled=false; btn.innerText=(payload.action==='add_personnel' ? 'Add Personnel' : 'Update Personnel'); }
         }
 
         function archivePersonnel(no) {
@@ -1671,6 +1767,7 @@
             const encoderFilter = document.getElementById('filterEncoder').value;
             const monthFilter = document.getElementById('filterMonth').value;
             const yearFilter = document.getElementById('filterYear').value;
+            const dayFilter = document.getElementById('filterDay').value;
 
             if (userSettings.rememberSearch) {
                 const user = localStorage.getItem('loggedInUser');
@@ -1687,18 +1784,21 @@
                 
                 let matchesMonth = true;
                 let matchesYear = true;
-                
+                let matchesDay = true;
+
                 if (row[0]) {
                     const d = new Date(row[0]);
                     if (!isNaN(d.getTime())) {
                         const m = ("0" + (d.getMonth() + 1)).slice(-2);
                         const y = d.getFullYear().toString();
+                        const day = `${y}-${m}-${String(d.getDate()).padStart(2,'0')}`;
                         if (monthFilter !== "" && m !== monthFilter) matchesMonth = false;
                         if (yearFilter !== "" && y !== yearFilter) matchesYear = false;
+                        if (dayFilter !== "" && day !== dayFilter) matchesDay = false;
                     }
                 }
 
-                return matchesSearch && matchesCategory && matchesEncoder && matchesMonth && matchesYear;
+                return matchesSearch && matchesCategory && matchesEncoder && matchesMonth && matchesYear && matchesDay;
             });
             currentMemoPage = 1;
             renderMemoTable();
