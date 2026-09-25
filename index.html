@@ -1831,6 +1831,10 @@
             passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
             passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
         }
+
+        // Restore the authenticated session whenever the page is loaded or refreshed.
+        // Authentication state is stored in localStorage and is not cleared by a refresh.
+        window.addEventListener('load', checkAuth);
     </script>
 </body>
 </html>
