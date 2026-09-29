@@ -315,6 +315,42 @@
         .personnel-recap-panel .settings-section { margin-bottom:15px; }
         @media(max-width:1100px){ .personnel-content-layout{grid-template-columns:1fr;} .personnel-recap-panel{position:static;} }
 
+
+        /* --- ACTIVITY MANAGEMENT --- */
+        .activity-toolbar { display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; margin:15px 0 12px; }
+        .activity-toolbar .activity-search { flex:1; min-width:240px; max-width:520px; margin:0; background:white; font-family:inherit; }
+        body.dark-mode .activity-toolbar .activity-search { background:#0f172a; }
+        .activity-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; text-align:left; align-items:start; }
+        .activity-form-grid .full-width { grid-column:1/-1; }
+        .activity-form-field { min-width:0; display:flex; flex-direction:column; }
+        .activity-form-field > label { font-size:13px; color:var(--text-muted); display:block; margin-bottom:6px; font-family:inherit; }
+        .activity-form-grid input, .activity-form-grid select, .activity-form-grid button { font-family:inherit; }
+        .activity-form-grid input, .activity-form-grid select { width:100%; min-height:42px; margin:0; }
+        .activity-dates-box { border:1px solid var(--border-color); border-radius:var(--radius-md); padding:14px; background:rgba(0,0,0,.02); font-family:inherit; }
+        body.dark-mode .activity-dates-box { background:rgba(255,255,255,.03); }
+        .activity-calendar-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
+        .activity-calendar-title { font-weight:700; color:var(--text-main); font-size:14px; }
+        .activity-calendar-nav { display:flex; gap:6px; }
+        .activity-calendar-nav button { width:34px !important; min-width:34px; min-height:34px !important; padding:0 !important; margin:0 !important; border:1px solid var(--border-color); background:transparent; color:var(--text-main); border-radius:var(--radius-sm); }
+        .activity-calendar-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
+        .activity-calendar-weekday { text-align:center; font-size:11px; font-weight:700; color:var(--text-muted); padding:4px 0; }
+        .activity-calendar-day { width:100%; min-height:36px !important; padding:0 !important; margin:0 !important; border:1px solid transparent; border-radius:var(--radius-sm); background:transparent; color:var(--text-main); font-family:inherit; font-size:12px; }
+        .activity-calendar-day:hover { border-color:var(--primary); }
+        .activity-calendar-day.is-other-month { opacity:.35; }
+        .activity-calendar-day.is-today { border-color:var(--primary); font-weight:700; }
+        .activity-calendar-day.is-selected { background:var(--primary); color:#fff; border-color:var(--primary); font-weight:700; }
+        .activity-date-list { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; min-height:28px; }
+        .activity-date-chip { display:inline-flex; align-items:center; gap:6px; padding:5px 9px; border-radius:999px; background:rgba(79,70,229,.1); color:var(--primary); font-size:12px; border:1px solid var(--border-color); font-family:inherit; }
+        .activity-date-chip button { width:auto; min-height:0 !important; margin:0; padding:2px 5px; font-size:11px; background:transparent; color:var(--danger); border:0; font-family:inherit; }
+        .activity-status { font-weight:600; white-space:nowrap; }
+        .activity-status.recurring { color:var(--primary); }
+        .activity-status.ongoing { color:var(--success); }
+        .activity-status.archive { color:var(--text-muted); }
+        .activity-archive-section { margin-top:28px; }
+        .activity-archive-section summary { cursor:pointer; font-weight:700; color:var(--primary); padding:12px 0; font-family:inherit; }
+        .activity-action-cell { white-space:nowrap; }
+        @media(max-width:700px){ .activity-form-grid{grid-template-columns:1fr;} .activity-form-grid .full-width{grid-column:auto;} .activity-toolbar .activity-search{max-width:none;} }
+
     </style>
 </head>
 <body>
@@ -398,6 +434,12 @@
             <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt');">
                 <img src="images/Activity.png" alt="Admin" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\'></path><circle cx=\'9\' cy=\'7\' r=\'4\'></circle><path d=\'M23 21v-2a4 4 0 0 0-3-3.87\'></path><path d=\'M16 3.13a4 4 0 0 1 0 7.75\'></path></svg>'">
                 <span class="nav-text">User Management</span>
+            </button>
+
+
+            <button class="sidebar-btn" id="btnActivityManagement" onclick="switchTab('activityManagement');">
+                <img src="images/Activity.png" alt="Activity Management" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><rect x=\'3\' y=\'4\' width=\'18\' height=\'18\' rx=\'2\'></rect><line x1=\'16\' y1=\'2\' x2=\'16\' y2=\'6\'></line><line x1=\'8\' y1=\'2\' x2=\'8\' y2=\'6\'></line><line x1=\'3\' y1=\'10\' x2=\'21\' y2=\'10\'></line></svg>'">
+                <span class="nav-text">Activity Management</span>
             </button>
 
             <button class="sidebar-btn" id="btnSettings" onclick="switchTab('settings');">
@@ -645,6 +687,79 @@
                 </div>
             </div>
 
+
+            <!-- ACTIVITY MANAGEMENT TAB -->
+            <div id="tabActivityManagement" class="hidden">
+                <div class="controls">
+                    <div>
+                        <h2 style="margin:0; color:var(--primary);">Activity Management</h2>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Recurring activities and scheduled PRO 1 venue activities</div>
+                    </div>
+                </div>
+
+                <div class="activity-toolbar">
+                    <button id="activityAddBtn" class="action-btn approve-btn" onclick="openActivityModal()" style="color:white;font-weight:bold;width:auto;">
+                        ＋ Add Activity
+                    </button>
+                    <input id="activitySearch" class="activity-search" type="text" placeholder="Search activities..." oninput="filterActivities()">
+                </div>
+
+                <div class="table-wrapper" style="margin-top:0;">
+                    <table id="activityTable">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Activity Title</th>
+                                <th>Assigned Venue</th>
+                                <th>Requesting Office</th>
+                                <th>Concerned Office</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th id="activityActionHeader">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="activityTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div id="activityPagination" class="pagination-container hidden">
+                    <span id="activityPageInfo" style="font-weight:bold;">Page 1 of 1</span>
+                    <div class="pagination-buttons">
+                        <button id="prevActivityBtn" class="page-btn" onclick="changeActivityPage(-1)">Prev</button>
+                        <button id="nextActivityBtn" class="page-btn" onclick="changeActivityPage(1)">Next</button>
+                    </div>
+                </div>
+
+                <div class="activity-archive-section">
+                    <details id="archivedActivitiesDetails">
+                        <summary>Archived Activities</summary>
+                        <div class="table-wrapper" style="margin-top:8px;">
+                            <table id="archivedActivityTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Activity Title</th>
+                                        <th>Assigned Venue</th>
+                                        <th>Requesting Office</th>
+                                        <th>Concerned Office</th>
+                                        <th>Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="archivedActivityTableBody"></tbody>
+                            </table>
+                        </div>
+                        <div id="archivedActivityPagination" class="pagination-container hidden">
+                            <span id="archivedActivityPageInfo" style="font-weight:bold;">Page 1 of 1</span>
+                            <div class="pagination-buttons">
+                                <button id="prevArchivedActivityBtn" class="page-btn" onclick="changeArchivedActivityPage(-1)">Prev</button>
+                                <button id="nextArchivedActivityBtn" class="page-btn" onclick="changeArchivedActivityPage(1)">Next</button>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
             <!-- SETTINGS TAB -->
             <div id="tabSettings" class="hidden">
                 <div class="controls">
@@ -850,6 +965,86 @@
         </div>
     </div>
 
+
+    <div id="activityModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel modal-large" style="font-family:inherit;max-width:820px;width:calc(100% - 30px);">
+            <h2 id="activityModalTitle" style="margin-top:0;color:var(--primary);font-family:inherit;">Add Activity</h2>
+
+            <div class="activity-form-grid">
+                <div class="full-width activity-form-field">
+                    <label>Date / Schedule</label>
+                    <div class="activity-dates-box">
+                        <div class="activity-calendar-head">
+                            <div id="activityCalendarTitle" class="activity-calendar-title"></div>
+                            <div class="activity-calendar-nav">
+                                <button type="button" onclick="changeActivityCalendarMonth(-1)" aria-label="Previous month">‹</button>
+                                <button type="button" onclick="changeActivityCalendarMonth(1)" aria-label="Next month">›</button>
+                            </div>
+                        </div>
+                        <div id="activityCalendar" class="activity-calendar-grid"></div>
+                        <div style="font-size:11px;color:var(--text-muted);margin-top:8px;">Click multiple dates to select the schedule. Click a selected date again to remove it.</div>
+                        <div id="activitySelectedDates" class="activity-date-list"></div>
+                    </div>
+                </div>
+
+                <div class="activity-form-field full-width">
+                    <label for="activityTitle">Activity Title</label>
+                    <input type="text" id="activityTitle" placeholder="Activity Title">
+                </div>
+
+                <div class="activity-form-field">
+                    <label for="activityVenue">Assigned Venue</label>
+                    <select id="activityVenue" onchange="toggleActivityVenueOther()">
+                        <option value="">Select Assigned Venue...</option>
+                        <option value="PRO 1 Auditorium">PRO 1 Auditorium</option>
+                        <option value="PRO 1 Grandstand">PRO 1 Grandstand</option>
+                        <option value="PRO 1 Parade Ground">PRO 1 Parade Ground</option>
+                        <option value="PRO 1 Firing Range">PRO 1 Firing Range</option>
+                        <option value="PRO 1 Conference Room">PRO 1 Conference Room</option>
+                        <option value="Others">Others</option>
+                    </select>
+                    <input type="text" id="activityVenueOther" class="hidden" placeholder="Manually encode venue" style="margin-top:8px;">
+                </div>
+
+                <div class="activity-form-field">
+                    <label for="activityRequestingOffice">Requesting Office</label>
+                    <input type="text" id="activityRequestingOffice" placeholder="Requesting Office">
+                </div>
+
+                <div class="activity-form-field">
+                    <label for="activityConcernedOffice">Concerned Office</label>
+                    <input type="text" id="activityConcernedOffice" placeholder="Concerned Office">
+                </div>
+
+                <div class="activity-form-field">
+                    <label for="activityTime">Time</label>
+                    <input type="time" id="activityTime">
+                </div>
+
+                <div class="activity-form-field">
+                    <label for="activityFrequency">Frequency</label>
+                    <select id="activityFrequency">
+                        <option value="N/A">N/A</option>
+                        <option value="Daily">Daily</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Annually">Annually</option>
+                    </select>
+                </div>
+
+                <div class="activity-form-field">
+                    <label for="activityStatus">Status</label>
+                    <input type="text" id="activityStatus" value="Recurring" readonly>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:20px;">
+                <button id="activitySaveBtn" class="approve-btn" style="flex:1;margin:0;color:white;font-family:inherit;" onclick="saveActivity()">Add Activity</button>
+                <button type="button" style="flex:1;margin:0;background:#e2e8f0;color:#475569;font-family:inherit;" onclick="closeActivityModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div id="notificationContainer"></div>
 
     <script>
@@ -871,6 +1066,16 @@
         let lastLogCount = 0;
         let allPersonnel = [];
         let personnelEditNo = null;
+
+        let allActivities = [];
+        let filteredActivities = [];
+        let archivedActivities = [];
+        let filteredArchivedActivities = [];
+        let currentActivityPage = 1;
+        let currentArchivedActivityPage = 1;
+        let activityEditId = null;
+        const ACTIVITY_VENUES = ["PRO 1 Auditorium","PRO 1 Grandstand","PRO 1 Parade Ground","PRO 1 Firing Range","PRO 1 Conference Room"];
+
 
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -1069,10 +1274,10 @@
         }
 
         function switchTab(tabName) {
-            ['tabHome','tabProfile','tabAdminMgmt','tabSettings','tabPersonnel'].forEach(id => {
+            ['tabHome','tabProfile','tabAdminMgmt','tabSettings','tabPersonnel','tabActivityManagement'].forEach(id => {
                 const el=document.getElementById(id); if(el) el.classList.add('hidden');
             });
-            ['btnHome','btnSettings','btnAdminMgmt','btnPersonnel'].forEach(id => {
+            ['btnHome','btnSettings','btnAdminMgmt','btnPersonnel','btnActivityManagement'].forEach(id => {
                 const el=document.getElementById(id); if(el) el.classList.remove('active');
             });
 
@@ -1098,6 +1303,12 @@
                     document.getElementById('adminPassInput').value = "";
                     document.getElementById('adminPassInput').focus();
                 } else showAdminMgmtTab();
+
+            } else if (tabName === 'activityManagement') {
+                document.getElementById('tabActivityManagement').classList.remove('hidden');
+                document.getElementById('btnActivityManagement').classList.add('active');
+                updateActivityPermissions();
+                loadActivities();
             } else if (tabName === 'personnel') {
                 document.getElementById('tabPersonnel').classList.remove('hidden');
                 document.getElementById('btnPersonnel').classList.add('active');
@@ -1634,6 +1845,347 @@
 
         function escapeHtml(v){ return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
         function escapeAttr(v){ return escapeHtml(v); }
+
+
+        function canManageActivities() {
+            const role = localStorage.getItem('userRole') || '';
+            return isAlphaAdmin() || role === 'Admin' || localStorage.getItem('canEdit') === 'Yes';
+        }
+
+        function updateActivityPermissions() {
+            const can = canManageActivities();
+            const addBtn = document.getElementById('activityAddBtn');
+            const header = document.getElementById('activityActionHeader');
+            if (addBtn) addBtn.classList.toggle('hidden', !can);
+            if (header) header.style.display = can ? '' : 'none';
+        }
+
+        function localDateKey(dateObj) {
+            const d = dateObj || new Date();
+            return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+        }
+
+        function activityStatusForDate(dateValue) {
+            const key = String(dateValue || '').slice(0,10);
+            const today = localDateKey(new Date());
+            if (key === today) return 'Ongoing';
+            if (key && key < today) return 'Archive';
+            return 'Recurring';
+        }
+
+        function toggleActivityVenueOther() {
+            const select = document.getElementById('activityVenue');
+            const input = document.getElementById('activityVenueOther');
+            const show = select.value === 'Others';
+            input.classList.toggle('hidden', !show);
+            input.required = show;
+            if (!show) input.value = '';
+        }
+
+        let activityCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+
+        function resetActivityDatePicker() {
+            activityCalendarMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+            renderActivityCalendar();
+            renderSelectedActivityDates([]);
+        }
+
+        function getSelectedActivityDates() {
+            return Array.from(document.querySelectorAll('#activitySelectedDates .activity-date-chip'))
+                .map(el => el.dataset.date).filter(Boolean);
+        }
+
+        function toggleActivityDate(dateValue) {
+            let dates = getSelectedActivityDates();
+            if (dates.includes(dateValue)) dates = dates.filter(d => d !== dateValue);
+            else dates.push(dateValue);
+            dates.sort();
+            renderSelectedActivityDates(dates);
+            renderActivityCalendar();
+            updateActivityModalStatus();
+        }
+
+        function renderActivityCalendar() {
+            const title = document.getElementById('activityCalendarTitle');
+            const calendar = document.getElementById('activityCalendar');
+            if (!title || !calendar) return;
+            const year = activityCalendarMonth.getFullYear();
+            const month = activityCalendarMonth.getMonth();
+            title.textContent = activityCalendarMonth.toLocaleDateString(undefined, {month:'long', year:'numeric'});
+
+            const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+            let html = weekdays.map(d => `<div class="activity-calendar-weekday">${d}</div>`).join('');
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const prevDays = new Date(year, month, 0).getDate();
+            const selected = new Set(getSelectedActivityDates());
+            const today = localDateKey(new Date());
+
+            for (let i=0;i<42;i++) {
+                const cell = i - firstDay + 1;
+                let day, cellDate, other=false;
+                if (cell < 1) { day = prevDays + cell; cellDate = new Date(year, month-1, day); other=true; }
+                else if (cell > daysInMonth) { day = cell - daysInMonth; cellDate = new Date(year, month+1, day); other=true; }
+                else { day = cell; cellDate = new Date(year, month, day); }
+                const key = localDateKey(cellDate);
+                const cls = ['activity-calendar-day'];
+                if (other) cls.push('is-other-month');
+                if (key === today) cls.push('is-today');
+                if (selected.has(key)) cls.push('is-selected');
+                html += `<button type="button" class="${cls.join(' ')}" onclick="toggleActivityDate('${key}')">${day}</button>`;
+            }
+            calendar.innerHTML = html;
+        }
+
+        function changeActivityCalendarMonth(delta) {
+            activityCalendarMonth = new Date(activityCalendarMonth.getFullYear(), activityCalendarMonth.getMonth()+delta, 1);
+            renderActivityCalendar();
+        }
+
+        function removeActivityDate(dateValue) {
+            toggleActivityDate(dateValue);
+        }
+
+        function renderSelectedActivityDates(dates) {
+            const box = document.getElementById('activitySelectedDates');
+            if (!box) return;
+            const sorted = [...new Set(dates)].sort();
+            box.innerHTML = sorted.map(d => `
+                <span class="activity-date-chip" data-date="${escapeAttr(d)}">
+                    ${escapeHtml(d)}
+                    <button type="button" onclick="removeActivityDate('${escapeAttr(d)}')" title="Remove date">×</button>
+                </span>`).join('') ||
+                '<span style="font-size:12px;color:var(--text-muted);">No dates selected.</span>';
+        }
+
+        function updateActivityModalStatus() {
+            const dates = getSelectedActivityDates();
+            const status = dates.length ? dates.map(activityStatusForDate).includes('Ongoing') ? 'Ongoing' : 'Recurring' : 'Recurring';
+            document.getElementById('activityStatus').value = status;
+        }
+
+        function openActivityModal() {
+            if (!canManageActivities()) return customAlert('Only Alpha Admin and Admin users can add activities.', 'Permission Denied');
+            activityEditId = null;
+            document.getElementById('activityModalTitle').innerText = 'Add Activity';
+            document.getElementById('activitySaveBtn').innerText = 'Add Activity';
+            document.getElementById('activityTitle').value = '';
+            document.getElementById('activityVenue').value = '';
+            document.getElementById('activityVenueOther').value = '';
+            document.getElementById('activityRequestingOffice').value = '';
+            document.getElementById('activityConcernedOffice').value = '';
+            document.getElementById('activityTime').value = '';
+            document.getElementById('activityFrequency').value = 'N/A';
+            document.getElementById('activityStatus').value = 'Recurring';
+            resetActivityDatePicker();
+            toggleActivityVenueOther();
+            document.getElementById('activityModal').classList.remove('hidden');
+        }
+
+        function editActivity(id) {
+            if (!canManageActivities()) return customAlert('Permission denied.', 'Error');
+            const a = allActivities.find(x => String(x.id) === String(id));
+            if (!a) return;
+            activityEditId = String(id);
+            document.getElementById('activityModalTitle').innerText = 'Edit Activity';
+            document.getElementById('activitySaveBtn').innerText = 'Update Activity';
+            document.getElementById('activityTitle').value = a.activityTitle || '';
+            if (ACTIVITY_VENUES.includes(a.assignedVenue)) {
+                document.getElementById('activityVenue').value = a.assignedVenue;
+                document.getElementById('activityVenueOther').value = '';
+            } else {
+                document.getElementById('activityVenue').value = 'Others';
+                document.getElementById('activityVenueOther').value = a.assignedVenue || '';
+            }
+            document.getElementById('activityRequestingOffice').value = a.requestingOffice || '';
+            document.getElementById('activityConcernedOffice').value = a.concernedOffice || '';
+            document.getElementById('activityTime').value = a.time || '';
+            document.getElementById('activityFrequency').value = a.frequency || 'N/A';
+            document.getElementById('activityStatus').value = a.status || 'Recurring';
+            activityCalendarMonth = new Date(String(a.date || '').slice(0,10) + 'T00:00:00');
+            activityCalendarMonth = new Date(activityCalendarMonth.getFullYear(), activityCalendarMonth.getMonth(), 1);
+            renderSelectedActivityDates([String(a.date || '').slice(0,10)]);
+            renderActivityCalendar();
+            toggleActivityVenueOther();
+            document.getElementById('activityModal').classList.remove('hidden');
+        }
+
+        function closeActivityModal() {
+            document.getElementById('activityModal').classList.add('hidden');
+            activityEditId = null;
+        }
+
+        async function saveActivity() {
+            if (!canManageActivities()) return customAlert('Permission denied.', 'Error');
+
+            const title = document.getElementById('activityTitle').value.trim();
+            const venueSelect = document.getElementById('activityVenue').value;
+            const venueOther = document.getElementById('activityVenueOther').value.trim();
+            const venue = venueSelect === 'Others' ? venueOther : venueSelect;
+            const requestingOffice = document.getElementById('activityRequestingOffice').value.trim();
+            const concernedOffice = document.getElementById('activityConcernedOffice').value.trim();
+            const time = document.getElementById('activityTime').value;
+            const frequency = document.getElementById('activityFrequency').value || 'N/A';
+            const dates = getSelectedActivityDates();
+
+            if (!title || !venue || !requestingOffice || !concernedOffice || !time || !dates.length) {
+                return customAlert('Please complete all required fields and select at least one date.', 'Validation Error');
+            }
+            if (activityEditId && dates.length !== 1) {
+                return customAlert('When editing an activity, select only its scheduled date.', 'Validation Error');
+            }
+
+            const wasEditing = !!activityEditId;
+            const payload = {
+                action: wasEditing ? 'update_activity' : 'add_activity',
+                id: activityEditId,
+                userName: localStorage.getItem('loggedInUser'),
+                credential: localStorage.getItem('loggedCred') || '',
+                activityTitle: title, assignedVenue: venue, requestingOffice, concernedOffice, time, frequency, dates
+            };
+
+            const btn = document.getElementById('activitySaveBtn');
+            btn.disabled = true; btn.innerText = wasEditing ? 'Updating...' : 'Saving...';
+            try {
+                const res = await fetch(API_URL, { method:'POST', mode:'cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(payload) });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Unable to save activity.');
+                logActivity(`${wasEditing ? 'updated' : 'added'} activity: "${title}"`);
+                closeActivityModal();
+                customAlert(wasEditing ? 'Activity updated successfully.' : 'Activity added successfully.', 'Success');
+                await loadActivities();
+            } catch (err) {
+                customAlert(err.message || 'Unable to save activity.', 'Error');
+            } finally {
+                btn.disabled = false; btn.innerText = wasEditing ? 'Update Activity' : 'Add Activity';
+            }
+        }
+
+        function deleteActivity(id) {
+            if (!canManageActivities()) return customAlert('Permission denied.', 'Error');
+            const a = allActivities.find(x => String(x.id) === String(id));
+            if (!a) return;
+            customConfirm(`Delete activity "${a.activityTitle}" scheduled on ${a.date}?`, async confirmed => {
+                if (!confirmed) return;
+                try {
+                    const res = await fetch(API_URL, {
+                        method:'POST', mode:'cors',
+                        headers:{'Content-Type':'text/plain;charset=utf-8'},
+                        body:JSON.stringify({
+                            action:'delete_activity', id:String(id),
+                            userName:localStorage.getItem('loggedInUser'),
+                            credential:localStorage.getItem('loggedCred') || ''
+                        })
+                    });
+                    const data = await res.json();
+                    if (!data.success) throw new Error(data.error || 'Unable to delete activity.');
+                    logActivity(`deleted activity: "${a.activityTitle}"`);
+                    customAlert('Activity deleted successfully.', 'Success');
+                    await loadActivities();
+                } catch(e) {
+                    customAlert(e.message || 'Unable to delete activity.', 'Error');
+                }
+            });
+        }
+
+        async function loadActivities() {
+            try {
+                const res = await fetch(API_URL + '?action=get_activities');
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Unable to load activities.');
+                allActivities = Array.isArray(data.activities) ? data.activities : [];
+                archivedActivities = Array.isArray(data.archived) ? data.archived : [];
+                // Backend status synchronization keeps current-date rows Ongoing and past rows archived.
+                filterActivities();
+                renderArchivedActivities();
+                updateActivityPermissions();
+            } catch(e) {
+                console.error(e);
+                document.getElementById('activityTableBody').innerHTML =
+                    '<tr><td colspan="8" style="text-align:center;color:var(--danger);padding:20px;">Unable to load activities.</td></tr>';
+                customAlert('Unable to load Activity Management records.', 'Error');
+            }
+        }
+
+        function filterActivities() {
+            const q = (document.getElementById('activitySearch').value || '').trim().toLowerCase();
+            filteredActivities = allActivities.filter(a =>
+                [a.date,a.activityTitle,a.assignedVenue,a.requestingOffice,a.concernedOffice,a.time,a.frequency,a.status]
+                .join(' ').toLowerCase().includes(q)
+            );
+            currentActivityPage = 1;
+            renderActivities();
+        }
+
+        function renderActivities() {
+            const body = document.getElementById('activityTableBody');
+            const can = canManageActivities();
+            const perPage = Math.max(1, parseInt(userSettings.recordsPerPage,10) || 10);
+            const totalPages = Math.ceil(filteredActivities.length / perPage) || 1;
+            currentActivityPage = Math.min(Math.max(currentActivityPage,1),totalPages);
+            const rows = filteredActivities.slice((currentActivityPage-1)*perPage, currentActivityPage*perPage);
+
+            body.innerHTML = rows.length ? rows.map(a => {
+                const status = a.status || activityStatusForDate(a.date);
+                const statusClass = status.toLowerCase() === 'ongoing' ? 'ongoing' : status.toLowerCase() === 'archive' ? 'archive' : 'recurring';
+                return `<tr>
+                    <td>${escapeHtml(a.date)}</td>
+                    <td>${escapeHtml(a.activityTitle)}</td>
+                    <td>${escapeHtml(a.assignedVenue)}</td>
+                    <td>${escapeHtml(a.requestingOffice)}</td>
+                    <td>${escapeHtml(a.concernedOffice)}</td>
+                    <td>${escapeHtml(a.time)}</td>
+                    <td><span class="activity-status ${statusClass}">${escapeHtml(status)}</span></td>
+                    ${can ? `<td class="activity-action-cell">
+                        <button class="action-btn" onclick="editActivity('${escapeAttr(a.id)}')">Edit</button>
+                        <button class="action-btn delete-btn" style="color:white;" onclick="deleteActivity('${escapeAttr(a.id)}')">Delete</button>
+                    </td>` : ''}
+                </tr>`;
+            }).join('') : `<tr><td colspan="${can ? 8 : 7}" style="text-align:center;padding:20px;">No activities found.</td></tr>`;
+
+            const p = document.getElementById('activityPagination');
+            if (filteredActivities.length > perPage) {
+                p.classList.remove('hidden');
+                document.getElementById('activityPageInfo').innerText = `Page ${currentActivityPage} of ${totalPages}`;
+                document.getElementById('prevActivityBtn').disabled = currentActivityPage === 1;
+                document.getElementById('nextActivityBtn').disabled = currentActivityPage === totalPages;
+            } else p.classList.add('hidden');
+        }
+
+        function changeActivityPage(direction) {
+            currentActivityPage += direction;
+            renderActivities();
+        }
+
+        function renderArchivedActivities() {
+            const body = document.getElementById('archivedActivityTableBody');
+            const perPage = Math.max(1, parseInt(userSettings.recordsPerPage,10) || 10);
+            const totalPages = Math.ceil(archivedActivities.length / perPage) || 1;
+            currentArchivedActivityPage = Math.min(Math.max(currentArchivedActivityPage,1),totalPages);
+            const rows = archivedActivities.slice((currentArchivedActivityPage-1)*perPage, currentArchivedActivityPage*perPage);
+            body.innerHTML = rows.length ? rows.map(a => `<tr>
+                <td>${escapeHtml(a.date)}</td>
+                <td>${escapeHtml(a.activityTitle)}</td>
+                <td>${escapeHtml(a.assignedVenue)}</td>
+                <td>${escapeHtml(a.requestingOffice)}</td>
+                <td>${escapeHtml(a.concernedOffice)}</td>
+                <td>${escapeHtml(a.time)}</td>
+                <td><span class="activity-status archive">Archive</span></td>
+            </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:20px;">No archived activities.</td></tr>';
+
+            const p = document.getElementById('archivedActivityPagination');
+            if (archivedActivities.length > perPage) {
+                p.classList.remove('hidden');
+                document.getElementById('archivedActivityPageInfo').innerText = `Page ${currentArchivedActivityPage} of ${totalPages}`;
+                document.getElementById('prevArchivedActivityBtn').disabled = currentArchivedActivityPage === 1;
+                document.getElementById('nextArchivedActivityBtn').disabled = currentArchivedActivityPage === totalPages;
+            } else p.classList.add('hidden');
+        }
+
+        function changeArchivedActivityPage(direction) {
+            currentArchivedActivityPage += direction;
+            renderArchivedActivities();
+        }
 
         async function loadData() {
             try {
