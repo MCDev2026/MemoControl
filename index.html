@@ -215,7 +215,10 @@
         .sidebar-btn.active .nav-icon { opacity: 1 !important; filter: brightness(0) invert(1) !important; }
         .sidebar.collapsed .nav-icon { margin-right: 0; }
 
-        .main-content { flex-grow: 1; padding: 30px; width: 100%; max-width: 1400px; margin: 0 auto;}
+        .main-content { flex-grow: 1; padding: 30px; width: 100%; max-width: 1400px; margin: 0 auto; transition: max-width 0.3s ease, padding 0.3s ease; }
+        .app-layout.nav-collapsed .main-content { max-width: none; }
+        .app-layout.nav-collapsed .main-content .table-wrapper,
+        .app-layout.nav-collapsed .main-content table { width: 100%; }
         
         .controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
         .action-btn { width: auto; padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); background-color: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid var(--border-color); display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-weight: 500;}
@@ -305,6 +308,12 @@
         .personnel-form-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; text-align:left; }
         .personnel-form-grid .full-width { grid-column:1/-1; }
         @media(max-width:700px){ .personnel-form-grid{grid-template-columns:1fr;} .personnel-form-grid .full-width{grid-column:auto;} }
+
+        /* Personnel recap layout: recapitulations are positioned at the right side on larger screens. */
+        .personnel-content-layout { display:grid; grid-template-columns:minmax(0, 1fr) 320px; gap:20px; align-items:start; }
+        .personnel-recap-panel { position:sticky; top:80px; }
+        .personnel-recap-panel .settings-section { margin-bottom:15px; }
+        @media(max-width:1100px){ .personnel-content-layout{grid-template-columns:1fr;} .personnel-recap-panel{position:static;} }
 
     </style>
 </head>
@@ -600,22 +609,9 @@
                     <div class="personnel-card"><h4>Other</h4><div class="count" id="personnelOther">0</div></div>
                 </div>
 
-                <div class="settings-section glass-panel" style="margin-bottom:15px;">
-                    <h3 style="margin-bottom:10px;">Recapitulation By Rank</h3>
-                    <div id="personnelRankRecap" class="rank-recap"></div>
-                </div>
-
-                <div class="settings-section glass-panel" style="margin-bottom:15px;">
-                    <h3 style="margin-bottom:10px;">Recapitulation By Section</h3>
-                    <div id="personnelSectionRecap" class="rank-recap"></div>
-                </div>
-
-                <div class="settings-section glass-panel" style="margin-bottom:15px;">
-                    <h3 style="margin-bottom:10px;">Detached Service Recapitulation</h3>
-                    <div id="detachedServiceRecap" class="rank-recap"></div>
-                </div>
-
-                <div class="personnel-toolbar">
+                <div class="personnel-content-layout">
+                    <div class="personnel-table-content">
+                        <div class="personnel-toolbar">
                     <input type="text" id="personnelSearch" placeholder="Search personnel..." oninput="filterPersonnel()" style="flex:1;min-width:220px;">
                     <select id="personnelRankFilter" onchange="filterPersonnel()" style="width:auto;min-width:170px;">
                         <option value="">All Ranks</option>
@@ -625,9 +621,28 @@
                     </select>
                     <button class="action-btn" onclick="clearPersonnelFilters()">Clear Filters</button>
                     <button class="action-btn" onclick="loadPersonnel()">↻ Refresh</button>
-                </div>
+                        </div>
 
-                <div id="personnelTablesContainer"></div>
+                        <div id="personnelTablesContainer"></div>
+                    </div>
+
+                    <aside class="personnel-recap-panel">
+                        <div class="settings-section glass-panel">
+                            <h3 style="margin-bottom:10px;">Recapitulation By Section</h3>
+                            <div id="personnelSectionRecap" class="rank-recap"></div>
+                        </div>
+
+                        <div class="settings-section glass-panel">
+                            <h3 style="margin-bottom:10px;">Detached Service Recapitulation</h3>
+                            <div id="detachedServiceRecap" class="rank-recap"></div>
+                        </div>
+
+                        <div class="settings-section glass-panel">
+                            <h3 style="margin-bottom:10px;">Recapitulation By Rank</h3>
+                            <div id="personnelRankRecap" class="rank-recap"></div>
+                        </div>
+                    </aside>
+                </div>
             </div>
 
             <!-- SETTINGS TAB -->
@@ -795,7 +810,7 @@
                 <input type="text" id="actionNewOfficeDestinationOther" placeholder="Enter Office Destination" class="hidden" style="background: white; margin:0;"> 
             </div>
             <div style="display: flex; gap: 10px; margin-top: 15px;">
-                <button style="flex: 1;" onclick="executeAction()">Confirm</button>
+                <button id="actionConfirmBtn" style="flex: 1;" onclick="executeAction()">Confirm</button>
                 <button style="flex: 1; background: #e2e8f0; color: #475569;" onclick="closeActionModal()">Cancel</button>
             </div>
         </div>
@@ -826,6 +841,7 @@
                     <option value="Detached Service">Detached Service</option>
                 </select>
                 <input id="pStatus" type="text" placeholder="Status" value="Active">
+                <input id="pContactNo" type="text" placeholder="Contact No.">
             </div>
             <div style="display:flex;gap:10px;margin-top:18px;">
                 <button id="personnelSaveBtn" class="approve-btn" style="flex:1;margin:0;color:white;" onclick="savePersonnel()">Save</button>
@@ -924,7 +940,14 @@
             if (userSettings.tableDisplay === 'Compact') body.classList.add('compact-mode'); else body.classList.remove('compact-mode');
 
             const sb = document.getElementById('navSidebar');
-            if (window.innerWidth > 992) { if (userSettings.sidebar === 'Collapsed') sb.classList.add('collapsed'); else sb.classList.remove('collapsed'); }
+            const appLayout = document.getElementById('appLayout');
+            if (window.innerWidth > 992) {
+                const collapsed = userSettings.sidebar === 'Collapsed';
+                if (collapsed) sb.classList.add('collapsed'); else sb.classList.remove('collapsed');
+                if (appLayout) appLayout.classList.toggle('nav-collapsed', collapsed);
+            } else if (appLayout) {
+                appLayout.classList.remove('nav-collapsed');
+            }
 
             MEMOS_PER_PAGE = parseInt(userSettings.recordsPerPage, 10) || 10;
             if (filteredMemos && filteredMemos.length > 0) renderMemoTable();
@@ -956,7 +979,15 @@
         function toggleNav() {
             const sidebar = document.getElementById('navSidebar');
             if (window.innerWidth <= 992) sidebar.classList.toggle('open');
-            else { sidebar.classList.toggle('collapsed'); userSettings.sidebar = sidebar.classList.contains('collapsed') ? 'Collapsed' : 'Expanded'; const user = localStorage.getItem('loggedInUser'); if(user) { document.getElementById('setSidebar').value = userSettings.sidebar; localStorage.setItem('rhsuSettings_' + user, JSON.stringify(userSettings)); } }
+            else {
+                sidebar.classList.toggle('collapsed');
+                const collapsed = sidebar.classList.contains('collapsed');
+                const appLayout = document.getElementById('appLayout');
+                if (appLayout) appLayout.classList.toggle('nav-collapsed', collapsed);
+                userSettings.sidebar = collapsed ? 'Collapsed' : 'Expanded';
+                const user = localStorage.getItem('loggedInUser');
+                if(user) { document.getElementById('setSidebar').value = userSettings.sidebar; localStorage.setItem('rhsuSettings_' + user, JSON.stringify(userSettings)); }
+            }
         }
 
         function updateDateTime() { const now = new Date(); const options = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }; document.getElementById('datetime-display').innerText = now.toLocaleString('en-US', options); }
@@ -1346,7 +1377,17 @@
             document.getElementById('personnelOther').innerText = counts.Other;
 
             const recap=document.getElementById('personnelRankRecap');
-            recap.innerHTML=Object.keys(rankCounts).sort((a,b)=>a.localeCompare(b)).map(r =>
+            const rankOrder = {
+                'PBGEN':1, 'PCOL':2, 'PLTCOL':3, 'PMAJ':4, 'PCPT':5, 'PLT':6,
+                'PEMS':7, 'PCMS':8, 'PSMS':9, 'PMSG':10, 'PSSG':11, 'PCPL':12,
+                'PAT':13, 'NUP':14
+            };
+            const sortRanksHighestToLowest = (a,b) => {
+                const ra=String(a||'').trim().toUpperCase(), rb=String(b||'').trim().toUpperCase();
+                const oa=rankOrder[ra] || 99, ob=rankOrder[rb] || 99;
+                return oa !== ob ? oa-ob : String(a).localeCompare(String(b));
+            };
+            recap.innerHTML=Object.keys(rankCounts).sort(sortRanksHighestToLowest).map(r =>
                 `<div class="rank-chip"><span>${escapeHtml(r)}</span><strong>${rankCounts[r]}</strong></div>`).join('') ||
                 '<div style="color:var(--text-muted);font-size:13px;">No personnel records.</div>';
 
@@ -1359,7 +1400,7 @@
             const detachedTotal=Object.values(detachedRankCounts).reduce((a,b)=>a+b,0);
             detachedRecap.innerHTML = detachedTotal
                 ? `<div class="rank-chip"><span>Total Detached Service</span><strong>${detachedTotal}</strong></div>` +
-                  Object.keys(detachedRankCounts).sort((a,b)=>a.localeCompare(b)).map(r =>
+                  Object.keys(detachedRankCounts).sort(sortRanksHighestToLowest).map(r =>
                     `<div class="rank-chip"><span>${escapeHtml(r)}</span><strong>${detachedRankCounts[r]}</strong></div>`).join('')
                 : '<div style="color:var(--text-muted);font-size:13px;">No Detached Service personnel.</div>';
         }
@@ -1406,7 +1447,7 @@
             const status = document.getElementById('personnelStatusFilter').value;
 
             const rows = allPersonnel.filter(p => {
-                const text = [p.no,p.rank,p.lastName,p.firstName,p.middleName,p.qualifiers,p.designation,p.section,p.status]
+                const text = [p.no,p.rank,p.lastName,p.firstName,p.middleName,p.qualifiers,p.designation,p.section,p.status,p.contactNo]
                     .join(' ').toLowerCase();
                 return (!q || text.includes(q)) &&
                        (!rank || String(p.rank || '') === rank) &&
@@ -1482,7 +1523,7 @@
                     return `<tr>
                         <td>${index + 1}</td><td>${escapeHtml(p.rank)}</td><td>${escapeHtml(p.lastName)}</td>
                         <td>${escapeHtml(p.firstName)}</td><td>${escapeHtml(p.middleName)}</td><td>${escapeHtml(p.qualifiers)}</td>
-                        <td>${escapeHtml(p.designation)}</td><td>${escapeHtml(p.section)}</td><td>${escapeHtml(p.status)}</td>${action}
+                        <td>${escapeHtml(p.designation)}</td><td>${escapeHtml(p.section)}</td><td>${escapeHtml(p.status)}</td><td>${escapeHtml(p.contactNo)}</td>${action}
                     </tr>`;
                 }).join('');
 
@@ -1491,7 +1532,7 @@
                     <table>
                         <thead><tr>
                             <th>No.</th><th>Rank</th><th>Last Name</th><th>First Name</th><th>Middle Name</th>
-                            <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th>
+                            <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th><th>Contact No.</th>
                             ${can ? '<th>Actions</th>' : ''}
                         </tr></thead>
                         <tbody>${bodyHtml}</tbody>
@@ -1517,7 +1558,7 @@
             if(!canManagePersonnel()) return customAlert("Only the Alpha Admin and designated Admin users can modify personnel records.","Permission Denied");
             personnelEditNo=null;
             document.getElementById('personnelModalTitle').innerText='Add Personnel';
-            ['pLastName','pFirstName','pMiddleName','pQualifiers','pDesignation','pSection'].forEach(id=>document.getElementById(id).value='');
+            ['pLastName','pFirstName','pMiddleName','pQualifiers','pDesignation','pSection','pContactNo'].forEach(id=>document.getElementById(id).value='');
             document.getElementById('pRank').value='';
             document.getElementById('pStatus').value='Active';
             document.getElementById('pNo').value='Auto';
@@ -1539,6 +1580,7 @@
             document.getElementById('pDesignation').value=p.designation||'';
             document.getElementById('pSection').value=p.section||'';
             document.getElementById('pStatus').value=p.status||'';
+            document.getElementById('pContactNo').value=p.contactNo||'';
             document.getElementById('personnelSaveBtn').innerText='Update Personnel';
             document.getElementById('personnelModal').classList.remove('hidden');
         }
@@ -1559,7 +1601,8 @@
                 qualifiers:document.getElementById('pQualifiers').value.trim(),
                 designation:document.getElementById('pDesignation').value.trim(),
                 section:document.getElementById('pSection').value.trim(),
-                status:document.getElementById('pStatus').value.trim()
+                status:document.getElementById('pStatus').value.trim(),
+                contactNo:document.getElementById('pContactNo').value.trim()
             };
             if(!payload.rank||!payload.lastName||!payload.firstName) return customAlert("Rank, Last Name and First Name are required.","Validation Error");
             const btn=document.getElementById('personnelSaveBtn'); btn.disabled=true; btn.innerText='Saving...';
@@ -1714,6 +1757,8 @@
             document.getElementById('actionModal').classList.remove('hidden'); 
             
             const passInput = document.getElementById('actionAdminPass');
+            const confirmBtn = document.getElementById('actionConfirmBtn');
+            if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.innerText = 'Confirm'; }
             passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
             passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
             
@@ -1737,27 +1782,54 @@
         function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); pendingAction = null; actionTargetControl = null; document.getElementById('actionNewSubject').classList.add('hidden'); document.getElementById('actionNewStatus').classList.add('hidden'); document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden'); setOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther', ""); }
         
         async function executeAction() {
-            const pass = document.getElementById('actionAdminPass').value; if (!pass) return customAlert("Please enter password.", "Error");
+            const pass = document.getElementById('actionAdminPass').value;
+            const confirmBtn = document.getElementById('actionConfirmBtn');
+            if (!pass) {
+                if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.innerText = 'Confirm'; }
+                return customAlert("Please enter password.", "Error");
+            }
+
+            // Lock the Confirm button immediately after the first valid press to prevent
+            // duplicate submissions while the backend request is being processed.
+            if (confirmBtn) {
+                if (confirmBtn.disabled) return;
+                confirmBtn.disabled = true;
+                confirmBtn.innerText = 'Processing...';
+            }
+
             const currentUser = localStorage.getItem('loggedInUser');
 
-            if (pendingAction === 'edit') { 
-                const newSubject = document.getElementById('actionNewSubject').value.trim(); 
-                const newStatus = document.getElementById('actionNewStatus').value;
-                const newOfficeDestination = getSelectedOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther'); 
-                
-                if (!newSubject) return customAlert("Please enter a Memo Subject.", "Error"); 
-                if (!newOfficeDestination) return customAlert("Please select or enter the Office Destination.", "Error"); 
-                
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, newStatus: newStatus, officeDestination: newOfficeDestination, password: pass, userName: currentUser }) }); 
-                logActivity(`updated memo: ${actionTargetControl}`);
-            } else if (pendingAction === 'delete') { 
-                await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass, userName: currentUser }) }); 
-                logActivity(`deleted memo: ${actionTargetControl}`);
-            } else if (pendingAction === 'batch_delete') { 
-                for (const c of actionTargetControl) { 
-                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: c, password: pass, userName: currentUser }) }); 
-                } 
-                logActivity(`batch deleted ${actionTargetControl.length} memos`);
+            try {
+                if (pendingAction === 'edit') { 
+                    const newSubject = document.getElementById('actionNewSubject').value.trim(); 
+                    const newStatus = document.getElementById('actionNewStatus').value;
+                    const newOfficeDestination = getSelectedOfficeDestination('actionNewOfficeDestination', 'actionNewOfficeDestinationOther'); 
+                    
+                    if (!newSubject) throw new Error("Please enter a Memo Subject."); 
+                    if (!newOfficeDestination) throw new Error("Please select or enter the Office Destination."); 
+                    
+                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: actionTargetControl, newSubject: newSubject, newStatus: newStatus, officeDestination: newOfficeDestination, password: pass, userName: currentUser }) }); 
+                    logActivity(`updated memo: ${actionTargetControl}`);
+                } else if (pendingAction === 'delete') { 
+                    await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: actionTargetControl, password: pass, userName: currentUser }) }); 
+                    logActivity(`deleted memo: ${actionTargetControl}`);
+                } else if (pendingAction === 'batch_delete') { 
+                    for (const c of actionTargetControl) { 
+                        await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: c, password: pass, userName: currentUser }) }); 
+                    } 
+                    logActivity(`batch deleted ${actionTargetControl.length} memos`);
+                }
+
+                // Refresh the memo database after an admin update so the latest
+                // backend data is immediately displayed in the table/dashboard.
+                setTimeout(loadData, 1500);
+
+                // Automatically close the action/confirmation modal after the first
+                // confirmed action has been submitted successfully.
+                closeActionModal();
+            } catch (err) {
+                if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.innerText = 'Confirm'; }
+                customAlert(err.message || 'Unable to complete the requested action.', 'Error');
             }
         }
 
@@ -1828,6 +1900,8 @@
             document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden');
             
             const passInput = document.getElementById('actionAdminPass');
+            const confirmBtn = document.getElementById('actionConfirmBtn');
+            if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.innerText = 'Confirm'; }
             passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
             passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
         }
