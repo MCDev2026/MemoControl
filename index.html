@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RHSU Memo Control</title>
+    <title>RHSU Portal</title>
     <style>
         :root {
             /* Minimalist Light Theme Colors */
@@ -351,6 +351,223 @@
         .activity-action-cell { white-space:nowrap; }
         @media(max-width:700px){ .activity-form-grid{grid-template-columns:1fr;} .activity-form-grid .full-width{grid-column:auto;} .activity-toolbar .activity-search{max-width:none;} }
 
+/* ===== EXECUTIVE REDESIGN OVERRIDES ===== */
+:root{
+  --primary:#2563eb; --primary-hover:#1d4ed8; --accent:#0f766e;
+  --text-main:#172033; --text-muted:#64748b; --border-color:#e2e8f0;
+  --glass-bg:rgba(255,255,255,.94); --radius-lg:18px; --radius-md:12px;
+  --shadow-soft:0 10px 30px rgba(15,23,42,.07);
+}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:#f4f7fb; color:var(--text-main); align-items:stretch;
+}
+body.dark-mode{--primary:#60a5fa;--primary-hover:#3b82f6;--accent:#2dd4bf;--text-main:#e5e7eb;--text-muted:#94a3b8;--border-color:#263449;--glass-bg:#111827;background:#0b1220;}
+.top-bar{
+  height:68px;padding:10px 24px;background:#0b1f3a;border-bottom:1px solid rgba(255,255,255,.08);
+  box-shadow:0 4px 18px rgba(2,8,23,.16);
+}
+.top-bar-left{gap:14px}.top-bar-left>button{border-radius:10px!important}.top-bar-right{gap:14px}
+.sidebar{
+  width:270px;height:calc(100vh - 68px);top:68px;padding:18px 14px;background:#0b1f3a;
+  border-right:1px solid rgba(255,255,255,.06);gap:5px;box-shadow:6px 0 24px rgba(2,8,23,.08);
+}
+.sidebar.collapsed{width:78px;padding:18px 10px}.sidebar-header{padding:4px 10px 18px;margin-bottom:6px}
+.sidebar-header img{width:42px;height:42px}.sidebar-header h1{font-size:15px;letter-spacing:.5px}
+.sidebar-btn{
+  border-radius:10px!important;padding:12px 13px;color:#b9c7da!important;border:1px solid transparent;
+  margin-bottom:3px;transition:.2s ease!important;
+}
+.sidebar-btn:hover{background:rgba(255,255,255,.08)!important;transform:translateX(2px)}
+.sidebar-btn.active{background:linear-gradient(90deg,rgba(59,130,246,.28),rgba(59,130,246,.10))!important;border-color:rgba(96,165,250,.18);color:#fff!important}
+.nav-icon{width:19px;height:19px;margin-right:14px}.main-content{max-width:none;padding:28px 32px}
+.app-layout{align-items:stretch}.glass-panel{box-shadow:var(--shadow-soft);border-color:var(--border-color)}
+.controls{margin-bottom:18px}.controls h2{font-size:25px!important;letter-spacing:-.4px}
+.settings-grid{gap:16px}.settings-section{background:var(--glass-bg);box-shadow:var(--shadow-soft);border-color:var(--border-color)}
+.table-wrapper{border-radius:14px;box-shadow:var(--shadow-soft);border-color:var(--border-color)}
+th{background:#f8fafc;color:#64748b}body.dark-mode th{background:#162033}
+td{padding:13px 14px}.action-btn{border-radius:9px;background:#fff}
+body.dark-mode .action-btn{background:#172235}.approve-btn{background:#0f766e}.delete-btn{background:#dc2626}
+input[type=text],input[type=password],input[type=email],input[type=date],select,textarea{border-radius:10px}
+button{border-radius:10px}
+.auth-container{box-shadow:0 20px 60px rgba(15,23,42,.12);border:1px solid var(--border-color)}
+/* Executive dashboard */
+.exec-dashboard{display:flex;flex-direction:column;gap:18px}
+.exec-hero{
+  background:linear-gradient(135deg,#0b1f3a 0%,#123d69 55%,#1d4ed8 100%);
+  color:#fff;border-radius:22px;padding:26px 28px;box-shadow:0 18px 45px rgba(15,42,78,.22);
+  display:flex;justify-content:space-between;gap:20px;align-items:center;overflow:hidden;position:relative;
+}
+.exec-hero:after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;right:-70px;top:-100px;background:rgba(255,255,255,.08)}
+.exec-hero h2{margin:0 0 7px;font-size:28px;letter-spacing:-.7px}.exec-hero p{margin:0;color:#dbeafe;font-size:13px}
+.exec-hero-meta{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;position:relative;z-index:1}
+.exec-hero-side{display:flex;flex-direction:column;align-items:flex-end;gap:10px;position:relative;z-index:2;min-width:260px}
+.exec-hero-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.exec-hero-actions button{width:auto;margin:0;padding:8px 11px;font-size:12px;border-radius:9px}
+.exec-pill{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.14);font-size:12px;white-space:nowrap}
+#appBrand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;max-width:42vw;flex:0 1 auto}
+.exec-kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.exec-kpi{background:var(--glass-bg);border:1px solid var(--border-color);border-radius:15px;padding:17px;box-shadow:var(--shadow-soft);min-width:0}
+.exec-kpi .label{font-size:11px;text-transform:uppercase;letter-spacing:.7px;color:var(--text-muted);font-weight:700}
+.exec-kpi .value{font-size:29px;font-weight:800;margin-top:7px;line-height:1;color:var(--primary)}
+.exec-kpi .sub{font-size:11px;color:var(--text-muted);margin-top:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exec-grid{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:16px}
+.exec-card{background:var(--glass-bg);border:1px solid var(--border-color);border-radius:15px;padding:18px;box-shadow:var(--shadow-soft);min-width:0}
+.exec-card.wide{grid-column:span 2}.exec-card h3{margin:0 0 14px;font-size:14px}.exec-card .subhead{font-size:11px;color:var(--text-muted);margin-top:-8px;margin-bottom:12px}
+.exec-list{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto}
+.exec-row{display:flex;justify-content:space-between;gap:12px;padding:9px 10px;border:1px solid var(--border-color);border-radius:10px;background:rgba(148,163,184,.05);font-size:12px}
+.exec-row strong{font-size:12px}.exec-row span:last-child{color:var(--primary);font-weight:800}
+.exec-bar{height:7px;background:rgba(148,163,184,.18);border-radius:999px;overflow:hidden;margin-top:6px}.exec-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--primary),#38bdf8);border-radius:inherit}
+.exec-empty{padding:25px;text-align:center;color:var(--text-muted);font-size:12px}
+.exec-table{width:100%;border-collapse:collapse;font-size:12px}.exec-table th,.exec-table td{padding:9px 7px;border-bottom:1px solid var(--border-color);text-align:left}.exec-table th{position:static;text-transform:none;font-size:11px}
+.exec-status{display:inline-flex;padding:4px 8px;border-radius:999px;background:rgba(16,185,129,.12);color:#059669;font-weight:700;font-size:10px}
+.exec-actions{display:flex;gap:8px;flex-wrap:wrap}.exec-actions button{width:auto;margin:0;padding:9px 12px;font-size:12px}
+body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
+@media(max-width:1200px){.exec-kpis{grid-template-columns:repeat(3,1fr)}.exec-grid{grid-template-columns:1fr 1fr}.exec-card.wide{grid-column:span 2}}
+@media(max-width:760px){
+    .main-content{padding:18px 14px}
+    .exec-hero{padding:20px;display:block}
+    .exec-hero-side{align-items:flex-start;min-width:0;margin-top:14px}
+    .exec-hero-meta,.exec-hero-actions{justify-content:flex-start}
+    .exec-kpis{grid-template-columns:repeat(2,1fr)}
+    .exec-grid{grid-template-columns:1fr}
+    .exec-card.wide{grid-column:auto}
+    #appBrand{max-width:55vw}
+}
+        /* Settings sub-page: User Management */
+        .settings-subpage-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:18px; flex-wrap:wrap; }
+        .settings-subpage-head h3 { margin:0; color:var(--primary); font-size:18px; border:0; padding:0; }
+        .settings-subpage-head .action-btn { margin:0; }
+        .dashboard-personnel-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:10px; }
+        .dashboard-personnel-summary .exec-row { margin:0; }
+        @media(max-width:700px){ .dashboard-personnel-summary{grid-template-columns:1fr;} }
+
+    
+
+        /* ===== RHSU REQUESTED UI ADDITIONS ===== */
+        #appBrand{
+            font-weight:700;
+            color:#ffffff;
+            font-size:15px;
+            letter-spacing:.45px;
+            white-space:nowrap;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            display:block;
+            max-width:min(70vw,720px);
+        }
+
+        .rhsu-dashboard-modal{
+            overflow:hidden;
+            isolation:isolate;
+            border:1px solid rgba(255,255,255,.12);
+            min-height:142px;
+        }
+        .rhsu-dashboard-modal > *:not(.rhsu-dashboard-watermark){
+            position:relative;
+            z-index:2;
+        }
+        .rhsu-dashboard-watermark{
+            position:absolute !important;
+            z-index:0 !important;
+            pointer-events:none;
+            user-select:none;
+            object-fit:contain;
+            opacity:.075;
+            mix-blend-mode:screen;
+            max-width:42%;
+            max-height:180%;
+            filter:grayscale(100%) brightness(1.35);
+        }
+        .rhsu-dashboard-watermark-pnp{ left:-25px; top:-30px; width:210px; height:210px; }
+        .rhsu-dashboard-watermark-pro1{ right:-25px; bottom:-38px; width:220px; height:220px; }
+        .exec-hero-copy{ min-width:0; max-width:58%; }
+        .exec-hero-copy h2{ position:relative; z-index:2; }
+        .rhsu-dashboard-action-btn{
+            flex:1 1 0;
+            min-width:150px;
+            width:100% !important;
+            margin:0 !important;
+            padding:10px 14px !important;
+            border-radius:10px !important;
+            border:1px solid rgba(255,255,255,.18) !important;
+            background:rgba(255,255,255,.12) !important;
+            color:#ffffff !important;
+            box-shadow:0 6px 16px rgba(2,8,23,.12);
+            font-weight:700;
+        }
+        .rhsu-dashboard-action-btn:hover:not(:disabled){
+            background:rgba(255,255,255,.2) !important;
+            transform:translateY(-1px);
+        }
+        .exec-hero-actions{ width:100%; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+        .exec-card-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:12px; }
+        .exec-card-head h3{ margin-bottom:0; }
+        .exec-card-head .subhead{ margin-top:4px; margin-bottom:0; }
+        .exec-filter{
+            width:auto !important;
+            min-width:165px;
+            margin:0 !important;
+            padding:8px 11px !important;
+            border:1px solid var(--border-color);
+            border-radius:9px !important;
+            background:#ffffff;
+            color:var(--text-main);
+            font-size:12px;
+        }
+        body.dark-mode .exec-filter{ background:#0f172a; color:var(--text-main); }
+
+        /* Keep Memo and Personnel dashboard summaries visually tied to the main RHSU dashboard. */
+        .rhsu-summary-dashboard{ gap:12px; }
+        .rhsu-summary-panel{
+            background:linear-gradient(135deg,#0b1f3a 0%,#123d69 55%,#1d4ed8 100%) !important;
+            color:#ffffff;
+            border-color:rgba(255,255,255,.10) !important;
+            box-shadow:0 14px 32px rgba(15,42,78,.16) !important;
+            overflow:hidden;
+            position:relative;
+        }
+        .rhsu-summary-panel:after{
+            content:"";
+            position:absolute;
+            width:110px;
+            height:110px;
+            border-radius:50%;
+            right:-30px;
+            top:-45px;
+            background:rgba(255,255,255,.07);
+            pointer-events:none;
+        }
+        .rhsu-summary-panel h3,
+        .rhsu-summary-panel h4,
+        .rhsu-summary-panel .count,
+        .rhsu-summary-panel > div:not(.subhead){
+            position:relative;
+            z-index:1;
+        }
+        .rhsu-summary-panel h3,
+        .rhsu-summary-panel h4{ color:#dbeafe !important; }
+        .rhsu-summary-panel .count,
+        .rhsu-summary-panel-primary #dashTotalMemos{ color:#ffffff !important; }
+        .memo-summary-dashboard .rhsu-summary-panel{ min-height:118px; }
+        .personnel-summary-dashboard .rhsu-summary-panel{ min-height:102px; }
+        .personnel-summary-dashboard .personnel-card .count{ font-size:28px; }
+        .personnel-summary-dashboard .personnel-card h4{ margin-bottom:7px; }
+
+        @media(max-width:900px){
+            .exec-hero-copy{max-width:100%;}
+            .exec-hero-side{align-items:stretch;min-width:0;}
+            .exec-hero-actions{grid-template-columns:1fr;}
+            .rhsu-dashboard-action-btn{min-width:0;}
+        }
+        @media(max-width:760px){
+            #appBrand{font-size:13px;max-width:58vw;}
+            .rhsu-dashboard-watermark-pnp{width:150px;height:150px;left:-20px;top:-18px;}
+            .rhsu-dashboard-watermark-pro1{width:160px;height:160px;right:-20px;bottom:-24px;}
+            .exec-card-head{flex-direction:column;align-items:stretch;}
+            .exec-filter{width:100% !important;min-width:0;}
+        }
+
     </style>
 </head>
 <body>
@@ -359,7 +576,7 @@
             <button onclick="toggleNav()" style="background: transparent; border: none; cursor: pointer; padding: 5px;">
                 <img src="images/Menu.png" alt="Menu" style="width: 24px; height: 24px; filter: invert(1);" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><line x1=\'3\' y1=\'12\' x2=\'21\' y2=\'12\'></line><line x1=\'3\' y1=\'6\' x2=\'21\' y2=\'6\'></line><line x1=\'3\' y1=\'18\' x2=\'21\' y2=\'18\'></line></svg>'">
             </button>
-            <span id="welcomeMsg" style="font-weight: 600; color: #ffffff; font-size: 15px;"></span>
+            <span id="appBrand">REGIONAL HEADQUARTERS SUPPORT UNIT</span>
         </div>
         <div class="top-bar-right">
             <div id="datetime-display"></div>
@@ -421,9 +638,14 @@
                 <h1>RHSU PORTAL</h1>
             </div>
             
-            <button class="sidebar-btn active" id="btnHome" onclick="switchTab('home');">
-                <img src="images/Home.png" alt="Home" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\'></path><polyline points=\'9 22 9 12 15 12 15 22\'></polyline></svg>'">
-                <span class="nav-text">Home Page</span>
+            <button class="sidebar-btn active" id="btnDashboard" onclick="switchTab('dashboard');">
+                <img src="images/Home.png" alt="Dashboard" class="nav-icon" onerror="this.style.display='none'">
+                <span class="nav-text">Dashboard</span>
+            </button>
+
+            <button class="sidebar-btn" id="btnHome" onclick="switchTab('home');">
+                <img src="images/Memo.png" alt="Memos" class="nav-icon" onerror="this.style.display='none'">
+                <span class="nav-text">Memo Database</span>
             </button>
             
             <button class="sidebar-btn" id="btnPersonnel" onclick="switchTab('personnel');">
@@ -431,7 +653,7 @@
                 <span class="nav-text">Personnel Management</span>
             </button>
 
-            <button class="sidebar-btn hidden" id="btnAdminMgmt" onclick="switchTab('adminMgmt');">
+            <button class="sidebar-btn hidden" id="btnAdminMgmt" style="display:none !important;" onclick="switchTab('adminMgmt');">
                 <img src="images/Users.png" alt="Admin" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2\'></path><circle cx=\'9\' cy=\'7\' r=\'4\'></circle><path d=\'M23 21v-2a4 4 0 0 0-3-3.87\'></path><path d=\'M16 3.13a4 4 0 0 1 0 7.75\'></path></svg>'">
                 <span class="nav-text">User Management</span>
             </button>
@@ -452,6 +674,79 @@
 
         <main class="main-content">
             
+            <!-- EXECUTIVE DASHBOARD TAB -->
+            <div id="tabDashboard" class="exec-dashboard">
+                <section class="exec-hero rhsu-dashboard-modal">
+                    <img class="rhsu-dashboard-watermark rhsu-dashboard-watermark-pnp" src="images/PNP LOGO.png" alt="PNP Logo" aria-hidden="true" onerror="this.style.display='none'">
+                    <img class="rhsu-dashboard-watermark rhsu-dashboard-watermark-pro1" src="images/PRO 1 LOGO.png" alt="PRO 1 Logo" aria-hidden="true" onerror="this.style.display='none'">
+                    <div class="exec-hero-copy">
+                        <h2>RHSU Operations Dashboard</h2>
+                        <p>Central overview of memos, personnel, scheduled activities, offices, and system activity.</p>
+                    </div>
+                    <div class="exec-hero-side">
+                        <div class="exec-hero-meta">
+                            <span class="exec-pill" id="execDashUser">Signed in</span>
+                            <span class="exec-pill" id="execDashUpdated">Data not loaded</span>
+                        </div>
+                        <div class="exec-hero-actions">
+                            <button class="rhsu-dashboard-action-btn" onclick="dashboardAddMemo()">Add Memo</button>
+                            <button class="rhsu-dashboard-action-btn" onclick="switchTab('personnel')">Personnel</button>
+                            <button class="rhsu-dashboard-action-btn" onclick="switchTab('activityManagement')">Add Activity</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="exec-kpis">
+                    <div class="exec-kpi"><div class="label">Total Memos</div><div class="value" id="execTotalMemos">0</div><div class="sub">All loaded memo records</div></div>
+                    <div class="exec-kpi"><div class="label">Total Personnel</div><div class="value" id="execTotalPersonnel">0</div><div class="sub">Organic + Detached Service</div></div>
+                    <div class="exec-kpi"><div class="label">Active Activities</div><div class="value" id="execTotalActivities">0</div><div class="sub">Scheduled activities</div></div>
+                    <div class="exec-kpi"><div class="label">Archived Activities</div><div class="value" id="execArchivedActivities">0</div><div class="sub">Archived activity records</div></div>
+                    <div class="exec-kpi"><div class="label">Offices / Sections</div><div class="value" id="execOfficeCount">0</div><div class="sub">Distinct offices in loaded data</div></div>
+                    <div class="exec-kpi"><div class="label">Encoders</div><div class="value" id="execEncoderCount">0</div><div class="sub">Users with memo records</div></div>
+                </section>
+
+                <section class="exec-grid">
+                    <div class="exec-card">
+                        <h3>Memo Recap by Category</h3>
+                        <div class="subhead">Current loaded memo database</div>
+                        <div id="execMemoCategories" class="exec-list"></div>
+                    </div>
+                    <div class="exec-card">
+                        <h3>Memo Recap by Encoder</h3>
+                        <div class="subhead">Users who encoded memo records</div>
+                        <div id="execMemoEncoders" class="exec-list"></div>
+                    </div>
+                    <div class="exec-card">
+                        <h3>Personnel Recap</h3>
+                        <div class="subhead">Organic, Detached Service, and rank-group totals</div>
+                        <div id="execPersonnelGroups" class="exec-list"></div>
+                    </div>
+                    <div class="exec-card">
+                        <h3>Activity Venues</h3>
+                        <div class="subhead">Scheduled activities by venue</div>
+                        <div id="execVenues" class="exec-list"></div>
+                    </div>
+                    <div class="exec-card wide">
+                        <div class="exec-card-head">
+                            <div>
+                                <h3>Live Activity Logs</h3>
+                                <div class="subhead">Live activity monitoring</div>
+                            </div>
+                            <select id="execActivityUserFilter" class="exec-filter" onchange="setExecActivityUserFilter(this.value)" aria-label="Filter live activity logs by user">
+                                <option value="">All Users</option>
+                            </select>
+                        </div>
+                        <div id="execRecentMemos"></div>
+                    </div>
+                    <div class="exec-card">
+                        <h3>Operational Status</h3>
+                        <div class="subhead">Client-side data availability</div>
+                        <div id="execSystemStatus" class="exec-list"></div>
+                    </div>
+
+                </section>
+            </div>
+
             <!-- HOME TAB -->
             <div id="tabHome">
                 <div class="controls">
@@ -463,16 +758,16 @@
                     </div>
                 </div>
 
-                <div class="settings-grid" style="margin-top: 15px; margin-bottom: 25px;">
-                    <div class="settings-section glass-panel" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <div class="settings-grid rhsu-summary-dashboard memo-summary-dashboard" style="margin-top: 15px; margin-bottom: 25px;">
+                    <div class="settings-section glass-panel rhsu-summary-panel rhsu-summary-panel-primary" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                         <h3 style="margin-bottom: 5px; border-bottom: none; padding-bottom: 0;">Total Memos Created</h3>
                         <div id="dashTotalMemos" style="font-size: 38px; font-weight: bold; color: var(--primary);">0</div>
                     </div>
-                    <div class="settings-section glass-panel">
+                    <div class="settings-section glass-panel rhsu-summary-panel">
                         <h3 style="margin-bottom: 10px;">Total Memos by Categories</h3>
                         <div id="dashCategories" style="max-height: 120px; overflow-y: auto; padding-right: 5px;"></div>
                     </div>
-                    <div class="settings-section glass-panel">
+                    <div class="settings-section glass-panel rhsu-summary-panel">
                         <h3 style="margin-bottom: 10px;">Total Memos by Users</h3>
                         <div id="dashUsers" style="max-height: 120px; overflow-y: auto; padding-right: 5px;"></div>
                     </div>
@@ -594,43 +889,6 @@
                 </div>
             </div>
 
-            <!-- ADMIN TAB -->
-            <div id="tabAdminMgmt" class="hidden">
-                <div class="controls">
-                    <h2 style="margin:0; color: var(--danger);">Administration Management</h2>
-                    <button class="action-btn approve-btn" onclick="loadAdminUsers()" style="padding: 10px 18px; font-weight: bold; color:white;">Refresh Data</button>
-                </div>
-                
-                <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; margin-top: 20px;">
-                    <!-- USER MANAGEMENT TABLE WITH ROLE SELECTION -->
-                    <div class="table-wrapper" style="flex: 2; margin-top: 0; min-width: 300px;">
-                        <table id="adminUsersTable">
-                            <thead>
-                                <tr>
-                                    <th>Rank & Name</th>
-                                    <th>Username</th>
-                                    <th>Assigned Role</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminUsersTableBody"></tbody>
-                        </table>
-                    </div>
-
-                    <!-- GLOBAL SYSTEM ANNOUNCEMENT CONTROL -->
-                    <div class="glass-panel" style="flex: 1; padding: 20px; background: white; min-width: 250px;">
-                        <h3 style="margin-top:0; color: var(--primary); font-size: 16px;">Global System Announcement Control</h3>
-                        <textarea id="adminAnnouncementText" placeholder="Enter the system announcement here..." style="min-height: 100px; width: 100%;"></textarea>
-                        <div style="display: flex; gap: 10px; margin-top:10px;">
-                            <button class="approve-btn" style="flex: 1; margin:0;" onclick="saveAdminAnnouncement()">Post Announcement</button>
-                            <button class="delete-btn" style="flex: 1; margin:0;" onclick="deleteAdminAnnouncement()">Remove</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
             <!-- PERSONNEL MANAGEMENT TAB -->
             <div id="tabPersonnel" class="hidden">
                 <div class="controls">
@@ -643,12 +901,12 @@
                     </div>
                 </div>
 
-                <div class="personnel-dashboard">
-                    <div class="personnel-card"><h4>Total Personnel</h4><div class="count" id="personnelTotal">0</div></div>
-                    <div class="personnel-card"><h4>PNCO (Pat–PEMS)</h4><div class="count" id="personnelPNCO">0</div></div>
-                    <div class="personnel-card"><h4>PCO (PLT–PCOL)</h4><div class="count" id="personnelPCO">0</div></div>
-                    <div class="personnel-card"><h4>NUP</h4><div class="count" id="personnelNUP">0</div></div>
-                    <div class="personnel-card"><h4>Other</h4><div class="count" id="personnelOther">0</div></div>
+                <div class="personnel-dashboard rhsu-summary-dashboard personnel-summary-dashboard">
+                    <div class="personnel-card rhsu-summary-panel rhsu-summary-panel-primary"><h4>Total Personnel</h4><div class="count" id="personnelTotal">0</div></div>
+                    <div class="personnel-card rhsu-summary-panel"><h4>PNCO (Pat–PEMS)</h4><div class="count" id="personnelPNCO">0</div></div>
+                    <div class="personnel-card rhsu-summary-panel"><h4>PCO (PLT–PCOL)</h4><div class="count" id="personnelPCO">0</div></div>
+                    <div class="personnel-card rhsu-summary-panel"><h4>NUP</h4><div class="count" id="personnelNUP">0</div></div>
+                    <div class="personnel-card rhsu-summary-panel"><h4>Other</h4><div class="count" id="personnelOther">0</div></div>
                 </div>
 
                 <div class="personnel-content-layout">
@@ -762,39 +1020,90 @@
 
             <!-- SETTINGS TAB -->
             <div id="tabSettings" class="hidden">
-                <div class="controls">
-                    <h2 style="margin:0; color: var(--primary);">System Settings</h2>
-                    <button class="action-btn delete-btn" style="color:white;" onclick="resetPreferences()">Reset Preferences</button>
+                <div id="settingsMainPanel">
+                    <div class="controls">
+                        <h2 style="margin:0; color: var(--primary);">System Settings</h2>
+                        <button class="action-btn delete-btn" style="color:white;" onclick="resetPreferences()">Reset Preferences</button>
+                    </div>
+                    <div class="settings-grid">
+                        <div class="settings-section glass-panel">
+                            <h3>Appearance</h3>
+                            <div class="setting-row"><span>Theme</span><select id="setTheme" onchange="saveSettings()"><option value="Light">Light</option><option value="Dark">Dark</option><option value="System">System</option></select></div>
+                            <div class="setting-row"><span>Sidebar</span><select id="setSidebar" onchange="saveSettings()"><option value="Expanded">Expanded</option><option value="Collapsed">Collapsed</option></select></div>
+                            <div class="setting-row"><span>Table Display</span><select id="setTableDisplay" onchange="saveSettings()"><option value="Comfortable">Comfortable (Default)</option><option value="Compact">Compact</option></select></div>
+                        </div>
+                        <div class="settings-section glass-panel">
+                            <h3>Notifications</h3>
+                            <div class="setting-row"><span>Live Activity Notifications</span><label class="switch"><input type="checkbox" id="setLiveNotif" onchange="saveSettings()"><span class="slider"></span></label></div>
+                            <div class="setting-row"><span>Notification Sound</span><label class="switch"><input type="checkbox" id="setNotifSound" onchange="saveSettings()"><span class="slider"></span></label></div>
+                        </div>
+                        <div class="settings-section glass-panel">
+                            <h3>Memo Settings</h3>
+                            <div class="setting-row"><span>Records per page</span><select id="setRecordsPage" onchange="saveSettings()"><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="50">50</option></select></div>
+                            <div class="setting-row"><span>Remember Search/Filter</span><label class="switch"><input type="checkbox" id="setRemSearch" onchange="saveSettings()"><span class="slider"></span></label></div>
+                        </div>
+                        <div class="settings-section glass-panel">
+                            <h3>AI Assistant</h3>
+                            <div class="setting-row"><span>Show Chatbot</span><label class="switch"><input type="checkbox" id="setShowChat" onchange="saveSettings()"><span class="slider"></span></label></div>
+                            <div class="setting-row"><span>Auto Open Chatbot</span><label class="switch"><input type="checkbox" id="setAutoChat" onchange="saveSettings()"><span class="slider"></span></label></div>
+                        </div>
+                        <div class="settings-section glass-panel">
+                            <h3>Security</h3>
+                            <div class="setting-row"><span>Auto Logout (Inactivity)</span><select id="setAutoLogout" onchange="saveSettings()"><option value="Never">Never</option><option value="15">15 min</option><option value="30">30 min</option><option value="60">1 hour</option></select></div>
+                            <div class="setting-row"><span>Confirm Before Logout</span><label class="switch"><input type="checkbox" id="setConfirmLogout" onchange="saveSettings()"><span class="slider"></span></label></div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section glass-panel" style="margin-top:16px;">
+                        <h3>User Management</h3>
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+                            <div>
+                                <div style="font-size:14px;font-weight:600;color:var(--text-main);">Manage system user accounts</div>
+                                <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Restricted to the Alpha Admin and protected by admin validation.</div>
+                            </div>
+                            <button id="settingsUserMgmtBtn" class="action-btn approve-btn" style="color:white;margin:0;width:auto;" onclick="switchTab('adminMgmt')">Open User Management</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="settings-grid">
-                    <div class="settings-section glass-panel">
-                        <h3>Appearance</h3>
-                        <div class="setting-row"><span>Theme</span><select id="setTheme" onchange="saveSettings()"><option value="Light">Light</option><option value="Dark">Dark</option><option value="System">System</option></select></div>
-                        <div class="setting-row"><span>Sidebar</span><select id="setSidebar" onchange="saveSettings()"><option value="Expanded">Expanded</option><option value="Collapsed">Collapsed</option></select></div>
-                        <div class="setting-row"><span>Table Display</span><select id="setTableDisplay" onchange="saveSettings()"><option value="Comfortable">Comfortable (Default)</option><option value="Compact">Compact</option></select></div>
+
+                <!-- USER MANAGEMENT SUB-PAGE -->
+                <div id="tabAdminMgmt" class="hidden">
+                    <div class="settings-subpage-head">
+                        <div>
+                            <h3>User Management</h3>
+                            <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Administration of user accounts, roles, approvals, and system announcement.</div>
+                        </div>
+                        <button class="action-btn" onclick="closeAdminMgmtSubPage()" style="margin:0;width:auto;">← Back to Settings</button>
                     </div>
-                    <div class="settings-section glass-panel">
-                        <h3>Notifications</h3>
-                        <div class="setting-row"><span>Live Activity Notifications</span><label class="switch"><input type="checkbox" id="setLiveNotif" onchange="saveSettings()"><span class="slider"></span></label></div>
-                        <div class="setting-row"><span>Notification Sound</span><label class="switch"><input type="checkbox" id="setNotifSound" onchange="saveSettings()"><span class="slider"></span></label></div>
-                    </div>
-                    <div class="settings-section glass-panel">
-                        <h3>Memo Settings</h3>
-                        <div class="setting-row"><span>Records per page</span><select id="setRecordsPage" onchange="saveSettings()"><option value="10">10</option><option value="20">20</option><option value="30">30</option><option value="50">50</option></select></div>
-                        <div class="setting-row"><span>Remember Search/Filter</span><label class="switch"><input type="checkbox" id="setRemSearch" onchange="saveSettings()"><span class="slider"></span></label></div>
-                    </div>
-                    <div class="settings-section glass-panel">
-                        <h3>AI Assistant</h3>
-                        <div class="setting-row"><span>Show Chatbot</span><label class="switch"><input type="checkbox" id="setShowChat" onchange="saveSettings()"><span class="slider"></span></label></div>
-                        <div class="setting-row"><span>Auto Open Chatbot</span><label class="switch"><input type="checkbox" id="setAutoChat" onchange="saveSettings()"><span class="slider"></span></label></div>
-                    </div>
-                    <div class="settings-section glass-panel">
-                        <h3>Security</h3>
-                        <div class="setting-row"><span>Auto Logout (Inactivity)</span><select id="setAutoLogout" onchange="saveSettings()"><option value="Never">Never</option><option value="15">15 min</option><option value="30">30 min</option><option value="60">1 hour</option></select></div>
-                        <div class="setting-row"><span>Confirm Before Logout</span><label class="switch"><input type="checkbox" id="setConfirmLogout" onchange="saveSettings()"><span class="slider"></span></label></div>
+
+                    <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap;margin-top:0;">
+                        <div class="table-wrapper" style="flex:2;margin-top:0;min-width:300px;">
+                            <table id="adminUsersTable">
+                                <thead>
+                                    <tr>
+                                        <th>Rank & Name</th>
+                                        <th>Username</th>
+                                        <th>Assigned Role</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminUsersTableBody"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="glass-panel" style="flex:1;padding:20px;background:white;min-width:250px;">
+                            <h3 style="margin-top:0;color:var(--primary);font-size:16px;">Global System Announcement Control</h3>
+                            <textarea id="adminAnnouncementText" placeholder="Enter the system announcement here..." style="min-height:100px;width:100%;"></textarea>
+                            <div style="display:flex;gap:10px;margin-top:10px;">
+                                <button class="approve-btn" style="flex:1;margin:0;" onclick="saveAdminAnnouncement()">Post Announcement</button>
+                                <button class="delete-btn" style="flex:1;margin:0;" onclick="deleteAdminAnnouncement()">Remove</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
         </main>
     </div>
 
@@ -1062,8 +1371,12 @@
         let MEMOS_PER_PAGE = 10;
         let activityRefreshTimer = null;
         let autoLogoutTimer = null;
-        let userSettings = { theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable', liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false, showChatbot: true, autoOpenChatbot: false, autoLogout: 'Never', confirmLogout: true };
+        const DEFAULT_USER_SETTINGS = { theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable', liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false, showChatbot: true, autoOpenChatbot: false, autoLogout: 'Never', confirmLogout: true };
+        let userSettings = { ...DEFAULT_USER_SETTINGS };
         let lastLogCount = 0;
+        let liveActivityLogs = [];
+        let execActivityUserFilter = "";
+        let activityLogRefreshTimer = null;
         let allPersonnel = [];
         let personnelEditNo = null;
 
@@ -1088,12 +1401,34 @@
             }
         });
 
+        function getUserSettingsKey(username) {
+            return 'rhsuSettings_' + String(username || '').trim();
+        }
+
+        function persistUserSettings(username = localStorage.getItem('loggedInUser')) {
+            if (!username) return;
+            try {
+                localStorage.setItem(getUserSettingsKey(username), JSON.stringify(userSettings));
+            } catch (e) {}
+        }
+
         function loadSettings() {
             const user = localStorage.getItem('loggedInUser');
             if(!user) return;
-            const stored = localStorage.getItem('rhsuSettings_' + user);
-            if(stored) { try { userSettings = { ...userSettings, ...JSON.parse(stored) }; } catch(e) {} }
-            updateSettingsUI(); applySettingsEffects();
+
+            userSettings = { ...DEFAULT_USER_SETTINGS };
+            const stored = localStorage.getItem(getUserSettingsKey(user));
+            if(stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (parsed && typeof parsed === 'object') {
+                        userSettings = { ...userSettings, ...parsed };
+                    }
+                } catch(e) {}
+            }
+
+            updateSettingsUI();
+            applySettingsEffects();
         }
 
         function updateSettingsUI() {
@@ -1123,9 +1458,7 @@
             userSettings.autoLogout = document.getElementById('setAutoLogout').value;
             userSettings.confirmLogout = document.getElementById('setConfirmLogout').checked;
 
-            const user = localStorage.getItem('loggedInUser');
-            if(user) localStorage.setItem('rhsuSettings_' + user, JSON.stringify(userSettings));
-            
+            persistUserSettings();
             applySettingsEffects();
             showNotification("Settings Saved", "Your preferences have been updated successfully.");
         }
@@ -1133,8 +1466,9 @@
         function resetPreferences() {
             customConfirm("Are you sure you want to reset all preferences to default?", (confirmed) => {
                 if(confirmed) {
-                    userSettings = { theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable', liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false, showChatbot: true, autoOpenChatbot: false, autoLogout: 'Never', confirmLogout: true };
-                    updateSettingsUI(); saveSettings();
+                    userSettings = { ...DEFAULT_USER_SETTINGS };
+                    updateSettingsUI();
+                    saveSettings();
                 }
             });
         }
@@ -1191,7 +1525,7 @@
                 if (appLayout) appLayout.classList.toggle('nav-collapsed', collapsed);
                 userSettings.sidebar = collapsed ? 'Collapsed' : 'Expanded';
                 const user = localStorage.getItem('loggedInUser');
-                if(user) { document.getElementById('setSidebar').value = userSettings.sidebar; localStorage.setItem('rhsuSettings_' + user, JSON.stringify(userSettings)); }
+                if(user) { document.getElementById('setSidebar').value = userSettings.sidebar; persistUserSettings(user); }
             }
         }
 
@@ -1210,22 +1544,60 @@
         function customAlert(message, title = "System Notification") { showNotification(title, message); }
         function customConfirm(message, callback) { document.getElementById('customConfirmMessage').innerText = message; document.getElementById('customConfirmModal').classList.remove('hidden'); document.getElementById('customConfirmYesBtn').onclick = () => { document.getElementById('customConfirmModal').classList.add('hidden'); callback(true); }; document.getElementById('customConfirmNoBtn').onclick = () => { document.getElementById('customConfirmModal').classList.add('hidden'); callback(false); }; }
 
+        function getActivityLogTimestamp(log) {
+            if (!log) return 0;
+            const raw = log.timestamp || log.time || log.datetime || log.date || log.createdAt || log.created_at || '';
+            if (raw instanceof Date) return raw.getTime();
+            if (typeof raw === 'number') return raw < 100000000000 ? raw * 1000 : raw;
+            const parsed = Date.parse(String(raw));
+            return Number.isNaN(parsed) ? 0 : parsed;
+        }
+
+        function sortActivityLogsLatestFirst(logs) {
+            return (Array.isArray(logs) ? logs : []).map((log, index) => ({ log, index, ts: getActivityLogTimestamp(log) }))
+                .sort((a, b) => {
+                    if (b.ts !== a.ts) return b.ts - a.ts;
+                    return a.index - b.index;
+                })
+                .map(item => item.log);
+        }
+
         async function logActivity(actionText) {
             const user = localStorage.getItem('loggedInUser') || 'Unknown User';
-            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'log_activity', user: user, actionText: actionText }) }); setTimeout(fetchActivityLogs, 1500); } catch (err) {}
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({ action: 'log_activity', user: user, actionText: actionText })
+                });
+                // Refresh after the backend has had time to append the log; the normal polling
+                // timer continues to keep every user's dashboard current.
+                setTimeout(fetchActivityLogs, 1200);
+            } catch (err) {}
         }
 
         async function fetchActivityLogs() {
             try {
-                const res = await fetch(API_URL + "?action=get_activity_logs"); const logs = await res.json();
-                if (lastLogCount > 0 && logs.length > lastLogCount) {
-                    const newLogs = logs.length - lastLogCount;
+                // Cache-busting ensures every poll asks the backend for the latest log dataset.
+                const res = await fetch(API_URL + "?action=get_activity_logs&_ts=" + Date.now(), { cache: 'no-store' });
+                const logs = await res.json();
+                liveActivityLogs = sortActivityLogsLatestFirst(logs);
+
+                if (lastLogCount > 0 && liveActivityLogs.length > lastLogCount) {
+                    const newLogs = liveActivityLogs.length - lastLogCount;
                     for (let i = 0; i < Math.min(newLogs, 3); i++) {
-                        const log = logs[i]; 
-                        if (userSettings.liveNotif) { showNotification("Live Activity", `${log.user} ${log.actionText}`); if (userSettings.notifSound && i === 0) playAudioBeep(); }
+                        const log = liveActivityLogs[i];
+                        if (userSettings.liveNotif) {
+                            showNotification("Live Activity", `${log.user || 'Unknown User'} ${log.actionText || log.action || ''}`.trim());
+                            if (userSettings.notifSound && i === 0) playAudioBeep();
+                        }
                     }
                 }
-                lastLogCount = logs.length;
+
+                lastLogCount = liveActivityLogs.length;
+                if (!document.getElementById('tabDashboard').classList.contains('hidden')) {
+                    renderExecutiveDashboard();
+                }
             } catch (err) {}
         }
 
@@ -1274,14 +1646,20 @@
         }
 
         function switchTab(tabName) {
-            ['tabHome','tabProfile','tabAdminMgmt','tabSettings','tabPersonnel','tabActivityManagement'].forEach(id => {
+            ['tabDashboard','tabHome','tabProfile','tabAdminMgmt','tabSettings','tabPersonnel','tabActivityManagement'].forEach(id => {
                 const el=document.getElementById(id); if(el) el.classList.add('hidden');
             });
-            ['btnHome','btnSettings','btnAdminMgmt','btnPersonnel','btnActivityManagement'].forEach(id => {
+            ['btnDashboard','btnHome','btnSettings','btnAdminMgmt','btnPersonnel','btnActivityManagement'].forEach(id => {
                 const el=document.getElementById(id); if(el) el.classList.remove('active');
             });
+            const settingsMain = document.getElementById('settingsMainPanel');
+            if (settingsMain) settingsMain.classList.remove('hidden');
 
-            if (tabName === 'home') {
+            if (tabName === 'dashboard') {
+                document.getElementById('tabDashboard').classList.remove('hidden');
+                document.getElementById('btnDashboard').classList.add('active');
+                loadExecutiveDashboard();
+            } else if (tabName === 'home') {
                 document.getElementById('tabHome').classList.remove('hidden');
                 document.getElementById('btnHome').classList.add('active');
                 loadData();
@@ -1297,12 +1675,16 @@
                 if (localStorage.getItem('loggedInUser') !== ALPHA_ADMIN_NAME) {
                     customAlert("Only the Alpha Admin can access User Management.", "Permission Denied"); return;
                 }
+                document.getElementById('tabSettings').classList.remove('hidden');
+                document.getElementById('btnSettings').classList.add('active');
                 if (sessionAdminPass === "") {
                     pendingAdminAction = 'open_mgmt';
                     document.getElementById('adminModal').classList.remove('hidden');
                     document.getElementById('adminPassInput').value = "";
                     document.getElementById('adminPassInput').focus();
-                } else showAdminMgmtTab();
+                } else {
+                    showAdminMgmtTab();
+                }
 
             } else if (tabName === 'activityManagement') {
                 document.getElementById('tabActivityManagement').classList.remove('hidden');
@@ -1320,11 +1702,23 @@
         }
 
         function showAdminMgmtTab() {
+            document.getElementById('tabSettings').classList.remove('hidden');
+            document.getElementById('btnSettings').classList.add('active');
+            const settingsMain = document.getElementById('settingsMainPanel');
+            if (settingsMain) settingsMain.classList.add('hidden');
             document.getElementById('tabAdminMgmt').classList.remove('hidden');
-            document.getElementById('btnAdminMgmt').classList.add('active');
             loadAdminUsers();
+            sessionStorage.setItem('activeTab', 'adminMgmt');
         }
 
+        function closeAdminMgmtSubPage() {
+            document.getElementById('tabAdminMgmt').classList.add('hidden');
+            const settingsMain = document.getElementById('settingsMainPanel');
+            if (settingsMain) settingsMain.classList.remove('hidden');
+            document.getElementById('tabSettings').classList.remove('hidden');
+            document.getElementById('btnSettings').classList.add('active');
+            sessionStorage.setItem('activeTab', 'settings');
+        }
 
         async function fetchSystemAnnouncement() {
             if (sessionStorage.getItem('systemAnnouncementSeen') === 'true') return;
@@ -1343,16 +1737,20 @@
         function checkAuth() {
             const user = localStorage.getItem('loggedInUser');
             if (user) {
-                document.getElementById('welcomeMsg').innerText = `Welcome, ${user}`;
-                document.getElementById('loginPage').classList.add('hidden'); document.getElementById('registerPage').classList.add('hidden'); document.getElementById('appLayout').classList.remove('hidden'); document.getElementById('mainTopBar').classList.remove('hidden'); document.getElementById('btnAdminMgmt').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
+                document.getElementById('appBrand').innerText = 'REGIONAL HEADQUARTERS SUPPORT UNIT';
+                document.getElementById('loginPage').classList.add('hidden'); document.getElementById('registerPage').classList.add('hidden'); document.getElementById('appLayout').classList.remove('hidden'); document.getElementById('mainTopBar').classList.remove('hidden'); document.getElementById('btnAdminMgmt').classList.add('hidden');
+                document.getElementById('settingsUserMgmtBtn').classList.toggle('hidden', user !== ALPHA_ADMIN_NAME);
                 document.getElementById('btnPersonnel').classList.remove('hidden');
                 loadSettings();
                 if (userSettings.autoOpenChatbot && userSettings.showChatbot) document.getElementById('chatbot-window').classList.remove('hidden'); else document.getElementById('chatbot-window').classList.add('hidden');
                 
-                const savedTab = sessionStorage.getItem('activeTab') || 'home';
+                const savedTab = sessionStorage.getItem('activeTab') || 'dashboard';
                 switchTab(savedTab);
                 
-                fetchActivityLogs(); fetchSystemAnnouncement(); 
+                fetchActivityLogs();
+                if (activityLogRefreshTimer) clearInterval(activityLogRefreshTimer);
+                activityLogRefreshTimer = setInterval(fetchActivityLogs, 2000);
+                fetchSystemAnnouncement(); 
             } else { toggleAuthViews('loginPage'); }
         }
 
@@ -1420,21 +1818,75 @@
         }
 
         function attemptLogout() { if (userSettings.confirmLogout) { customConfirm("Are you sure you want to log out of the system?", (confirmed) => { if (confirmed) logoutUser(false); }); } else { logoutUser(false); } }
-        function logoutUser(force = false) { if (!force) logActivity("logged out of the system."); localStorage.removeItem('loggedInUser'); localStorage.removeItem('loggedCred'); localStorage.removeItem('userRole'); localStorage.removeItem('canEdit'); sessionAdminPass = ""; pendingAdminAction = null; sessionStorage.removeItem('systemAnnouncementSeen'); if (activityRefreshTimer) clearInterval(activityRefreshTimer); if (autoLogoutTimer) clearTimeout(autoLogoutTimer); checkAuth(); }
-
-        async function updateProfile() {
-            const newCred = document.getElementById('newCredential').value.trim(); const newUsername = document.getElementById('newUsernameInput').value.trim();
-            if(!newCred && !newUsername) return customAlert("Enter new username or credential.", "Error");
-            
-            try { await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update_profile', username: localStorage.getItem('loggedInUser'), currentCredential: localStorage.getItem('loggedCred'), newUsername: newUsername, newCredential: newCred }) }); if (newCred) localStorage.setItem('loggedCred', newCred); if (newUsername) localStorage.setItem('loggedInUser', newUsername); customAlert("Profile updated successfully!", "Success"); document.getElementById('newCredential').value = ""; document.getElementById('newUsernameInput').value = ""; document.getElementById('welcomeMsg').innerText = `Welcome, ${localStorage.getItem('loggedInUser')}`; populateProfileData(); logActivity("updated their profile information."); } catch (err) { }
+        function logoutUser(force = false) {
+            const currentUser = localStorage.getItem('loggedInUser');
+            persistUserSettings(currentUser);
+            if (!force) logActivity("logged out of the system.");
+            localStorage.removeItem('loggedInUser');
+            localStorage.removeItem('loggedCred');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('canEdit');
+            sessionAdminPass = "";
+            pendingAdminAction = null;
+            liveActivityLogs = [];
+            lastLogCount = 0;
+            if (activityLogRefreshTimer) {
+                clearInterval(activityLogRefreshTimer);
+                activityLogRefreshTimer = null;
+            }
+            sessionStorage.removeItem('systemAnnouncementSeen');
+            if (activityRefreshTimer) clearInterval(activityRefreshTimer);
+            if (autoLogoutTimer) clearTimeout(autoLogoutTimer);
+            userSettings = { ...DEFAULT_USER_SETTINGS };
+            checkAuth();
         }
+        async function updateProfile() {
+            const newCred = document.getElementById('newCredential').value.trim();
+            const newUsername = document.getElementById('newUsernameInput').value.trim();
+            if(!newCred && !newUsername) return customAlert("Enter new username or credential.", "Error");
 
+            const oldUsername = localStorage.getItem('loggedInUser');
+
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: JSON.stringify({
+                        action: 'update_profile',
+                        username: oldUsername,
+                        currentCredential: localStorage.getItem('loggedCred'),
+                        newUsername: newUsername,
+                        newCredential: newCred
+                    })
+                });
+
+                if (newCred) localStorage.setItem('loggedCred', newCred);
+
+                if (newUsername) {
+                    const oldSettings = localStorage.getItem(getUserSettingsKey(oldUsername));
+                    if (oldSettings) localStorage.setItem(getUserSettingsKey(newUsername), oldSettings);
+                    localStorage.setItem('loggedInUser', newUsername);
+                }
+
+                persistUserSettings(localStorage.getItem('loggedInUser'));
+                customAlert("Profile updated successfully!", "Success");
+                document.getElementById('newCredential').value = "";
+                document.getElementById('newUsernameInput').value = "";
+                document.getElementById('appBrand').innerText = 'REGIONAL HEADQUARTERS SUPPORT UNIT';
+                populateProfileData();
+                logActivity("updated their profile information.");
+            } catch (err) {}
+        }
         const OFFICE_DESTINATIONS = ["RD, PRO1", "DRDA", "DRDO", "CRS", "Msg Center", "RPRMD", "RID", "ROD", "RLRDD", "RCADD", "RCD", "RIDMD", "RETD", "RPSMD", "RICTMD", "RESPO", "RMFB1"];
         function toggleOfficeDestinationOther(selectId, otherInputId) { const select = document.getElementById(selectId); const otherInput = document.getElementById(otherInputId); if (!select || !otherInput) return; const showOther = select.value === "Others"; otherInput.classList.toggle('hidden', !showOther); otherInput.required = showOther; if (!showOther) otherInput.value = ""; }
         function getSelectedOfficeDestination(selectId, otherInputId) { const select = document.getElementById(selectId); const otherInput = document.getElementById(otherInputId); if (!select) return ""; if (select.value === "Others") return otherInput ? otherInput.value.trim() : ""; return select.value.trim(); }
         function setOfficeDestination(selectId, otherInputId, destination) { const select = document.getElementById(selectId); const otherInput = document.getElementById(otherInputId); if (!select) return; const value = String(destination || "").trim(); if (OFFICE_DESTINATIONS.includes(value)) { select.value = value; if (otherInput) { otherInput.value = ""; otherInput.classList.add('hidden'); otherInput.required = false; } } else if (value) { select.value = "Others"; if (otherInput) { otherInput.value = value; otherInput.classList.remove('hidden'); otherInput.required = true; } } else { select.value = ""; if (otherInput) { otherInput.value = ""; otherInput.classList.add('hidden'); otherInput.required = false; } } }
 
         function openMemoModalUser() { document.getElementById('memoSubmissionModal').classList.remove('hidden'); document.getElementById('memoSubmitBtn').disabled = false; document.getElementById('memoSubmitBtn').innerText = "Submit Data"; }
+        function dashboardAddMemo() {
+            switchTab('home');
+            setTimeout(openMemoModalUser, 0);
+        }
         function closeMemoModal() { document.getElementById('memoSubmissionModal').classList.add('hidden'); }
         function closeAdminModal() { document.getElementById('adminModal').classList.add('hidden'); pendingAdminAction = null; }
 
@@ -1535,7 +1987,7 @@
 
                 // Defer the potentially heavier table DOM rendering until the browser has
                 // painted the Personnel page. This keeps the page responsive with larger sheets.
-                requestAnimationFrame(() => filterPersonnel());
+                requestAnimationFrame(() => { filterPersonnel(); if (!document.getElementById('tabDashboard').classList.contains('hidden')) renderExecutiveDashboard(); });
             } catch (err) {
                 console.error(err);
                 const container = document.getElementById('personnelTablesContainer');
@@ -2099,6 +2551,7 @@
                 filterActivities();
                 renderArchivedActivities();
                 updateActivityPermissions();
+                if (!document.getElementById('tabDashboard').classList.contains('hidden')) renderExecutiveDashboard();
             } catch(e) {
                 console.error(e);
                 document.getElementById('activityTableBody').innerHTML =
@@ -2187,6 +2640,163 @@
             renderArchivedActivities();
         }
 
+
+        // ===== EXECUTIVE DASHBOARD =====
+        function execCountMap(items, keyFn) {
+            const map = {};
+            (items || []).forEach(item => {
+                const key = String(keyFn(item) || 'Unspecified').trim() || 'Unspecified';
+                map[key] = (map[key] || 0) + 1;
+            });
+            return map;
+        }
+
+        function execRenderList(containerId, map, total) {
+            const el = document.getElementById(containerId);
+            if (!el) return;
+            const entries = Object.entries(map || {}).sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0]));
+            if (!entries.length) { el.innerHTML = '<div class="exec-empty">No data available.</div>'; return; }
+            const max = entries[0][1] || 1;
+            el.innerHTML = entries.slice(0, 12).map(([name,count]) => `
+                <div class="exec-row">
+                    <div style="min-width:0;flex:1"><strong title="${escapeHtml(name)}">${escapeHtml(name)}</strong>
+                    <div class="exec-bar"><i style="width:${Math.max(4,(count/max)*100)}%"></i></div></div>
+                    <span>${count}</span>
+                </div>`).join('');
+        }
+
+        function execFormatDate(value) {
+            if (!value) return '—';
+            const d = new Date(value);
+            return isNaN(d.getTime()) ? String(value) : d.toLocaleString('en-US',{month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'});
+        }
+
+        function setExecActivityUserFilter(username) {
+            execActivityUserFilter = String(username || '');
+            renderExecutiveDashboard();
+        }
+
+        function populateExecActivityUserFilter(logs) {
+            const select = document.getElementById('execActivityUserFilter');
+            if (!select) return;
+            const users = Array.from(new Set((Array.isArray(logs) ? logs : []).map(log => {
+                const value = log && (log.user || log.username || log.name);
+                return String(value || 'Unknown User').trim();
+            }).filter(Boolean))).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+            const previous = execActivityUserFilter;
+            select.innerHTML = '<option value="">All Users</option>' + users.map(user =>
+                `<option value="${escapeAttr(user)}">${escapeHtml(user)}</option>`
+            ).join('');
+
+            if (previous && users.includes(previous)) {
+                select.value = previous;
+            } else {
+                execActivityUserFilter = '';
+                select.value = '';
+            }
+        }
+
+        function renderExecutiveDashboard() {
+            const totalMemos = allMemos.length;
+            const organicPersonnel = (allPersonnel || []).filter(p => String(p.section || '').trim().toLowerCase() !== 'detached service');
+            const detachedPersonnel = (allPersonnel || []).filter(p => String(p.section || '').trim().toLowerCase() === 'detached service');
+            const totalPersonnel = organicPersonnel.length + detachedPersonnel.length;
+            const totalActivities = (allActivities || []).length;
+            const totalArchived = (archivedActivities || []).length;
+
+            document.getElementById('execTotalMemos').innerText = totalMemos;
+            document.getElementById('execTotalPersonnel').innerText = totalPersonnel;
+            document.getElementById('execTotalActivities').innerText = totalActivities;
+            document.getElementById('execArchivedActivities').innerText = totalArchived;
+
+            const encoders = execCountMap(allMemos, r => r[3]);
+            document.getElementById('execEncoderCount').innerText = Object.keys(encoders).length;
+
+            const memoOffices = execCountMap(allMemos, r => r[1]);
+            const personnelSections = execCountMap(organicPersonnel, p => p.section);
+            const officeNames = new Set([...Object.keys(memoOffices), ...Object.keys(personnelSections)].filter(x => x && x !== 'Unspecified'));
+            document.getElementById('execOfficeCount').innerText = officeNames.size;
+
+            const categories = {};
+            allMemos.forEach(r => {
+                const c = String(r[2] || '');
+                const m = c.match(/RHSU\(([^)]+)\)/i);
+                const key = m ? m[1] : (c || 'Uncategorized');
+                categories[key] = (categories[key] || 0) + 1;
+            });
+            execRenderList('execMemoCategories', categories, totalMemos);
+            execRenderList('execMemoEncoders', encoders, totalMemos);
+
+            const groups = { PNCO:0, PCO:0, NUP:0, Other:0 };
+            organicPersonnel.forEach(p => {
+                const g = rankGroup(p.rank);
+                groups[g] = (groups[g] || 0) + 1;
+            });
+            const personnelRecap = {
+                'Organic Personnel': organicPersonnel.length,
+                'Detached Service': detachedPersonnel.length,
+                'Total Personnel': totalPersonnel,
+                'PNCO': groups.PNCO,
+                'PCO': groups.PCO,
+                'NUP': groups.NUP,
+                'Other': groups.Other
+            };
+            execRenderList('execPersonnelGroups', personnelRecap, totalPersonnel);
+
+            const venues = execCountMap(allActivities, a => a.assignedVenue);
+            execRenderList('execVenues', venues, totalActivities);
+
+            const recent = document.getElementById('execRecentMemos');
+            if (recent) {
+                // Display the complete activity-log dataset returned by the backend.
+                // No user filtering or row limit is applied so the dashboard shows
+                // activity from every user, while the existing polling/notification
+                // logic remains unchanged.
+                const logs = sortActivityLogsLatestFirst(liveActivityLogs);
+                populateExecActivityUserFilter(logs);
+                const getLogTime = (log) => log && (log.timestamp || log.time || log.datetime || log.date || log.createdAt || log.created_at || '');
+                const getLogUser = (log) => log && (log.user || log.username || log.name || 'Unknown User');
+                const getLogAction = (log) => log && (log.actionText || log.action || log.activity || log.message || '—');
+                const visibleLogs = execActivityUserFilter
+                    ? logs.filter(log => String(getLogUser(log)).trim() === execActivityUserFilter)
+                    : logs;
+                const filterLabel = execActivityUserFilter ? ` • ${execActivityUserFilter}` : ' • all users';
+                const countText = `${visibleLogs.length} entr${visibleLogs.length === 1 ? 'y' : 'ies'}${filterLabel}`;
+
+                if (visibleLogs.length) {
+                    recent.innerHTML = `<div style="margin-bottom:10px;font-size:11px;color:var(--text-muted);font-weight:600;">${escapeHtml(countText)}</div><div style="overflow:auto;max-height:520px"><table class="exec-table"><thead><tr><th>Time</th><th>User</th><th>Activity</th></tr></thead><tbody>${
+                        visibleLogs.map(log => `<tr><td>${escapeHtml(execFormatDate(getLogTime(log)))}</td><td>${escapeHtml(getLogUser(log))}</td><td>${escapeHtml(getLogAction(log))}</td></tr>`).join('')
+                    }</tbody></table></div>`;
+                } else if (execActivityUserFilter && logs.length) {
+                    recent.innerHTML = '<div class="exec-empty">No activity logs found for the selected user.</div>';
+                } else {
+                    recent.innerHTML = '<div class="exec-empty">No activity logs are currently available from the backend.</div>';
+                }
+            }
+
+            const status = document.getElementById('execSystemStatus');
+            status.innerHTML = [
+                ['Memo database', totalMemos, 'records loaded'],
+                ['Personnel database', totalPersonnel, 'organic + detached records'],
+                ['Activity schedule', totalActivities, 'active records'],
+                ['Archive', totalArchived, 'archived records'],
+                ['Activity logs', liveActivityLogs.length, 'latest backend entries'],
+                ['Logged-in user', localStorage.getItem('loggedInUser') || 'Guest', 'current session']
+            ].map(([label,value,sub]) => `<div class="exec-row"><div><strong>${escapeHtml(String(label))}</strong><div style="color:var(--text-muted);margin-top:3px;font-size:10px">${escapeHtml(String(sub))}</div></div><span>${escapeHtml(String(value))}</span></div>`).join('');
+
+            document.getElementById('execDashUser').innerText = `Signed in: ${localStorage.getItem('loggedInUser') || 'Guest'}`;
+            document.getElementById('execDashUpdated').innerText = `Updated ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
+        }
+
+        async function loadExecutiveDashboard() {
+            // Reuse the original loaders so authentication, backend requests, and existing
+            // business logic remain unchanged. The dashboard only reads their in-memory results.
+            try { await Promise.allSettled([loadData(), loadPersonnel(), loadActivities(), fetchActivityLogs()]); }
+            catch (e) {}
+            renderExecutiveDashboard();
+        }
+
         async function loadData() {
             try {
                 const response = await fetch(API_URL + "?action=get_memos"); let data = await response.json();
@@ -2223,6 +2833,7 @@
                 }
                 
                 searchTable(); 
+                if (!document.getElementById('tabDashboard').classList.contains('hidden')) renderExecutiveDashboard();
             } catch (err) { }
         }
 
