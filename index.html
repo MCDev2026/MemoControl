@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RHSU Portal</title>
+    <title>RHSU Data Entry System</title>
     <style>
         :root {
             /* Minimalist Light Theme Colors */
@@ -160,6 +160,8 @@
         }
 
         .auth-container { max-width: 500px; width: 100%; padding: 40px; text-align: center; margin-top: 50px; }
+        /* Login panel: keep the existing UI but anchor it at the exact center of the page. */
+        #loginPage { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin: 0; z-index: 90; }
         .auth-container h2 { margin-top: 0; margin-bottom: 25px; font-size: 24px; color: var(--primary); }
         .auth-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
         .auth-grid .full-width { grid-column: 1 / -1; }
@@ -719,8 +721,8 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
     </div>
 
     <div id="loginPage" class="auth-container glass-panel">
-        <img src="images/PRO 1 LOGO.png" alt="Logo" style="width: 80px; margin-bottom: 10px;" onerror="this.style.display='none'">
-        <h2>System Login</h2>
+        <img src="images/RHSU LOGO.png" alt="RHSU Logo" style="width: 80px; margin-bottom: 10px;" onerror="this.style.display='none'">
+        <h2>RHSU PORTAL</h2>
         <div class="auth-type-toggle">
             <label><input type="radio" name="loginType" value="pin" checked onchange="toggleInputType('loginCredential', 'pin')"> Use PIN</label>
             <label><input type="radio" name="loginType" value="password" onchange="toggleInputType('loginCredential', 'password')"> Use Password</label>
@@ -1876,8 +1878,10 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 loadSettings();
                 if (userSettings.autoOpenChatbot && userSettings.showChatbot) document.getElementById('chatbot-window').classList.remove('hidden'); else document.getElementById('chatbot-window').classList.add('hidden');
                 
-                const savedTab = sessionStorage.getItem('activeTab') || 'dashboard';
-                switchTab(savedTab);
+                // Authentication survives browser refresh through localStorage.
+                // A fresh page load always starts on the Dashboard, regardless of the
+                // tab that was open before the refresh.
+                switchTab('dashboard');
                 
                 fetchActivityLogs();
                 if (activityLogRefreshTimer) clearInterval(activityLogRefreshTimer);
@@ -2566,6 +2570,54 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             document.getElementById('activityModal').classList.remove('hidden');
         }
 
+        function formatActivityTime(value) {
+            const raw = String(value == null ? '' : value).trim();
+            if (!raw) return '';
+            const match24 = raw.match(/^(\\d{1,2}):(\\d{2})$/);
+            if (match24) {
+                let hours = Number(match24[1]);
+                const minutes = match24[2];
+                if (hours >= 0 && hours <= 23 && Number(minutes) >= 0 && Number(minutes) <= 59) {
+                    const suffix = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12 || 12;
+                    return `${String(hours).padStart(2, '0')}:${minutes} ${suffix}`;
+                }
+            }
+            const match12 = raw.match(/^(\\d{1,2}):(\\d{2})\\s*([AaPp][Mm])$/);
+            if (match12) {
+                let hours = Number(match12[1]);
+                const minutes = match12[2];
+                if (hours >= 1 && hours <= 12 && Number(minutes) >= 0 && Number(minutes) <= 59) {
+                    return `${String(hours).padStart(2, '0')}:${minutes} ${match12[3].toUpperCase()}`;
+                }
+            }
+            return raw;
+        }
+
+        function activityTimeForInput(value) {
+            const raw = String(value == null ? '' : value).trim();
+            const match24 = raw.match(/^(\\d{1,2}):(\\d{2})$/);
+            if (match24) {
+                const hours = Number(match24[1]);
+                const minutes = Number(match24[2]);
+                if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                }
+            }
+            const match12 = raw.match(/^(\\d{1,2}):(\\d{2})\\s*([AaPp][Mm])$/);
+            if (match12) {
+                let hours = Number(match12[1]);
+                const minutes = Number(match12[2]);
+                const suffix = match12[3].toUpperCase();
+                if (hours >= 1 && hours <= 12 && minutes >= 0 && minutes <= 59) {
+                    if (suffix === 'AM') hours = hours === 12 ? 0 : hours;
+                    else hours = hours === 12 ? 12 : hours + 12;
+                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                }
+            }
+            return '';
+        }
+
         function editActivity(id) {
             if (!canManageActivities()) return customAlert('Permission denied.', 'Error');
             const a = allActivities.find(x => String(x.id) === String(id));
@@ -2583,7 +2635,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             }
             document.getElementById('activityRequestingOffice').value = a.requestingOffice || '';
             document.getElementById('activityConcernedOffice').value = a.concernedOffice || '';
-            document.getElementById('activityTime').value = a.time || '';
+            document.getElementById('activityTime').value = activityTimeForInput(a.time);
             document.getElementById('activityFrequency').value = a.frequency || 'N/A';
             document.getElementById('activityStatus').value = a.status || 'Recurring';
             activityCalendarMonth = new Date(String(a.date || '').slice(0,10) + 'T00:00:00');
@@ -2719,7 +2771,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                     <td>${escapeHtml(a.assignedVenue)}</td>
                     <td>${escapeHtml(a.requestingOffice)}</td>
                     <td>${escapeHtml(a.concernedOffice)}</td>
-                    <td>${escapeHtml(a.time)}</td>
+                    <td>${escapeHtml(formatActivityTime(a.time))}</td>
                     <td><span class="activity-status ${statusClass}">${escapeHtml(status)}</span></td>
                     ${can ? `<td class="activity-action-cell">
                         <button class="action-btn" onclick="editActivity('${escapeAttr(a.id)}')">Edit</button>
@@ -2754,7 +2806,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 <td>${escapeHtml(a.assignedVenue)}</td>
                 <td>${escapeHtml(a.requestingOffice)}</td>
                 <td>${escapeHtml(a.concernedOffice)}</td>
-                <td>${escapeHtml(a.time)}</td>
+                <td>${escapeHtml(formatActivityTime(a.time))}</td>
                 <td><span class="activity-status archive">Archive</span></td>
             </tr>`).join('') : '<tr><td colspan="7" style="text-align:center;padding:20px;">No archived activities.</td></tr>';
 
