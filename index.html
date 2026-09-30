@@ -568,6 +568,138 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             .exec-filter{width:100% !important;min-width:0;}
         }
 
+    
+        /* ===== READABILITY + HEADER DISPLAY OVERRIDES ===== */
+        .top-bar-left{
+            min-width:0;
+            flex:1 1 auto;
+            display:flex !important;
+            align-items:center !important;
+            justify-content:flex-start !important;
+            gap:14px !important;
+            overflow:hidden;
+        }
+        .top-bar-left > button{
+            flex:0 0 34px;
+            width:34px !important;
+            min-width:34px !important;
+            margin:0 !important;
+            padding:5px !important;
+        }
+        .top-bar-right{
+            flex:0 0 auto;
+            margin-left:auto;
+        }
+        #appBrand{
+            max-width:none !important;
+            overflow:visible !important;
+            text-overflow:clip !important;
+            white-space:nowrap !important;
+            flex:0 1 auto !important;
+            min-width:0;
+            margin:0 !important;
+            font-size:15px !important;
+            line-height:1.15;
+            letter-spacing:.25px !important;
+        }
+
+        /* Executive dashboard: strengthen foreground contrast without changing the design. */
+        .exec-kpi .label{ color:#475569 !important; }
+        .exec-kpi .value{ color:#1d4ed8 !important; text-shadow:none; }
+        .exec-kpi .sub{ color:#475569 !important; }
+        .exec-card h3{ color:#172033 !important; }
+        .exec-card .subhead{ color:#475569 !important; }
+        .exec-row{ color:#172033 !important; background:rgba(148,163,184,.07); }
+        .exec-row strong{ color:#172033 !important; }
+        .exec-row span:last-child{ color:#1d4ed8 !important; }
+        .exec-empty{ color:#475569 !important; }
+        .exec-table{ color:#172033 !important; }
+        .exec-table th{ color:#475569 !important; background:#f8fafc !important; }
+        .exec-table td{ color:#172033 !important; }
+        .exec-table td:nth-child(2){ font-weight:600; }
+        .exec-status{ color:#047857 !important; }
+        .exec-filter{ color:#172033 !important; background:#ffffff !important; }
+
+        /* RHSU blue-gradient cards: all dashboard text/numbers stay bright and readable. */
+        .rhsu-summary-panel,
+        .rhsu-summary-panel *{
+            color:#ffffff;
+        }
+        .rhsu-summary-panel h3,
+        .rhsu-summary-panel h4{
+            color:#e0efff !important;
+            text-shadow:0 1px 1px rgba(0,0,0,.20);
+        }
+        .rhsu-summary-panel .count,
+        .rhsu-summary-panel-primary #dashTotalMemos{
+            color:#ffffff !important;
+            text-shadow:0 1px 2px rgba(0,0,0,.25);
+        }
+        .rhsu-summary-panel #dashCategories,
+        .rhsu-summary-panel #dashUsers{
+            color:#ffffff !important;
+        }
+        .rhsu-summary-panel #dashCategories > div,
+        .rhsu-summary-panel #dashUsers > div{
+            color:#ffffff !important;
+            border-bottom-color:rgba(255,255,255,.24) !important;
+        }
+        .rhsu-summary-panel #dashCategories span,
+        .rhsu-summary-panel #dashUsers span{
+            color:#ffffff !important;
+        }
+        .rhsu-summary-panel #dashCategories strong,
+        .rhsu-summary-panel #dashUsers strong{
+            color:#ffffff !important;
+            font-weight:800;
+            text-shadow:0 1px 2px rgba(0,0,0,.20);
+        }
+
+        /* Personnel recap remains readable on its existing light panels, including dark mode. */
+        .personnel-recap-panel .settings-section h3{ color:var(--primary) !important; }
+        .rank-chip span{ color:var(--text-main) !important; }
+        .rank-chip strong{ color:var(--primary) !important; }
+        body.dark-mode .rank-chip span{ color:#f1f5f9 !important; }
+        body.dark-mode .rank-chip strong{ color:#93c5fd !important; }
+
+        /* Dark-mode executive text contrast. */
+        body.dark-mode .exec-kpi .label,
+        body.dark-mode .exec-kpi .sub,
+        body.dark-mode .exec-card .subhead,
+        body.dark-mode .exec-empty,
+        body.dark-mode .exec-table th{
+            color:#cbd5e1 !important;
+        }
+        body.dark-mode .exec-kpi .value,
+        body.dark-mode .exec-row span:last-child{
+            color:#93c5fd !important;
+        }
+        body.dark-mode .exec-card h3,
+        body.dark-mode .exec-row,
+        body.dark-mode .exec-row strong,
+        body.dark-mode .exec-table,
+        body.dark-mode .exec-table td{
+            color:#f1f5f9 !important;
+        }
+        body.dark-mode .exec-table th{ background:#162033 !important; }
+
+        @media(max-width:1200px){
+            #appBrand{ font-size:14px !important; }
+        }
+        @media(max-width:900px){
+            #appBrand{ font-size:12px !important; letter-spacing:.15px !important; }
+        }
+        @media(max-width:760px){
+            #appBrand{ font-size:11px !important; letter-spacing:0 !important; }
+        }
+        @media(max-width:560px){
+            #appBrand{ font-size:10px !important; }
+            .top-bar{ padding-left:12px; padding-right:12px; }
+            .top-bar-left{ gap:8px !important; }
+            .top-bar-right{ gap:8px; }
+            #datetime-display{ font-size:10px; }
+        }
+
     </style>
 </head>
 <body>
