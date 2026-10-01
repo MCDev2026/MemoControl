@@ -1591,7 +1591,9 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         let activityRefreshTimer = null;
         let autoLogoutTimer = null;
         const NOTIFICATION_SOUNDS = [
-            { file: 'Notif1.mp3', label: 'Notif1 (Default)' }
+            { file: 'Notif1.mp3', label: 'Notif1 (Default)' },
+            { file: 'Notif2.mp3', label: 'Notif2' },
+            { file: 'Alert.mp3', label: 'Alert' }
             // Add additional MP3 files placed in the sounds folder here, for example:
             // ,{ file: 'Notif2.mp3', label: 'Notif2' }
             // ,{ file: 'Alert.mp3', label: 'Alert' }
@@ -1676,45 +1678,48 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             select.value = current;
         }
 
-        let notificationAudio = null;
-
-        function getNotificationAudio() {
-            if (!notificationAudio) {
-                notificationAudio = new Audio();
-                notificationAudio.preload = 'auto';
-            }
-            return notificationAudio;
-        }
+        const NOTIFICATION_SOUND_DELAY_MS = 500;
 
         function playNotificationSound(soundFile = userSettings.notificationSound) {
             if (userSettings.notifSound === false) return;
-            try {
-                const audio = getNotificationAudio();
-                const selected = getValidNotificationSound(soundFile);
-                const source = 'sounds/' + selected;
-                if (audio.src !== new URL(source, window.location.href).href) audio.src = source;
-                audio.volume = 0.7;
-                audio.currentTime = 0;
-                const playPromise = audio.play();
-                if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
-            } catch (e) {}
+            const selected = getValidNotificationSound(soundFile);
+
+            // Delay playback slightly so the notification UI can finish rendering and
+            // the browser has time to initialize the audio element. A fresh Audio
+            // instance prevents a new notification from resetting/cutting off a sound
+            // that is already playing.
+            setTimeout(() => {
+                if (userSettings.notifSound === false) return;
+                try {
+                    const audio = new Audio('sounds/' + selected);
+                    audio.preload = 'auto';
+                    audio.volume = 0.7;
+                    audio.addEventListener('ended', () => {
+                        audio.removeAttribute('src');
+                        audio.load();
+                    }, { once: true });
+                    const playPromise = audio.play();
+                    if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
+                } catch (e) {}
+            }, NOTIFICATION_SOUND_DELAY_MS);
         }
 
         function testNotificationSound() {
             const select = document.getElementById('setNotificationSound');
             const selected = select ? getValidNotificationSound(select.value) : DEFAULT_NOTIFICATION_SOUND;
-            try {
-                const audio = getNotificationAudio();
-                audio.src = 'sounds/' + selected;
-                audio.volume = 0.7;
-                audio.currentTime = 0;
-                const playPromise = audio.play();
-                if (playPromise && typeof playPromise.catch === 'function') {
-                    playPromise.catch(() => showNotification('Sound Test', 'The browser blocked audio playback. Click the Test button again to allow the sound.'));
+            setTimeout(() => {
+                try {
+                    const audio = new Audio('sounds/' + selected);
+                    audio.preload = 'auto';
+                    audio.volume = 0.7;
+                    const playPromise = audio.play();
+                    if (playPromise && typeof playPromise.catch === 'function') {
+                        playPromise.catch(() => showNotification('Sound Test', 'The browser blocked audio playback. Click the Test button again to allow the sound.'));
+                    }
+                } catch (e) {
+                    showNotification('Sound Test', 'Unable to play the selected notification sound.');
                 }
-            } catch (e) {
-                showNotification('Sound Test', 'Unable to play the selected notification sound.');
-            }
+            }, NOTIFICATION_SOUND_DELAY_MS);
         }
 
         function updateSettingsUI() {
