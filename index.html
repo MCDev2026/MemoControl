@@ -702,7 +702,35 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             #datetime-display{ font-size:10px; }
         }
 
-    </style>
+    
+        /* ===== PROFILE / EXTENDED SETTINGS ===== */
+        .profile-options-grid{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));}
+        .profile-identity-card{text-align:center;}
+        .profile-avatar{width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;background:var(--primary);color:#fff;font-size:30px;font-weight:800;box-shadow:0 8px 22px rgba(37,99,235,.22);}
+        .profile-display-name{font-size:18px;font-weight:800;color:var(--text-main);margin-bottom:7px;}
+        .profile-role-badge{display:inline-flex;padding:5px 10px;border-radius:999px;background:rgba(37,99,235,.1);color:var(--primary);font-size:11px;font-weight:700;}
+        .profile-meta-list{margin-top:18px;text-align:left;display:grid;gap:9px;}
+        .profile-meta-list div{display:flex;justify-content:space-between;gap:12px;font-size:12px;border-bottom:1px solid var(--border-color);padding-bottom:8px;}
+        .profile-meta-list span,.profile-value{color:var(--text-muted);}
+        .profile-meta-list strong{color:var(--text-main);font-weight:600;text-align:right;overflow-wrap:anywhere;}
+        #tabProfile.profile-compact .settings-section{padding:14px;}
+        #tabProfile.profile-compact .setting-row{margin-bottom:9px;font-size:13px;}
+        body.rhsu-font-large{font-size:16px;}
+        body.rhsu-font-large .main-content{font-size:16px;}
+        body.rhsu-font-xlarge{font-size:18px;}
+        body.rhsu-font-xlarge .main-content{font-size:18px;}
+        body.rhsu-high-contrast .glass-panel{border-color:#64748b;box-shadow:0 4px 18px rgba(15,23,42,.12);}
+        body.rhsu-high-contrast .text-muted,body.rhsu-high-contrast .profile-value{color:#334155 !important;}
+        body.rhsu-high-contrast.dark-mode .text-muted,body.rhsu-high-contrast.dark-mode .profile-value{color:#cbd5e1 !important;}
+        body.rhsu-reduced-motion *,body.rhsu-reduced-motion *::before,body.rhsu-reduced-motion *::after{transition:none !important;animation:none !important;scroll-behavior:auto !important;}
+        @media(max-width:760px){.profile-options-grid{grid-template-columns:1fr;}.profile-meta-list div{align-items:flex-start;flex-direction:column;gap:3px;}}
+
+    
+        /* Official-use / legal notice */
+        .rhsu-legal-footer { margin: 18px 0 8px; padding: 14px 18px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 10.5px; line-height: 1.55; text-align: center; }
+        .rhsu-legal-footer strong { color: var(--text-main); }
+        .rhsu-login-notice { margin-top: 14px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-muted); font-size: 10.5px; line-height: 1.5; text-align: center; background: var(--glass-bg); }
+</style>
 </head>
 <body>
     <div class="top-bar hidden" id="mainTopBar">
@@ -897,6 +925,11 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                         <h3 style="margin-bottom: 5px; border-bottom: none; padding-bottom: 0;">Total Memos Created</h3>
                         <div id="dashTotalMemos" style="font-size: 38px; font-weight: bold; color: var(--primary);">0</div>
                     </div>
+                    <div class="settings-section glass-panel rhsu-summary-panel rhsu-summary-panel-primary" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                        <h3 style="margin-bottom: 5px; border-bottom: none; padding-bottom: 0;">Memos This Month</h3>
+                        <div id="dashCurrentMonthMemos" style="font-size: 38px; font-weight: bold; color: var(--primary);">0</div>
+                        <div id="dashCurrentMonthLabel" style="font-size:12px;margin-top:4px;opacity:.9;">Current Month</div>
+                    </div>
                     <div class="settings-section glass-panel rhsu-summary-panel">
                         <h3 style="margin-bottom: 10px;">Total Memos by Categories</h3>
                         <div id="dashCategories" style="max-height: 120px; overflow-y: auto; padding-right: 5px;"></div>
@@ -947,6 +980,9 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
 
                     <input type="date" id="filterDay" onchange="searchTable()" title="Filter by exact day" style="margin:0; width:auto; background:white; padding:8px 12px; border-radius:var(--radius-sm);">
 
+                    <button class="action-btn approve-btn" onclick="batchEditStatus()" style="color:white;">
+                        Bulk Edit Status
+                    </button>
                     <button class="action-btn delete-btn" onclick="batchDelete()" style="color:white; margin-left: auto;">
                         <img src="images/Trash.png" alt="Delete" style="width: 14px; height: 14px; filter: invert(1);" onerror="this.style.display='none'"> Delete Selected
                     </button>
@@ -982,43 +1018,67 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             <!-- PROFILE TAB -->
             <div id="tabProfile" class="hidden">
                 <div class="controls">
-                    <h2 style="margin:0; color: var(--primary);">My Profile</h2>
+                    <div>
+                        <h2 style="margin:0; color: var(--primary);">My Profile</h2>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Manage your account, profile information, security, preferences, and session.</div>
+                    </div>
+                    <button class="action-btn" onclick="populateProfileData()">Refresh Profile</button>
                 </div>
-                <div class="settings-grid">
+                <div class="profile-options-grid settings-grid">
+                    <div class="settings-section glass-panel profile-identity-card">
+                        <div class="profile-avatar" id="profileAvatar">U</div>
+                        <h3 style="border-bottom:none;margin-bottom:4px;">Account Overview</h3>
+                        <div id="profileDisplayName" class="profile-display-name">User</div>
+                        <div id="profileRoleBadge" class="profile-role-badge">Regular User</div>
+                        <div class="profile-meta-list">
+                            <div><span>Username</span><strong id="profUsername"></strong></div>
+                            <div><span>Account Status</span><strong style="color:var(--success);">Active</strong></div>
+                        </div>
+                    </div>
                     <div class="settings-section glass-panel">
                         <h3>Personal Information</h3>
-                        <div class="setting-row"><span>Rank</span> <span id="profRank" style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>First Name</span> <span id="profFirstName" style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>Middle Name</span> <span id="profMiddleName" style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>Last Name</span> <span id="profLastName" style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>Qualifier</span> <span id="profQlf" style="color:var(--text-muted)">Not Available</span></div>
-                        <div class="setting-row"><span>Email Address</span> <span id="profEmail" style="color:var(--text-muted)">Not Available</span></div>
+                        <div class="setting-row"><span>Rank</span> <span id="profRank" class="profile-value">Not Available</span></div>
+                        <div class="setting-row"><span>First Name</span> <span id="profFirstName" class="profile-value">Not Available</span></div>
+                        <div class="setting-row"><span>Middle Name</span> <span id="profMiddleName" class="profile-value">Not Available</span></div>
+                        <div class="setting-row"><span>Last Name</span> <span id="profLastName" class="profile-value">Not Available</span></div>
+                        <div class="setting-row"><span>Qualifier</span> <span id="profQlf" class="profile-value">Not Available</span></div>
+                        <div class="setting-row"><span>Email Address</span> <span id="profEmail" class="profile-value">Not Available</span></div>
                     </div>
                     <div class="settings-section glass-panel">
-                        <h3>Account Information</h3>
-                        <div class="setting-row"><span>Username</span> <span id="profUsername" style="font-weight:500;"></span></div>
-                        <div class="setting-row"><span>Assigned Role</span> <span id="profAccType" style="font-weight:600; color:var(--primary);"></span></div>
-                        <div class="setting-row"><span>Account Status</span> <span style="color:var(--success); font-weight:500;">Active</span></div>
-                    </div>
-                    <div class="settings-section glass-panel">
-                        <h3>Activity Summary</h3>
-                        <div class="setting-row"><span>Total Memos Created</span> <span id="profTotalMemos" style="font-weight:bold; color:var(--primary);">0</span></div>
-                        <div class="setting-row"><span>Last Activity</span> <span id="profLastActivity" style="color:var(--text-muted)">Not Available</span></div>
+                        <h3>Account & Role</h3>
+                        <div class="setting-row"><span>Assigned Role</span> <span id="profAccType" style="font-weight:600;color:var(--primary);"></span></div>
+                        <div class="setting-row"><span>Access Level</span> <span id="profAccessLevel" class="profile-value">Standard</span></div>
+                        <div class="setting-row"><span>Profile Source</span> <span class="profile-value">RHSU User Database</span></div>
+                        <div class="setting-row"><span>Total Memos Created</span> <span id="profTotalMemos" style="font-weight:bold;color:var(--primary);">0</span></div>
+                        <div class="setting-row"><span>Last Activity</span> <span id="profLastActivity" class="profile-value">Not Available</span></div>
                     </div>
                     <div class="settings-section glass-panel">
                         <h3>Security & Authentication</h3>
-                        <div style="margin-bottom: 15px;">
-                            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 5px;">Change Username:</label>
+                        <div style="margin-bottom:15px;">
+                            <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:5px;">Change Username</label>
                             <input type="text" id="newUsernameInput" placeholder="Enter new Username" style="margin:0;">
                         </div>
-                        <div style="margin-bottom: 20px;">
-                            <label style="font-size: 13px; color: var(--text-muted); display: block; margin-bottom: 5px;">Change PIN / Password:</label>
+                        <div style="margin-bottom:15px;">
+                            <label style="font-size:13px;color:var(--text-muted);display:block;margin-bottom:5px;">Change PIN / Password</label>
                             <input type="password" id="newCredential" placeholder="Enter new PIN or Password" style="margin:0;">
                         </div>
-                        <div style="display: flex; gap: 10px; margin-top: 15px;">
-                            <button style="flex:1; margin:0;" onclick="updateProfile()">Save Changes</button>
-                            <button class="delete-btn" style="flex:1; margin:0;" onclick="attemptLogout()">Logout</button>
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;">
+                            <button style="flex:1;margin:0;min-width:150px;" onclick="updateProfile()">Save Account Changes</button>
+                            <button class="action-btn" style="flex:1;margin:0;min-width:150px;" onclick="clearProfileFields()">Clear Fields</button>
+                            <button class="delete-btn" style="flex:1;margin:0;min-width:150px;" onclick="attemptLogout()">Logout</button>
                         </div>
+                    </div>
+                    <div class="settings-section glass-panel">
+                        <h3>Profile Preferences</h3>
+                        <div class="setting-row"><span>Profile Display</span><select id="profileDisplayDensity" onchange="saveProfilePreferences()" style="width:150px;margin:0;"><option value="Comfortable">Comfortable</option><option value="Compact">Compact</option></select></div>
+                        <div class="setting-row"><span>Show Activity Summary</span><label class="switch"><input type="checkbox" id="profileShowActivity" onchange="saveProfilePreferences()" checked><span class="slider"></span></label></div>
+                        <div class="setting-row"><span>Show Contact Details</span><label class="switch"><input type="checkbox" id="profileShowContact" onchange="saveProfilePreferences()" checked><span class="slider"></span></label></div>
+                    </div>
+                    <div class="settings-section glass-panel">
+                        <h3>Session & Account Actions</h3>
+                        <div class="setting-row"><span>Current Session</span><strong style="color:var(--success);">Active</strong></div>
+                        <button class="action-btn" style="width:100%;margin:0 0 8px;" onclick="refreshSessionProfile()">Refresh Session Information</button>
+                        <button class="action-btn delete-btn" style="width:100%;margin:0;color:white;" onclick="attemptLogout()">Sign Out of Current Session</button>
                     </div>
                 </div>
             </div>
@@ -1170,6 +1230,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                             <h3>Notifications</h3>
                             <div class="setting-row"><span>Live Activity Notifications</span><label class="switch"><input type="checkbox" id="setLiveNotif" onchange="saveSettings()"><span class="slider"></span></label></div>
                             <div class="setting-row"><span>Notification Sound</span><label class="switch"><input type="checkbox" id="setNotifSound" onchange="saveSettings()"><span class="slider"></span></label></div>
+                            <div class="setting-row" style="align-items:flex-start;"><div style="display:flex;flex-direction:column;gap:4px;min-width:0;"><span>Sound Selection</span><small style="color:var(--text-muted);font-size:11px;">MP3 files from the sounds folder</small></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end;"><select id="setNotificationSound" onchange="saveSettings()" style="min-width:175px;"></select><button type="button" class="action-btn" onclick="testNotificationSound()" style="padding:7px 10px;">▶ Test</button></div></div>
                         </div>
                         <div class="settings-section glass-panel">
                             <h3>Memo Settings</h3>
@@ -1185,6 +1246,24 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                             <h3>Security</h3>
                             <div class="setting-row"><span>Auto Logout (Inactivity)</span><select id="setAutoLogout" onchange="saveSettings()"><option value="Never">Never</option><option value="15">15 min</option><option value="30">30 min</option><option value="60">1 hour</option></select></div>
                             <div class="setting-row"><span>Confirm Before Logout</span><label class="switch"><input type="checkbox" id="setConfirmLogout" onchange="saveSettings()"><span class="slider"></span></label></div>
+                        </div>
+                        <div class="settings-section glass-panel">
+                            <h3>Interface & Accessibility</h3>
+                            <div class="setting-row"><span>Font Size</span><select id="setFontSize" onchange="saveSettings()"><option value="Default">Default</option><option value="Large">Large</option><option value="ExtraLarge">Extra Large</option></select></div>
+                            <div class="setting-row"><span>Reduced Motion</span><label class="switch"><input type="checkbox" id="setReducedMotion" onchange="saveSettings()"><span class="slider"></span></label></div>
+                            <div class="setting-row"><span>High Contrast</span><label class="switch"><input type="checkbox" id="setHighContrast" onchange="saveSettings()"><span class="slider"></span></label></div>
+                        </div>
+                        <div class="settings-section glass-panel">
+                            <h3>Data & Refresh</h3>
+                            <div class="setting-row"><span>Auto Refresh Data</span><label class="switch"><input type="checkbox" id="setAutoRefresh" onchange="saveSettings()"><span class="slider"></span></label></div>
+                            <div class="setting-row"><span>Refresh Interval</span><select id="setRefreshInterval" onchange="saveSettings()"><option value="30">30 seconds</option><option value="60">1 minute</option><option value="300">5 minutes</option></select></div>
+                            <div class="setting-row"><span>Confirm Destructive Actions</span><label class="switch"><input type="checkbox" id="setConfirmActions" onchange="saveSettings()"><span class="slider"></span></label></div>
+                        </div>
+                        <div class="settings-section glass-panel">
+                            <h3>Localization</h3>
+                            <div class="setting-row"><span>Language</span><select id="setLanguage" onchange="saveSettings()"><option value="English">English</option></select></div>
+                            <div class="setting-row"><span>Date Format</span><select id="setDateFormat" onchange="saveSettings()"><option value="US">MM/DD/YYYY</option><option value="ISO">YYYY-MM-DD</option><option value="Long">Month DD, YYYY</option></select></div>
+                            <div class="setting-row"><span>24-Hour Time</span><label class="switch"><input type="checkbox" id="set24Hour" onchange="saveSettings()"><span class="slider"></span></label></div>
                         </div>
                     </div>
 
@@ -1239,6 +1318,12 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             </div>
 
         </main>
+    </div>
+
+
+    <div class="rhsu-legal-footer" role="contentinfo">
+        <strong>OFFICIAL USE ONLY</strong> — This system is intended for authorized official use within the Regional Headquarters Support Unit. Information contained herein is subject to verification and applicable laws, regulations, policies, and directives. Unauthorized access, alteration, reproduction, distribution, disclosure, or use is prohibited, subject to applicable law.
+        <br><strong>Rights Reserved.</strong> The design, interface, system-generated presentation, compilation, and official use of this website are reserved to the appropriate office/system owner, subject to applicable laws, regulations, and government policies.
     </div>
 
     <!-- FLOATING CHATBOT AI -->
@@ -1505,7 +1590,14 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         let MEMOS_PER_PAGE = 10;
         let activityRefreshTimer = null;
         let autoLogoutTimer = null;
-        const DEFAULT_USER_SETTINGS = { theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable', liveNotif: true, notifSound: false, recordsPerPage: '10', rememberSearch: false, showChatbot: true, autoOpenChatbot: false, autoLogout: 'Never', confirmLogout: true };
+        const NOTIFICATION_SOUNDS = [
+            { file: 'Notif1.mp3', label: 'Notif1 (Default)' }
+            // Add additional MP3 files placed in the sounds folder here, for example:
+            // ,{ file: 'Notif2.mp3', label: 'Notif2' }
+            // ,{ file: 'Alert.mp3', label: 'Alert' }
+        ];
+        const DEFAULT_NOTIFICATION_SOUND = 'Notif1.mp3';
+        const DEFAULT_USER_SETTINGS = { theme: 'Light', sidebar: 'Expanded', tableDisplay: 'Comfortable', liveNotif: true, notifSound: true, notificationSound: DEFAULT_NOTIFICATION_SOUND, recordsPerPage: '10', rememberSearch: false, showChatbot: true, autoOpenChatbot: false, autoLogout: 'Never', confirmLogout: true, fontSize: 'Default', reducedMotion: false, highContrast: false, autoRefresh: true, refreshInterval: '60', confirmActions: true, language: 'English', dateFormat: 'US', time24: false };
         let userSettings = { ...DEFAULT_USER_SETTINGS };
         let lastLogCount = 0;
         let liveActivityLogs = [];
@@ -1565,18 +1657,90 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             applySettingsEffects();
         }
 
+        function getValidNotificationSound(soundFile) {
+            const requested = String(soundFile || '').trim();
+            return NOTIFICATION_SOUNDS.some(sound => sound.file === requested) ? requested : DEFAULT_NOTIFICATION_SOUND;
+        }
+
+        function populateNotificationSoundOptions() {
+            const select = document.getElementById('setNotificationSound');
+            if (!select) return;
+            const current = getValidNotificationSound(userSettings.notificationSound);
+            select.innerHTML = '';
+            NOTIFICATION_SOUNDS.forEach(sound => {
+                const option = document.createElement('option');
+                option.value = sound.file;
+                option.textContent = sound.label;
+                select.appendChild(option);
+            });
+            select.value = current;
+        }
+
+        let notificationAudio = null;
+
+        function getNotificationAudio() {
+            if (!notificationAudio) {
+                notificationAudio = new Audio();
+                notificationAudio.preload = 'auto';
+            }
+            return notificationAudio;
+        }
+
+        function playNotificationSound(soundFile = userSettings.notificationSound) {
+            if (userSettings.notifSound === false) return;
+            try {
+                const audio = getNotificationAudio();
+                const selected = getValidNotificationSound(soundFile);
+                const source = 'sounds/' + selected;
+                if (audio.src !== new URL(source, window.location.href).href) audio.src = source;
+                audio.volume = 0.7;
+                audio.currentTime = 0;
+                const playPromise = audio.play();
+                if (playPromise && typeof playPromise.catch === 'function') playPromise.catch(() => {});
+            } catch (e) {}
+        }
+
+        function testNotificationSound() {
+            const select = document.getElementById('setNotificationSound');
+            const selected = select ? getValidNotificationSound(select.value) : DEFAULT_NOTIFICATION_SOUND;
+            try {
+                const audio = getNotificationAudio();
+                audio.src = 'sounds/' + selected;
+                audio.volume = 0.7;
+                audio.currentTime = 0;
+                const playPromise = audio.play();
+                if (playPromise && typeof playPromise.catch === 'function') {
+                    playPromise.catch(() => showNotification('Sound Test', 'The browser blocked audio playback. Click the Test button again to allow the sound.'));
+                }
+            } catch (e) {
+                showNotification('Sound Test', 'Unable to play the selected notification sound.');
+            }
+        }
+
         function updateSettingsUI() {
             document.getElementById('setTheme').value = userSettings.theme || 'Light';
             document.getElementById('setSidebar').value = userSettings.sidebar || 'Expanded';
             document.getElementById('setTableDisplay').value = userSettings.tableDisplay || 'Comfortable';
             document.getElementById('setLiveNotif').checked = userSettings.liveNotif;
-            document.getElementById('setNotifSound').checked = userSettings.notifSound;
+            document.getElementById('setNotifSound').checked = userSettings.notifSound !== false;
+            populateNotificationSoundOptions();
+            const soundSelect = document.getElementById('setNotificationSound');
+            if (soundSelect) soundSelect.value = getValidNotificationSound(userSettings.notificationSound);
             document.getElementById('setRecordsPage').value = userSettings.recordsPerPage;
             document.getElementById('setRemSearch').checked = userSettings.rememberSearch;
             document.getElementById('setShowChat').checked = userSettings.showChatbot;
             document.getElementById('setAutoChat').checked = userSettings.autoOpenChatbot;
             document.getElementById('setAutoLogout').value = userSettings.autoLogout;
             document.getElementById('setConfirmLogout').checked = userSettings.confirmLogout;
+            document.getElementById('setFontSize').value = userSettings.fontSize || 'Default';
+            document.getElementById('setReducedMotion').checked = !!userSettings.reducedMotion;
+            document.getElementById('setHighContrast').checked = !!userSettings.highContrast;
+            document.getElementById('setAutoRefresh').checked = userSettings.autoRefresh !== false;
+            document.getElementById('setRefreshInterval').value = userSettings.refreshInterval || '60';
+            document.getElementById('setConfirmActions').checked = userSettings.confirmActions !== false;
+            document.getElementById('setLanguage').value = userSettings.language || 'English';
+            document.getElementById('setDateFormat').value = userSettings.dateFormat || 'US';
+            document.getElementById('set24Hour').checked = !!userSettings.time24;
         }
 
         function saveSettings() {
@@ -1585,12 +1749,22 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             userSettings.tableDisplay = document.getElementById('setTableDisplay').value;
             userSettings.liveNotif = document.getElementById('setLiveNotif').checked;
             userSettings.notifSound = document.getElementById('setNotifSound').checked;
+            userSettings.notificationSound = getValidNotificationSound(document.getElementById('setNotificationSound')?.value);
             userSettings.recordsPerPage = document.getElementById('setRecordsPage').value;
             userSettings.rememberSearch = document.getElementById('setRemSearch').checked;
             userSettings.showChatbot = document.getElementById('setShowChat').checked;
             userSettings.autoOpenChatbot = document.getElementById('setAutoChat').checked;
             userSettings.autoLogout = document.getElementById('setAutoLogout').value;
             userSettings.confirmLogout = document.getElementById('setConfirmLogout').checked;
+            userSettings.fontSize = document.getElementById('setFontSize').value;
+            userSettings.reducedMotion = document.getElementById('setReducedMotion').checked;
+            userSettings.highContrast = document.getElementById('setHighContrast').checked;
+            userSettings.autoRefresh = document.getElementById('setAutoRefresh').checked;
+            userSettings.refreshInterval = document.getElementById('setRefreshInterval').value;
+            userSettings.confirmActions = document.getElementById('setConfirmActions').checked;
+            userSettings.language = document.getElementById('setLanguage').value;
+            userSettings.dateFormat = document.getElementById('setDateFormat').value;
+            userSettings.time24 = document.getElementById('set24Hour').checked;
 
             persistUserSettings();
             applySettingsEffects();
@@ -1611,6 +1785,10 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             const body = document.body;
             if (userSettings.theme === 'Dark' || (userSettings.theme === 'System' && window.matchMedia('(prefers-color-scheme: dark)').matches)) body.classList.add('dark-mode'); else body.classList.remove('dark-mode');
             if (userSettings.tableDisplay === 'Compact') body.classList.add('compact-mode'); else body.classList.remove('compact-mode');
+            body.classList.toggle('rhsu-font-large', userSettings.fontSize === 'Large');
+            body.classList.toggle('rhsu-font-xlarge', userSettings.fontSize === 'ExtraLarge');
+            body.classList.toggle('rhsu-reduced-motion', !!userSettings.reducedMotion);
+            body.classList.toggle('rhsu-high-contrast', !!userSettings.highContrast);
 
             const sb = document.getElementById('navSidebar');
             const appLayout = document.getElementById('appLayout');
@@ -1633,7 +1811,9 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => { if (userSettings.theme === 'System') applySettingsEffects(); });
 
         function playAudioBeep() {
-            try { let ctx = new (window.AudioContext || window.webkitAudioContext)(); let osc = ctx.createOscillator(); let gainNode = ctx.createGain(); osc.connect(gainNode); gainNode.connect(ctx.destination); osc.type = 'sine'; osc.frequency.value = 800; gainNode.gain.setValueAtTime(0.05, ctx.currentTime); osc.start(); osc.stop(ctx.currentTime + 0.1); } catch(e) {}
+            // Preserve the existing function name for compatibility while using
+            // the user's selected notification MP3 instead of the generated beep.
+            playNotificationSound();
         }
 
         ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => { window.addEventListener(evt, resetIdleTimer); });
@@ -1667,6 +1847,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         setInterval(updateDateTime, 1000); updateDateTime();
 
         function showNotification(title, message, onClickAction) {
+            playNotificationSound();
             const container = document.getElementById('notificationContainer');
             const toast = document.createElement('div'); toast.className = 'notification-toast';
             toast.innerHTML = `<span class="notification-title">${title}</span><span class="notification-msg">${message}</span>`;
@@ -1723,7 +1904,6 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                         const log = liveActivityLogs[i];
                         if (userSettings.liveNotif) {
                             showNotification("Live Activity", `${log.user || 'Unknown User'} ${log.actionText || log.action || ''}`.trim());
-                            if (userSettings.notifSound && i === 0) playAudioBeep();
                         }
                     }
                 }
@@ -1765,6 +1945,12 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 displayRole = localStorage.getItem('userRole') || (localStorage.getItem('canEdit') === 'Yes' ? 'Admin' : 'Regular User');
             }
             document.getElementById('profAccType').innerText = displayRole;
+            const nameParts = [localStorage.getItem('profileFirstName') || '', localStorage.getItem('profileLastName') || ''].filter(Boolean);
+            const profileDisplay = document.getElementById('profileDisplayName'); if (profileDisplay) profileDisplay.innerText = nameParts.join(' ') || currentUser;
+            const avatar = document.getElementById('profileAvatar'); if (avatar) avatar.innerText = String((nameParts.join(' ') || currentUser).trim().charAt(0) || 'U').toUpperCase();
+            const roleBadge = document.getElementById('profileRoleBadge'); if (roleBadge) roleBadge.innerText = displayRole;
+            const access = document.getElementById('profAccessLevel'); if (access) access.innerText = currentUser === ALPHA_ADMIN_NAME ? 'Full Administrative Access' : (localStorage.getItem('canEdit') === 'Yes' || localStorage.getItem('userRole') === 'Admin' ? 'Administrative Editing' : 'Standard User');
+            loadProfilePreferences();
             
             try {
                 const res = await fetch(`${API_URL}?action=get_profile&username=${encodeURIComponent(currentUser)}`); const data = await res.json();
@@ -1976,6 +2162,27 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             userSettings = { ...DEFAULT_USER_SETTINGS };
             checkAuth();
         }
+        function getProfilePreferencesKey(username = localStorage.getItem('loggedInUser')) { return 'rhsuProfilePrefs_' + String(username || '').trim(); }
+        function loadProfilePreferences() {
+            const stored = localStorage.getItem(getProfilePreferencesKey());
+            let prefs = { density:'Comfortable', showActivity:true, showContact:true };
+            try { if (stored) prefs = { ...prefs, ...JSON.parse(stored) }; } catch(e) {}
+            const density = document.getElementById('profileDisplayDensity'); if (density) density.value = prefs.density;
+            const activity = document.getElementById('profileShowActivity'); if (activity) activity.checked = prefs.showActivity !== false;
+            const contact = document.getElementById('profileShowContact'); if (contact) contact.checked = prefs.showContact !== false;
+            document.querySelectorAll('#tabProfile .settings-section').forEach(sec => {
+                if (sec.querySelector('#profTotalMemos')) sec.classList.toggle('hidden', prefs.showActivity === false);
+                if (sec.querySelector('#profEmail')) sec.classList.toggle('hidden', prefs.showContact === false);
+            });
+            document.getElementById('tabProfile')?.classList.toggle('profile-compact', prefs.density === 'Compact');
+        }
+        function saveProfilePreferences() {
+            const prefs = { density: document.getElementById('profileDisplayDensity')?.value || 'Comfortable', showActivity: document.getElementById('profileShowActivity')?.checked !== false, showContact: document.getElementById('profileShowContact')?.checked !== false };
+            localStorage.setItem(getProfilePreferencesKey(), JSON.stringify(prefs)); loadProfilePreferences();
+        }
+        function clearProfileFields() { document.getElementById('newCredential').value=''; document.getElementById('newUsernameInput').value=''; }
+        function refreshSessionProfile() { populateProfileData(); showNotification('Profile Refreshed','Your profile and session information are up to date.'); }
+
         async function updateProfile() {
             const newCred = document.getElementById('newCredential').value.trim();
             const newUsername = document.getElementById('newUsernameInput').value.trim();
@@ -3023,6 +3230,38 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
 
         function updateDashboard() {
             const total = allMemos.length; document.getElementById('dashTotalMemos').innerText = total;
+
+            // Memo Database monthly recap only. The main/Executive Dashboard does not
+            // display this KPI; this value is rendered exclusively in the Memo Database.
+            const now = new Date();
+            const currentMonth = now.getMonth();
+            const currentYear = now.getFullYear();
+            const currentMonthMemos = allMemos.filter(row => {
+                if (!row || !row[0]) return false;
+                const rawDate = String(row[0]).trim();
+                let memoDate = new Date(rawDate);
+
+                // Support common backend date formats such as YYYY-MM-DD,
+                // YYYY-MM-DD HH:mm:ss, and MM/DD/YYYY without changing stored data.
+                if (isNaN(memoDate.getTime())) {
+                    const match = rawDate.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+                    if (match) {
+                        memoDate = new Date(Number(match[3]), Number(match[1]) - 1, Number(match[2]));
+                    }
+                }
+
+                return !isNaN(memoDate.getTime()) &&
+                       memoDate.getMonth() === currentMonth &&
+                       memoDate.getFullYear() === currentYear;
+            }).length;
+
+            const monthlyCountEl = document.getElementById('dashCurrentMonthMemos');
+            const monthlyLabelEl = document.getElementById('dashCurrentMonthLabel');
+            if (monthlyCountEl) monthlyCountEl.innerText = currentMonthMemos;
+            if (monthlyLabelEl) {
+                monthlyLabelEl.innerText = now.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+            }
+
             const categoryCounts = {}; const userCounts = {};
 
             allMemos.forEach(row => {
@@ -3165,6 +3404,15 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                         await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'delete', controlNumber: c, password: pass, userName: currentUser }) }); 
                     } 
                     logActivity(`batch deleted ${actionTargetControl.length} memos`);
+                } else if (pendingAction === 'batch_status') {
+                    const newStatus = document.getElementById('actionNewStatus').value;
+                    for (const c of actionTargetControl) {
+                        const row = (allMemos || []).find(r => String(r[2]) === String(c));
+                        const newSubject = row ? String(row[1] || '') : '';
+                        const newOfficeDestination = row ? String(row[5] || 'N/A') : 'N/A';
+                        await fetch(API_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ action: 'update', controlNumber: c, newSubject: newSubject, newStatus: newStatus, officeDestination: newOfficeDestination, password: pass, userName: currentUser }) });
+                    }
+                    logActivity(`bulk updated status to ${newStatus} for ${actionTargetControl.length} memos`);
                 }
 
                 // Refresh the memo database after an admin update so the latest
@@ -3227,6 +3475,27 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             const isChecked = document.getElementById('selectAll').checked;
             const checkboxes = document.querySelectorAll('.row-checkbox');
             checkboxes.forEach(cb => cb.checked = isChecked);
+        }
+
+        function batchEditStatus() {
+            const isAlphaAdmin = localStorage.getItem('loggedInUser') === ALPHA_ADMIN_NAME;
+            const userRole = localStorage.getItem('userRole');
+            const canEdit = localStorage.getItem('canEdit') === 'Yes' || userRole === 'Admin';
+            if (!isAlphaAdmin && !canEdit) return customAlert("Regular Users cannot bulk edit memo status. Admin permission is required.", "Permission Denied");
+            const checked = document.querySelectorAll('.row-checkbox:checked');
+            if (checked.length === 0) return customAlert("No memos selected for status update.", "Error");
+            actionTargetControl = Array.from(checked).map(cb => cb.value);
+            pendingAction = 'batch_status';
+            document.getElementById('actionModal').classList.remove('hidden');
+            document.getElementById('actionModalTitle').innerText = `Bulk Edit Status (${actionTargetControl.length} items)`;
+            document.getElementById('actionNewSubject').classList.add('hidden');
+            document.getElementById('actionNewStatus').classList.remove('hidden');
+            document.getElementById('actionOfficeDestinationWrapper').classList.add('hidden');
+            const passInput = document.getElementById('actionAdminPass');
+            const confirmBtn = document.getElementById('actionConfirmBtn');
+            if (confirmBtn) { confirmBtn.disabled = false; confirmBtn.innerText = 'Confirm'; }
+            passInput.value = sessionAdminPass || localStorage.getItem('loggedCred') || "";
+            passInput.placeholder = sessionAdminPass ? "Master Password" : "Enter Password";
         }
 
         function batchDelete() {
