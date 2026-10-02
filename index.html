@@ -724,12 +724,72 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         body.rhsu-high-contrast.dark-mode .text-muted,body.rhsu-high-contrast.dark-mode .profile-value{color:#cbd5e1 !important;}
         body.rhsu-reduced-motion *,body.rhsu-reduced-motion *::before,body.rhsu-reduced-motion *::after{transition:none !important;animation:none !important;scroll-behavior:auto !important;}
         @media(max-width:760px){.profile-options-grid{grid-template-columns:1fr;}.profile-meta-list div{align-items:flex-start;flex-direction:column;gap:3px;}}
-
-    
-        /* Official-use / legal notice */
-        .rhsu-legal-footer { margin: 18px 0 8px; padding: 14px 18px; border-top: 1px solid var(--border-color); color: var(--text-muted); font-size: 10.5px; line-height: 1.55; text-align: center; }
-        .rhsu-legal-footer strong { color: var(--text-main); }
-        .rhsu-login-notice { margin-top: 14px; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 10px; color: var(--text-muted); font-size: 10.5px; line-height: 1.5; text-align: center; background: var(--glass-bg); }
+/* ===== LOGIN REDESIGN + DASHBOARD RECAP FIT ===== */
+        #loginPage.rhsu-login-shell {
+            width:min(900px, calc(100vw - 32px));
+            max-width:900px;
+            min-height:470px;
+            padding:0;
+            margin:0;
+            overflow:hidden;
+            display:grid;
+            grid-template-columns:minmax(0, 1.02fr) minmax(360px, .98fr);
+            text-align:left;
+            box-shadow:0 24px 70px rgba(15,23,42,.18);
+        }
+        .rhsu-login-brand {
+            position:relative;
+            display:flex;
+            align-items:stretch;
+            min-width:0;
+            background:linear-gradient(145deg,#1e3a8a 0%,#1d4ed8 58%,#4338ca 100%);
+            color:#fff;
+            overflow:hidden;
+        }
+        .rhsu-login-brand::before,.rhsu-login-brand::after {
+            content:"";position:absolute;border-radius:50%;pointer-events:none;
+            background:rgba(255,255,255,.07);
+        }
+        .rhsu-login-brand::before { width:330px;height:330px;right:-155px;top:-150px; }
+        .rhsu-login-brand::after { width:250px;height:250px;left:-125px;bottom:-145px; }
+        .rhsu-login-brand-inner { position:relative;z-index:1;display:flex;flex-direction:column;justify-content:center;padding:48px;max-width:500px; }
+        .rhsu-login-brand-logo { width:88px;height:88px;object-fit:contain;margin-bottom:28px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.18)); }
+        .rhsu-login-kicker,.rhsu-login-form-kicker { font-size:11px;font-weight:800;letter-spacing:1.8px; }
+        .rhsu-login-kicker { color:#bfdbfe;margin-bottom:10px; }
+        .rhsu-login-brand h1 { margin:0 0 16px;font-size:31px;line-height:1.12;color:#fff;letter-spacing:-.5px; }
+        .rhsu-login-brand p { margin:0;color:rgba(255,255,255,.82);font-size:14px;line-height:1.7;max-width:390px; }
+        .rhsu-login-system-status { display:flex;align-items:center;gap:8px;margin-top:30px;color:#dbeafe;font-size:12px;font-weight:600; }
+        .rhsu-login-system-status span { width:8px;height:8px;border-radius:50%;background:#34d399;box-shadow:0 0 0 4px rgba(52,211,153,.15); }
+        .rhsu-login-form { display:flex;flex-direction:column;justify-content:center;padding:48px 46px;background:var(--glass-bg);min-width:0; }
+        .rhsu-login-form-head { margin-bottom:28px; }
+        .rhsu-login-form-kicker { color:var(--primary);margin-bottom:7px; }
+        .rhsu-login-form h2 { margin:0 0 7px;font-size:29px;line-height:1.15;color:var(--text-main); }
+        .rhsu-login-form-head p { margin:0;color:var(--text-muted);font-size:13px; }
+        .rhsu-login-mode { margin-bottom:19px; }
+        .rhsu-login-mode > span { display:block;font-size:12px;font-weight:700;color:var(--text-main);margin-bottom:8px; }
+        .rhsu-login-form .auth-type-toggle { justify-content:flex-start;gap:8px;margin:0; }
+        .rhsu-login-form .auth-type-toggle label { display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border:1px solid var(--border-color);border-radius:8px;background:rgba(0,0,0,.02);font-size:12px;cursor:pointer; }
+        .rhsu-login-form .auth-type-toggle input { margin:0; }
+        .rhsu-login-field { margin-bottom:14px; }
+        .rhsu-login-field label { display:block;font-size:12px;font-weight:700;color:var(--text-main);margin:0 0 7px; }
+        .rhsu-login-field input { margin:0;min-height:45px;background:rgba(0,0,0,.025); }
+        .rhsu-login-submit { margin-top:5px;min-height:46px;font-size:14px;box-shadow:0 8px 18px rgba(79,70,229,.18); }
+        .rhsu-login-create { text-align:center;margin-top:18px;font-size:12px;color:var(--text-muted); }
+        .rhsu-login-create .link { margin:0;font-size:12px;font-weight:700; }
+        @media(max-width:760px){
+            #loginPage.rhsu-login-shell { grid-template-columns:1fr;min-height:0;max-height:calc(100vh - 24px);overflow:auto; }
+            .rhsu-login-brand-inner { padding:30px 28px; }
+            .rhsu-login-brand-logo { width:62px;height:62px;margin-bottom:18px; }
+            .rhsu-login-brand h1 { font-size:24px; }
+            .rhsu-login-system-status { margin-top:18px; }
+            .rhsu-login-form { padding:30px 28px 34px; }
+        }
+        /* Five recap cards now fill the row evenly. */
+        #tabDashboard .exec-kpis { grid-template-columns:repeat(5,minmax(0,1fr)); width:100%; gap:12px; }
+        #tabDashboard .exec-kpi { min-width:0;width:100%; }
+        @media(max-width:1100px){ #tabDashboard .exec-kpis { grid-template-columns:repeat(3,minmax(0,1fr)); } }
+        @media(max-width:700px){ #tabDashboard .exec-kpis { grid-template-columns:repeat(2,minmax(0,1fr));gap:8px; } }
+        @media(max-width:460px){ #tabDashboard .exec-kpis { grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
@@ -748,17 +808,40 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         </div>
     </div>
 
-    <div id="loginPage" class="auth-container glass-panel">
-        <img src="images/RHSU LOGO.png" alt="RHSU Logo" style="width: 80px; margin-bottom: 10px;" onerror="this.style.display='none'">
-        <h2>RHSU PORTAL</h2>
-        <div class="auth-type-toggle">
-            <label><input type="radio" name="loginType" value="pin" checked onchange="toggleInputType('loginCredential', 'pin')"> Use PIN</label>
-            <label><input type="radio" name="loginType" value="password" onchange="toggleInputType('loginCredential', 'password')"> Use Password</label>
-        </div>
-        <input type="text" id="loginUsername" placeholder="Enter Username">
-        <input type="password" id="loginCredential" placeholder="Enter 6-Digit PIN" maxlength="6">
-        <button onclick="loginUser()">Login</button>
-        <span class="link" onclick="toggleAuthViews('registerPage')">Create an Account</span>
+    <div id="loginPage" class="auth-container glass-panel rhsu-login-shell">
+        <section class="rhsu-login-brand" aria-label="RHSU system information">
+            <div class="rhsu-login-brand-inner">
+                <img class="rhsu-login-brand-logo" src="images/RHSU LOGO.png" alt="RHSU Logo" onerror="this.style.display='none'">
+                <div class="rhsu-login-kicker">RHSU OPERATIONS PORTAL</div>
+                <h1>Regional Headquarters<br>Support Unit</h1>
+                <p>Secure access to the RHSU Data Entry System and integrated operations dashboard.</p>
+                <div class="rhsu-login-system-status"><span></span> System access portal</div>
+            </div>
+        </section>
+        <section class="rhsu-login-form" aria-label="Login form">
+            <div class="rhsu-login-form-head">
+                <div class="rhsu-login-form-kicker">WELCOME BACK</div>
+                <h2>Sign in</h2>
+                <p>Enter your credentials to continue.</p>
+            </div>
+            <div class="rhsu-login-mode">
+                <span>Authentication</span>
+                <div class="auth-type-toggle">
+                    <label><input type="radio" name="loginType" value="pin" checked onchange="toggleInputType('loginCredential', 'pin')"> Use PIN</label>
+                    <label><input type="radio" name="loginType" value="password" onchange="toggleInputType('loginCredential', 'password')"> Use Password</label>
+                </div>
+            </div>
+            <div class="rhsu-login-field">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" placeholder="Enter Username" autocomplete="username">
+            </div>
+            <div class="rhsu-login-field">
+                <label for="loginCredential">PIN / Password</label>
+                <input type="password" id="loginCredential" placeholder="Enter 6-Digit PIN" maxlength="6" autocomplete="current-password">
+            </div>
+            <button class="rhsu-login-submit" onclick="loginUser()">Login</button>
+            <div class="rhsu-login-create">New user? <span class="link" onclick="toggleAuthViews('registerPage')">Create an Account</span></div>
+        </section>
     </div>
 
     <div id="registerPage" class="auth-container glass-panel hidden">
@@ -843,7 +926,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                     <img class="rhsu-dashboard-watermark rhsu-dashboard-watermark-pro1" src="images/PRO 1 LOGO.png" alt="PRO 1 Logo" aria-hidden="true" onerror="this.style.display='none'">
                     <div class="exec-hero-copy">
                         <h2>RHSU Operations Dashboard</h2>
-                        <p>Central overview of memos, personnel, scheduled activities, offices, and system activity.</p>
+                        <p>Central overview of memos, personnel, scheduled activities, and system activity.</p>
                     </div>
                     <div class="exec-hero-side">
                         <div class="exec-hero-meta">
@@ -863,7 +946,6 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                     <div class="exec-kpi"><div class="label">Total Personnel</div><div class="value" id="execTotalPersonnel">0</div><div class="sub">Organic + Detached Service</div></div>
                     <div class="exec-kpi"><div class="label">Active Activities</div><div class="value" id="execTotalActivities">0</div><div class="sub">Scheduled activities</div></div>
                     <div class="exec-kpi"><div class="label">Archived Activities</div><div class="value" id="execArchivedActivities">0</div><div class="sub">Archived activity records</div></div>
-                    <div class="exec-kpi"><div class="label">Offices / Sections</div><div class="value" id="execOfficeCount">0</div><div class="sub">Distinct offices in loaded data</div></div>
                     <div class="exec-kpi"><div class="label">Encoders</div><div class="value" id="execEncoderCount">0</div><div class="sub">Users with memo records</div></div>
                 </section>
 
@@ -1321,10 +1403,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
     </div>
 
 
-    <div class="rhsu-legal-footer" role="contentinfo">
-        <strong>OFFICIAL USE ONLY</strong> — This system is intended for authorized official use within the Regional Headquarters Support Unit. Information contained herein is subject to verification and applicable laws, regulations, policies, and directives. Unauthorized access, alteration, reproduction, distribution, disclosure, or use is prohibited, subject to applicable law.
-        <br><strong>Rights Reserved.</strong> The design, interface, system-generated presentation, compilation, and official use of this website are reserved to the appropriate office/system owner, subject to applicable laws, regulations, and government policies.
-    </div>
+
 
     <!-- FLOATING CHATBOT AI -->
     <div id="chatbot-container">
@@ -3111,9 +3190,6 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
 
             const memoOffices = execCountMap(allMemos, r => r[1]);
             const personnelSections = execCountMap(organicPersonnel, p => p.section);
-            const officeNames = new Set([...Object.keys(memoOffices), ...Object.keys(personnelSections)].filter(x => x && x !== 'Unspecified'));
-            document.getElementById('execOfficeCount').innerText = officeNames.size;
-
             const categories = {};
             allMemos.forEach(r => {
                 const c = String(r[2] || '');
