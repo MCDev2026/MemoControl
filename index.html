@@ -225,6 +225,8 @@
         .controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
         .action-btn { width: auto; padding: 8px 14px; font-size: 13px; border-radius: var(--radius-sm); background-color: rgba(0,0,0,0.05); color: var(--text-main); border: 1px solid var(--border-color); display: inline-flex; align-items: center; justify-content: center; gap: 5px; font-weight: 500;}
         .action-btn:hover { background-color: rgba(0,0,0,0.1); }
+        .icon-action-btn { width: 36px; min-width: 36px; height: 36px; padding: 7px; margin: 0; }
+        .icon-action-btn svg { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
         .delete-btn { background-color: var(--danger); color: white; border: none; }
         .delete-btn:hover { background-color: var(--danger-hover); }
         .approve-btn { background-color: var(--success); color: white; border: none; }
@@ -267,6 +269,7 @@
         .notification-toast.fade-out { animation: fadeOutLeft 0.3s ease-in forwards; }
         .notification-title { display: block; font-weight: bold; font-size: 14px; color: var(--primary); margin-bottom: 4px; }
         .notification-msg { font-size: 13px; color: var(--text-muted); }
+        #activityReminderModal .modal-content { box-shadow: 0 18px 60px rgba(15,23,42,.22); }
         
         @keyframes slideInLeft { from { transform: translateX(-100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes fadeOutLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-100%); opacity: 0; } }
@@ -982,11 +985,6 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                         </div>
                         <div id="execRecentMemos"></div>
                     </div>
-                    <div class="exec-card">
-                        <h3>Operational Status</h3>
-                        <div class="subhead">Client-side data availability</div>
-                        <div id="execSystemStatus" class="exec-list"></div>
-                    </div>
 
                 </section>
             </div>
@@ -1562,8 +1560,32 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                     <option value="Base Police">Base Police</option>
                     <option value="Detached Service">Detached Service</option>
                 </select>
-                <input id="pStatus" type="text" placeholder="Status" value="Active">
+                <select id="pStatus" onchange="togglePersonnelRemarksFields()">
+                    <option value="Active">Active</option>
+                    <option value="Resigned">Resigned</option>
+                    <option value="Deceased">Deceased</option>
+                    <option value="Dismissed">Dismissed</option>
+                    <option value="Suspended">Suspended</option>
+                    <option value="Reassigned">Reassigned</option>
+                </select>
                 <input id="pContactNo" type="text" placeholder="Contact No.">
+                <select id="pRemarks" onchange="togglePersonnelRemarksFields()">
+                    <option value="">Select Remarks...</option>
+                    <option value="Off-Duty">Off-Duty</option>
+                    <option value="On-Leave">On-Leave</option>
+                    <option value="Schooling/Seminar">Schooling/Seminar</option>
+                    <option value="Others">Others</option>
+                </select>
+                <select id="pLeaveType" class="hidden" style="grid-column:1/-1;" onchange="togglePersonnelRemarksFields()">
+                    <option value="">Select Leave Type...</option>
+                    <option value="Mandatory Leave">Mandatory Leave</option>
+                    <option value="Sick Leave">Sick Leave</option>
+                    <option value="Special Privilege Leave">Special Privilege Leave</option>
+                    <option value="Service Leave">Service Leave</option>
+                    <option value="Wellness Leave">Wellness Leave</option>
+                </select>
+                <input id="pSchooling" type="text" class="hidden" style="grid-column:1/-1;" placeholder="Specify Schooling / Seminar">
+                <input id="pRemarksOther" type="text" class="hidden" style="grid-column:1/-1;" placeholder="Encode remarks manually">
             </div>
             <div style="display:flex;gap:10px;margin-top:18px;">
                 <button id="personnelSaveBtn" class="approve-btn" style="flex:1;margin:0;color:white;" onclick="savePersonnel()">Save</button>
@@ -1652,6 +1674,24 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         </div>
     </div>
 
+    <div id="activityReminderModal" class="modal-overlay hidden">
+        <div class="modal-content glass-panel" style="max-width:520px;text-align:left;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:15px;">
+                <div>
+                    <div style="font-size:12px;font-weight:700;color:var(--primary);text-transform:uppercase;letter-spacing:.06em;">Activity Reminder</div>
+                    <h2 id="activityReminderTitle" style="margin:6px 0 8px;color:var(--text-main);">Upcoming Activity</h2>
+                </div>
+                <button type="button" class="action-btn" style="width:36px;min-width:36px;height:36px;padding:0;margin:0;" onclick="closeActivityReminder()" aria-label="Close reminder">×</button>
+            </div>
+            <div id="activityReminderMessage" style="font-size:14px;line-height:1.6;color:var(--text-main);"></div>
+            <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;">
+                <button type="button" class="action-btn" style="flex:1;min-width:120px;margin:0;" onclick="snoozeActivityReminder(10)">Snooze 10 min</button>
+                <button type="button" class="delete-btn" style="flex:1;min-width:120px;margin:0;color:white;" onclick="stopActivityReminder()">Stop Alerts</button>
+                <button type="button" class="approve-btn" style="flex:1;min-width:120px;margin:0;color:white;" onclick="closeActivityReminder()">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
     <div id="notificationContainer"></div>
 
     <script>
@@ -1685,6 +1725,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         let execActivityUserFilter = "";
         let activityLogRefreshTimer = null;
         let allPersonnel = [];
+        let archivedPersonnel = [];
         let personnelEditNo = null;
 
         let allActivities = [];
@@ -1694,6 +1735,10 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         let currentActivityPage = 1;
         let currentArchivedActivityPage = 1;
         let activityEditId = null;
+        let activityReminderTimer = null;
+        let activeActivityReminder = null;
+        const ACTIVITY_REMINDER_OFFSETS = [12 * 60 * 60 * 1000, 6 * 60 * 60 * 1000, 1 * 60 * 60 * 1000];
+        const ACTIVITY_REMINDER_LABELS = { [12 * 60 * 60 * 1000]:'12 hours', [6 * 60 * 60 * 1000]:'6 hours', [1 * 60 * 60 * 1000]:'1 hour' };
         const ACTIVITY_VENUES = ["PRO 1 Auditorium","PRO 1 Grandstand","PRO 1 Parade Ground","PRO 1 Firing Range","PRO 1 Conference Room"];
 
 
@@ -1999,6 +2044,83 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             } catch (err) {}
         }
 
+        function activityReminderKey(activity, offset) {
+            return `rhsuActivityReminder:${activity.id}:${activity.date}:${activity.time}:${offset}`;
+        }
+
+        function activityReminderStoppedKey(activity) {
+            return `rhsuActivityReminderStopped:${activity.id}:${activity.date}:${activity.time}`;
+        }
+
+        function parseActivityDateTime(activity) {
+            const dateKey = String(activity.date || '').slice(0,10);
+            const timeKey = activityTimeForInput(activity.time);
+            if (!dateKey || !timeKey) return NaN;
+            const d = new Date(`${dateKey}T${timeKey}:00`);
+            return d.getTime();
+        }
+
+        function checkActivityReminders() {
+            if (!localStorage.getItem('loggedInUser')) return;
+            const now = Date.now();
+
+            for (const activity of (Array.isArray(allActivities) ? allActivities : [])) {
+                if (String(activity.status || '').toLowerCase() !== 'recurring') continue;
+                const start = parseActivityDateTime(activity);
+                if (!Number.isFinite(start) || start <= now) continue;
+
+                const stoppedKey = activityReminderStoppedKey(activity);
+                if (localStorage.getItem(stoppedKey) === 'true') continue;
+
+                for (const offset of ACTIVITY_REMINDER_OFFSETS) {
+                    const reminderAt = start - offset;
+                    const key = activityReminderKey(activity, offset);
+                    const snoozeUntil = Number(localStorage.getItem(`${key}:snoozeUntil`) || 0);
+
+                    if (now < reminderAt || now > start || localStorage.getItem(key) === 'shown') continue;
+                    if (snoozeUntil && now < snoozeUntil) continue;
+
+                    localStorage.setItem(key, 'shown');
+                    activeActivityReminder = { activity, offset, key };
+                    document.getElementById('activityReminderTitle').innerText = activity.activityTitle || 'Upcoming Activity';
+                    document.getElementById('activityReminderMessage').innerHTML =
+                        `<div><strong>${escapeHtml(ACTIVITY_REMINDER_LABELS[offset] || '')} before the scheduled activity.</strong></div>
+                         <div style="margin-top:8px;"><strong>Date:</strong> ${escapeHtml(activity.date)}</div>
+                         <div><strong>Time:</strong> ${escapeHtml(formatActivityTime(activity.time))}</div>
+                         <div><strong>Venue:</strong> ${escapeHtml(activity.assignedVenue)}</div>
+                         <div><strong>Requesting Office:</strong> ${escapeHtml(activity.requestingOffice)}</div>`;
+                    document.getElementById('activityReminderModal').classList.remove('hidden');
+                    return;
+                }
+            }
+        }
+
+        function closeActivityReminder() {
+            document.getElementById('activityReminderModal').classList.add('hidden');
+            activeActivityReminder = null;
+        }
+
+        function snoozeActivityReminder(minutes = 10) {
+            if (activeActivityReminder) {
+                localStorage.setItem(`${activeActivityReminder.key}:snoozeUntil`, String(Date.now() + minutes * 60 * 1000));
+                localStorage.removeItem(activeActivityReminder.key);
+            }
+            closeActivityReminder();
+        }
+
+        function stopActivityReminder() {
+            if (activeActivityReminder) {
+                localStorage.setItem(activityReminderStoppedKey(activeActivityReminder.activity), 'true');
+            }
+            closeActivityReminder();
+        }
+
+        function startActivityReminderMonitor() {
+            if (activityReminderTimer) clearInterval(activityReminderTimer);
+            checkActivityReminders();
+            activityReminderTimer = setInterval(checkActivityReminders, 30000);
+        }
+
         function toggleChat() { const window = document.getElementById('chatbot-window'); window.classList.toggle('hidden'); if(!window.classList.contains('hidden')) document.getElementById('chatInput').focus(); }
         function handleChat(e) {
             if (e.key === 'Enter') {
@@ -2156,8 +2278,12 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 fetchActivityLogs();
                 if (activityLogRefreshTimer) clearInterval(activityLogRefreshTimer);
                 activityLogRefreshTimer = setInterval(fetchActivityLogs, 2000);
-                fetchSystemAnnouncement(); 
-            } else { toggleAuthViews('loginPage'); }
+                fetchSystemAnnouncement();
+                startActivityReminderMonitor();
+            } else {
+                if (activityReminderTimer) clearInterval(activityReminderTimer);
+                toggleAuthViews('loginPage');
+            }
         }
 
         async function loginUser() {
@@ -2406,6 +2532,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 if (!data.success) throw new Error(data.error || 'Unable to load personnel');
 
                 allPersonnel = Array.isArray(data.personnel) ? data.personnel : [];
+                archivedPersonnel = Array.isArray(data.archived) ? data.archived : [];
 
                 // Do lightweight preparation first so the data is available immediately.
                 updatePersonnelDashboard();
@@ -2537,7 +2664,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             const status = document.getElementById('personnelStatusFilter').value;
 
             const rows = allPersonnel.filter(p => {
-                const text = [p.no,p.rank,p.lastName,p.firstName,p.middleName,p.qualifiers,p.designation,p.section,p.status,p.contactNo]
+                const text = [p.no,p.rank,p.lastName,p.firstName,p.middleName,p.qualifiers,p.designation,p.section,p.status,p.contactNo,p.remarks]
                     .join(' ').toLowerCase();
                 return (!q || text.includes(q)) &&
                        (!rank || String(p.rank || '') === rank) &&
@@ -2558,8 +2685,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 "PAT": 13, "NUP": 14
             };
 
-            // Work on a copy so the master backend-loaded array is never reordered.
-            const sortedRows = rows.slice().sort((a, b) => {
+            const sortPersonnel = data => data.slice().sort((a, b) => {
                 const rA = String(a.rank || '').trim().toUpperCase();
                 const rB = String(b.rank || '').trim().toUpperCase();
                 const valA = rankOrder[rA] || 99;
@@ -2568,8 +2694,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 return String(a.lastName || '').localeCompare(String(b.lastName || ''));
             });
 
-            // Build section groups dynamically from the loaded data. Detached Service
-            // remains separate and is never mixed into the regular sections.
+            const sortedRows = sortPersonnel(rows);
             const groups = new Map();
             let detached = [];
             sortedRows.forEach(p => {
@@ -2582,13 +2707,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 groups.get(section).push(p);
             });
 
-            const preferredOrder = [
-                'Admin Section',
-                'General Services Section',
-                'Special Services Band',
-                'Base Police'
-            ];
-
+            const preferredOrder = ['Admin Section','General Services Section','Special Services Band','Base Police'];
             const orderedSections = [];
             preferredOrder.forEach(name => {
                 const actual = [...groups.keys()].find(k => k.toLowerCase() === name.toLowerCase());
@@ -2599,43 +2718,59 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 .sort((a,b) => a.localeCompare(b))
                 .forEach(k => orderedSections.push(k));
 
-            let html = '';
-
-            const buildTable = (title, dataRows) => {
+            const buildTable = (title, dataRows, archived = false) => {
                 if (!dataRows.length) return '';
-
                 const bodyHtml = dataRows.map((p, index) => {
-                    const action = can ? `<td style="white-space:nowrap;">
+                    const action = can && !archived ? `<td style="white-space:nowrap;">
                         <button class="action-btn" onclick="editPersonnel(${Number(p.no)})">Edit</button>
                         <button class="action-btn delete-btn" style="color:white;" onclick="archivePersonnel(${Number(p.no)})">Archive</button>
                     </td>` : '';
 
                     return `<tr>
-                        <td>${index + 1}</td><td>${escapeHtml(p.rank)}</td><td>${escapeHtml(p.lastName)}</td>
-                        <td>${escapeHtml(p.firstName)}</td><td>${escapeHtml(p.middleName)}</td><td>${escapeHtml(p.qualifiers)}</td>
-                        <td>${escapeHtml(p.designation)}</td><td>${escapeHtml(p.section)}</td><td>${escapeHtml(p.status)}</td><td>${escapeHtml(p.contactNo)}</td>${action}
+                        <td>${index + 1}</td>
+                        <td>${escapeHtml(p.rank)}</td>
+                        <td>${escapeHtml(p.lastName)}</td>
+                        <td>${escapeHtml(p.firstName)}</td>
+                        <td>${escapeHtml(p.middleName)}</td>
+                        <td>${escapeHtml(p.qualifiers)}</td>
+                        <td>${escapeHtml(p.designation)}</td>
+                        <td>${escapeHtml(p.section)}</td>
+                        <td><span style="font-weight:600;color:${archived ? 'var(--danger)' : 'var(--success)'};">${escapeHtml(p.status || (archived ? 'Archived' : 'Active'))}</span></td>
+                        <td>${escapeHtml(p.contactNo)}</td>
+                        <td>${escapeHtml(p.remarks)}</td>
+                        ${archived ? `<td>${escapeHtml(p.archivedDate || '')}</td>` : ''}
+                        ${action}
                     </tr>`;
                 }).join('');
 
-                return `<h3 style="margin-top:25px;margin-bottom:10px;color:var(--primary);font-size:16px;">${escapeHtml(title)}</h3>
+                const archiveExtra = archived ? '<th>Archived Date</th>' : '';
+                return `<h3 style="margin-top:25px;margin-bottom:10px;color:${archived ? 'var(--danger)' : 'var(--primary)'};font-size:16px;">${escapeHtml(title)}</h3>
                 <div class="table-wrapper" style="margin-bottom:20px;margin-top:0;">
                     <table>
                         <thead><tr>
                             <th>No.</th><th>Rank</th><th>Last Name</th><th>First Name</th><th>Middle Name</th>
-                            <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th><th>Contact No.</th>
-                            ${can ? '<th>Actions</th>' : ''}
+                            <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th><th>Contact No.</th><th>Remarks</th>
+                            ${archiveExtra}
+                            ${can && !archived ? '<th>Actions</th>' : ''}
                         </tr></thead>
                         <tbody>${bodyHtml}</tbody>
                     </table>
                 </div>`;
             };
 
-            orderedSections.forEach(section => {
-                html += buildTable(section, groups.get(section));
-            });
-            html += buildTable('Detached Service', detached);
+            let activeHtml = '';
+            orderedSections.forEach(section => { activeHtml += buildTable(section, groups.get(section)); });
+            activeHtml += buildTable('Detached Service', detached);
 
-            container.innerHTML = html || '<div style="text-align:center;color:var(--text-muted);padding:20px;">No personnel records found.</div>';
+            const archivedSorted = sortPersonnel(archivedPersonnel || []);
+            const archiveHtml = archivedSorted.length
+                ? buildTable('Archived', archivedSorted, true)
+                : `<h3 style="margin-top:28px;margin-bottom:10px;color:var(--text-muted);font-size:16px;">Archived</h3>
+                   <div class="table-wrapper" style="margin-bottom:20px;margin-top:0;">
+                     <div style="text-align:center;color:var(--text-muted);padding:20px;">No archived personnel records.</div>
+                   </div>`;
+
+            container.innerHTML = (activeHtml || '<div style="text-align:center;color:var(--text-muted);padding:20px;">No active personnel records found.</div>') + archiveHtml;
         }
         function clearPersonnelFilters() {
             document.getElementById('personnelSearch').value='';
@@ -2644,15 +2779,85 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             filterPersonnel();
         }
 
+        function togglePersonnelRemarksFields() {
+            const remarks = document.getElementById('pRemarks');
+            const leave = document.getElementById('pLeaveType');
+            const schooling = document.getElementById('pSchooling');
+            const other = document.getElementById('pRemarksOther');
+            if (!remarks || !leave || !schooling || !other) return;
+
+            leave.classList.toggle('hidden', remarks.value !== 'On-Leave');
+            schooling.classList.toggle('hidden', remarks.value !== 'Schooling/Seminar');
+            other.classList.toggle('hidden', remarks.value !== 'Others');
+            leave.required = remarks.value === 'On-Leave';
+            schooling.required = remarks.value === 'Schooling/Seminar';
+            other.required = remarks.value === 'Others';
+
+            if (remarks.value !== 'On-Leave') leave.value = '';
+            if (remarks.value !== 'Schooling/Seminar') schooling.value = '';
+            if (remarks.value !== 'Others') other.value = '';
+        }
+
+        function getPersonnelRemarksPayload() {
+            const type = document.getElementById('pRemarks').value;
+            if (type === 'On-Leave') {
+                const leave = document.getElementById('pLeaveType').value;
+                return leave ? `On-Leave — ${leave}` : 'On-Leave';
+            }
+            if (type === 'Schooling/Seminar') {
+                const schooling = document.getElementById('pSchooling').value.trim();
+                return schooling ? `Schooling/Seminar — ${schooling}` : 'Schooling/Seminar';
+            }
+            if (type === 'Others') {
+                const other = document.getElementById('pRemarksOther').value.trim();
+                return other ? `Others — ${other}` : 'Others';
+            }
+            return type || '';
+        }
+
+        function populatePersonnelRemarks(remarks) {
+            const raw = String(remarks || '').trim();
+            const typeEl = document.getElementById('pRemarks');
+            const leaveEl = document.getElementById('pLeaveType');
+            const schoolingEl = document.getElementById('pSchooling');
+            const otherEl = document.getElementById('pRemarksOther');
+            typeEl.value = '';
+            leaveEl.value = '';
+            schoolingEl.value = '';
+            otherEl.value = '';
+
+            if (!raw) return togglePersonnelRemarksFields();
+
+            const parts = raw.split(/\s+—\s+/);
+            const type = parts[0];
+            if (['Off-Duty','On-Leave','Schooling/Seminar','Others'].includes(type)) {
+                typeEl.value = type;
+                const detail = parts.slice(1).join(' — ').trim();
+                if (type === 'On-Leave') {
+                    leaveEl.value = detail;
+                } else if (type === 'Schooling/Seminar') {
+                    schoolingEl.value = detail;
+                } else if (type === 'Others') {
+                    otherEl.value = detail;
+                }
+            } else {
+                typeEl.value = 'Others';
+                otherEl.value = raw;
+            }
+            togglePersonnelRemarksFields();
+        }
+
         function openPersonnelModal() {
             if(!canManagePersonnel()) return customAlert("Only the Alpha Admin and designated Admin users can modify personnel records.","Permission Denied");
             personnelEditNo=null;
             document.getElementById('personnelModalTitle').innerText='Add Personnel';
-            ['pLastName','pFirstName','pMiddleName','pQualifiers','pDesignation','pSection','pContactNo'].forEach(id=>document.getElementById(id).value='');
+            ['pLastName','pFirstName','pMiddleName','pQualifiers','pDesignation','pContactNo'].forEach(id=>document.getElementById(id).value='');
             document.getElementById('pRank').value='';
+            document.getElementById('pSection').value='';
             document.getElementById('pStatus').value='Active';
             document.getElementById('pNo').value='Auto';
             document.getElementById('personnelSaveBtn').innerText='Add Personnel';
+            populatePersonnelRemarks('');
             document.getElementById('personnelModal').classList.remove('hidden');
         }
 
@@ -2669,8 +2874,9 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             document.getElementById('pQualifiers').value=p.qualifiers||'';
             document.getElementById('pDesignation').value=p.designation||'';
             document.getElementById('pSection').value=p.section||'';
-            document.getElementById('pStatus').value=p.status||'';
+            document.getElementById('pStatus').value=p.status||'Active';
             document.getElementById('pContactNo').value=p.contactNo||'';
+            populatePersonnelRemarks(p.remarks||'');
             document.getElementById('personnelSaveBtn').innerText='Update Personnel';
             document.getElementById('personnelModal').classList.remove('hidden');
         }
@@ -2691,17 +2897,24 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 qualifiers:document.getElementById('pQualifiers').value.trim(),
                 designation:document.getElementById('pDesignation').value.trim(),
                 section:document.getElementById('pSection').value.trim(),
-                status:document.getElementById('pStatus').value.trim(),
-                contactNo:document.getElementById('pContactNo').value.trim()
+                status:document.getElementById('pStatus').value || 'Active',
+                contactNo:document.getElementById('pContactNo').value.trim(),
+                remarks:getPersonnelRemarksPayload()
             };
             if(!payload.rank||!payload.lastName||!payload.firstName) return customAlert("Rank, Last Name and First Name are required.","Validation Error");
+            if (document.getElementById('pRemarks').value === 'On-Leave' && !document.getElementById('pLeaveType').value) return customAlert("Please select the Leave Type.","Validation Error");
+            if (document.getElementById('pRemarks').value === 'Schooling/Seminar' && !document.getElementById('pSchooling').value.trim()) return customAlert("Please specify the schooling/seminar.","Validation Error");
+            if (document.getElementById('pRemarks').value === 'Others' && !document.getElementById('pRemarksOther').value.trim()) return customAlert("Please encode the remarks.","Validation Error");
+
             const btn=document.getElementById('personnelSaveBtn'); btn.disabled=true; btn.innerText='Saving...';
             try {
                 const res=await fetch(API_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)});
                 const data=await res.json();
                 if(!data.success) throw new Error(data.error||'Save failed');
                 logActivity(`${payload.action==='add_personnel'?'added':'updated'} personnel record: ${payload.rank} ${payload.lastName}, ${payload.firstName}`);
-                closePersonnelModal(); customAlert(payload.action==='add_personnel'?'Personnel added successfully.':'Personnel updated successfully.','Success'); await loadPersonnel();
+                closePersonnelModal();
+                customAlert(data.archived ? 'Personnel marked non-Active and moved to Archived.' : (payload.action==='add_personnel'?'Personnel added successfully.':'Personnel updated successfully.'),'Success');
+                await loadPersonnel();
             } catch(e) {
                 customAlert(e.message||'Unable to save personnel record.','Error');
             } finally { btn.disabled=false; btn.innerText=(payload.action==='add_personnel' ? 'Add Personnel' : 'Update Personnel'); }
@@ -2862,26 +3075,54 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         }
 
         function formatActivityTime(value) {
-            const raw = String(value == null ? '' : value).trim();
+            if (value === null || value === undefined) return '';
+
+            const raw = String(value).trim();
             if (!raw) return '';
-            const match24 = raw.match(/^(\\d{1,2}):(\\d{2})$/);
-            if (match24) {
-                let hours = Number(match24[1]);
-                const minutes = match24[2];
-                if (hours >= 0 && hours <= 23 && Number(minutes) >= 0 && Number(minutes) <= 59) {
+
+            // Google Sheets may return a time-only cell as a full Date string,
+            // e.g. "Sat Dec 30 1899 08:30:00 GMT+0800 (...)".
+            const dateTimeMatch = raw.match(/(?:^|\s)(\d{1,2}):(\d{2})(?::\d{2})?\s*(?:GMT[+-]\d{4})?/i);
+            if (dateTimeMatch) {
+                let hours = Number(dateTimeMatch[1]);
+                const minutes = Number(dateTimeMatch[2]);
+
+                if (
+                    Number.isFinite(hours) &&
+                    hours >= 0 &&
+                    hours <= 23 &&
+                    Number.isFinite(minutes) &&
+                    minutes >= 0 &&
+                    minutes <= 59
+                ) {
                     const suffix = hours >= 12 ? 'PM' : 'AM';
                     hours = hours % 12 || 12;
-                    return `${String(hours).padStart(2, '0')}:${minutes} ${suffix}`;
+                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${suffix}`;
                 }
             }
-            const match12 = raw.match(/^(\\d{1,2}):(\\d{2})\\s*([AaPp][Mm])$/);
+
+            // Normal 24-hour value: 08:30, 14:30, etc.
+            const match24 = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+            if (match24) {
+                let hours = Number(match24[1]);
+                const minutes = Number(match24[2]);
+                if (hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59) {
+                    const suffix = hours >= 12 ? 'PM' : 'AM';
+                    hours = hours % 12 || 12;
+                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${suffix}`;
+                }
+            }
+
+            // Normal 12-hour value: 08:30 AM, 02:30 PM, etc.
+            const match12 = raw.match(/^(\d{1,2}):(\d{2})(?::\d{2})?\s*([AaPp][Mm])$/);
             if (match12) {
-                let hours = Number(match12[1]);
-                const minutes = match12[2];
-                if (hours >= 1 && hours <= 12 && Number(minutes) >= 0 && Number(minutes) <= 59) {
-                    return `${String(hours).padStart(2, '0')}:${minutes} ${match12[3].toUpperCase()}`;
+                const hours = Number(match12[1]);
+                const minutes = Number(match12[2]);
+                if (hours >= 1 && hours <= 12 && minutes >= 0 && minutes <= 59) {
+                    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')} ${match12[3].toUpperCase()}`;
                 }
             }
+
             return raw;
         }
 
@@ -3026,6 +3267,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 filterActivities();
                 renderArchivedActivities();
                 updateActivityPermissions();
+                startActivityReminderMonitor();
                 if (!document.getElementById('tabDashboard').classList.contains('hidden')) renderExecutiveDashboard();
             } catch(e) {
                 console.error(e);
@@ -3247,16 +3489,6 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 }
             }
 
-            const status = document.getElementById('execSystemStatus');
-            status.innerHTML = [
-                ['Memo database', totalMemos, 'records loaded'],
-                ['Personnel database', totalPersonnel, 'organic + detached records'],
-                ['Activity schedule', totalActivities, 'active records'],
-                ['Archive', totalArchived, 'archived records'],
-                ['Activity logs', liveActivityLogs.length, 'latest backend entries'],
-                ['Logged-in user', localStorage.getItem('loggedInUser') || 'Guest', 'current session']
-            ].map(([label,value,sub]) => `<div class="exec-row"><div><strong>${escapeHtml(String(label))}</strong><div style="color:var(--text-muted);margin-top:3px;font-size:10px">${escapeHtml(String(sub))}</div></div><span>${escapeHtml(String(value))}</span></div>`).join('');
-
             document.getElementById('execDashUser').innerText = `Signed in: ${localStorage.getItem('loggedInUser') || 'Guest'}`;
             document.getElementById('execDashUpdated').innerText = `Updated ${new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}`;
         }
@@ -3379,8 +3611,12 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                     <td>${row[3] || "N/A"}</td>
                     <td><span style="font-weight: 500; color: var(--primary);">${memoStatus}</span></td>
                     <td style="white-space: nowrap;">
-                        <button class="action-btn" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}', '${memoStatus}')">Edit</button> 
-                        <button class="action-btn delete-btn" onclick="triggerDelete('${row[2]}')">Delete</button>
+                        <button class="action-btn icon-action-btn" title="Edit Memo" aria-label="Edit Memo" onclick="initiateEdit('${row[2]}', '${safeSubject}', '${safeDestination}', '${memoStatus}')">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10.5-10.5a2.12 2.12 0 0 0 0-3L17.5 5a2.12 2.12 0 0 0-3 0L4 15.5V20zM13.5 6.5l4 4"/></svg>
+                        </button>
+                        <button class="action-btn delete-btn icon-action-btn" title="Delete Memo" aria-label="Delete Memo" onclick="triggerDelete('${row[2]}')">
+                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M9 7V4h6v3M6 7l1 14h10l1-14"/></svg>
+                        </button>
                     </td>
                 </tr>`;
             });
