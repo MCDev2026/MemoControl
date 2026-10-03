@@ -312,6 +312,91 @@
         .personnel-actions { display:flex; gap:6px; flex-wrap:wrap; }
         .personnel-form-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; text-align:left; }
         .personnel-form-grid .full-width { grid-column:1/-1; }
+
+        /* Personnel Management: consistent row height, column sizing and typography. */
+        .personnel-data-table {
+            width:100%;
+            min-width:1180px;
+            table-layout:fixed;
+            border-collapse:collapse;
+            font-size:12px;
+        }
+        .personnel-data-table th,
+        .personnel-data-table td {
+            box-sizing:border-box;
+            padding:10px 9px;
+            height:42px;
+            vertical-align:middle;
+            line-height:1.35;
+            font-size:12px;
+            text-align:left;
+        }
+        .personnel-data-table th {
+            font-size:11px;
+            font-weight:700;
+            letter-spacing:.25px;
+            text-transform:uppercase;
+            white-space:nowrap;
+        }
+        .personnel-data-table td {
+            font-weight:400;
+            overflow:hidden;
+            text-overflow:ellipsis;
+            white-space:nowrap;
+        }
+        .personnel-data-table th:nth-child(1), .personnel-data-table td:nth-child(1) { width:4%; text-align:center; }
+        .personnel-data-table th:nth-child(2), .personnel-data-table td:nth-child(2) { width:7%; }
+        .personnel-data-table th:nth-child(3), .personnel-data-table td:nth-child(3) { width:10%; }
+        .personnel-data-table th:nth-child(4), .personnel-data-table td:nth-child(4) { width:10%; }
+        .personnel-data-table th:nth-child(5), .personnel-data-table td:nth-child(5) { width:10%; }
+        .personnel-data-table th:nth-child(6), .personnel-data-table td:nth-child(6) { width:9%; }
+        .personnel-data-table th:nth-child(7), .personnel-data-table td:nth-child(7) { width:10%; }
+        .personnel-data-table th:nth-child(8), .personnel-data-table td:nth-child(8) { width:12%; }
+        .personnel-data-table th:nth-child(9), .personnel-data-table td:nth-child(9) { width:8%; text-align:center; }
+        .personnel-data-table th:nth-child(10), .personnel-data-table td:nth-child(10) { width:9%; }
+        .personnel-data-table th:nth-child(11), .personnel-data-table td:nth-child(11) { width:9%; }
+        .personnel-data-table th:nth-child(12), .personnel-data-table td:nth-child(12) { width:9%; }
+        .personnel-data-table th:nth-child(13), .personnel-data-table td:nth-child(13) { width:10%; }
+        .personnel-data-table .personnel-actions-cell { width:10%; text-align:center; white-space:nowrap; }
+        .personnel-data-table .personnel-actions-cell .action-btn { padding:5px 8px; margin:0 2px; font-size:11px; line-height:1.2; }
+        body.compact-mode .personnel-data-table th, body.compact-mode .personnel-data-table td { padding:8px; height:38px; font-size:11px; }
+        body.compact-mode .personnel-data-table th { font-size:10px; }
+
+        /* Users Chat */
+        .users-chat-layout { display:grid; grid-template-columns:260px minmax(0,1fr); gap:14px; min-height:560px; }
+        .users-chat-sidebar, .users-chat-main { background:var(--glass-bg); border:1px solid var(--border-color); border-radius:var(--radius-lg); box-shadow:0 4px 20px rgba(0,0,0,.05); min-width:0; }
+        .users-chat-sidebar { padding:12px; display:flex; flex-direction:column; }
+        .users-chat-main { display:flex; flex-direction:column; overflow:hidden; }
+        .chat-mode-tabs { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px; }
+        .chat-mode-tab { width:100%; margin:0; padding:9px 10px; font-size:12px; background:rgba(0,0,0,.04); color:var(--text-main); border:1px solid var(--border-color); }
+        .chat-mode-tab.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+        .chat-user-search { margin:0 0 8px !important; padding:9px 11px !important; font-size:12px !important; }
+        .chat-user-list { flex:1; min-height:0; overflow:auto; display:flex; flex-direction:column; gap:4px; }
+        .chat-user-item { width:100%; margin:0; padding:9px 10px; text-align:left; background:transparent; color:var(--text-main); border:1px solid transparent; border-radius:9px; display:flex; align-items:center; gap:8px; font-size:12px; }
+        .chat-user-item:hover { background:rgba(79,70,229,.08); transform:none; }
+        .chat-user-item.active { background:rgba(79,70,229,.12); border-color:rgba(79,70,229,.18); color:var(--primary); }
+        .chat-user-dot { width:8px; height:8px; border-radius:50%; background:var(--success); flex:0 0 8px; }
+        .chat-user-name { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .chat-empty-users { padding:18px 8px; text-align:center; color:var(--text-muted); font-size:12px; }
+        .users-chat-head { padding:14px 16px; border-bottom:1px solid var(--border-color); display:flex; align-items:center; justify-content:space-between; gap:10px; }
+        .users-chat-head h3 { margin:0; font-size:15px; color:var(--text-main); }
+        .users-chat-head p { margin:3px 0 0; color:var(--text-muted); font-size:11px; }
+        .users-chat-refresh { width:auto !important; margin:0 !important; padding:7px 10px !important; font-size:11px !important; }
+        .users-chat-messages { flex:1; min-height:360px; overflow:auto; padding:16px; display:flex; flex-direction:column; gap:8px; background:rgba(248,250,252,.72); }
+        .user-chat-message { max-width:min(78%,620px); padding:9px 11px; border-radius:12px; border:1px solid var(--border-color); background:#fff; align-self:flex-start; }
+        .user-chat-message.mine { background:var(--primary); color:#fff; border-color:var(--primary); align-self:flex-end; }
+        .user-chat-message .meta { font-size:10px; opacity:.72; margin-bottom:3px; }
+        .user-chat-message .body { font-size:13px; line-height:1.45; white-space:pre-wrap; overflow-wrap:anywhere; }
+        .users-chat-composer { padding:10px; border-top:1px solid var(--border-color); display:flex; gap:8px; background:var(--glass-bg); }
+        .users-chat-composer textarea { flex:1; margin:0; min-height:42px; max-height:110px; resize:vertical; padding:10px 12px; font-size:12px; }
+        .users-chat-send { width:auto !important; min-width:76px; margin:0 !important; align-self:flex-end; padding:10px 14px !important; font-size:12px !important; }
+        .users-chat-note { font-size:10px; color:var(--text-muted); margin:6px 2px 0; }
+        body.dark-mode .users-chat-sidebar, body.dark-mode .users-chat-main { background:#1e293b; }
+        body.dark-mode .chat-mode-tab { background:rgba(255,255,255,.05); }
+        body.dark-mode .chat-user-item:hover { background:rgba(129,140,248,.12); }
+        body.dark-mode .users-chat-messages { background:#0f172a; }
+        body.dark-mode .user-chat-message { background:#1e293b; }
+        @media(max-width:800px) { .users-chat-layout { grid-template-columns:1fr; min-height:0; } .users-chat-sidebar { min-height:230px; max-height:280px; } .users-chat-messages { min-height:320px; } .user-chat-message { max-width:90%; } }
         @media(max-width:700px){ .personnel-form-grid{grid-template-columns:1fr;} .personnel-form-grid .full-width{grid-column:auto;} }
 
         /* Personnel recap layout: recapitulations are positioned at the right side on larger screens. */
@@ -907,6 +992,11 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             </button>
 
 
+            <button class="sidebar-btn" id="btnUsersChat" onclick="switchTab('usersChat');">
+                <img src="images/Chat.png" alt="Users Chat" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><path d=\'M21 11.5a8.38 8.38 0 0 1-9 8.5 8.5 8.5 0 0 1-7.3-4.1L3 21l1.1-4.2A8.4 8.4 0 1 1 21 11.5z\'></path></svg>'">
+                <span class="nav-text">Users Chat</span>
+            </button>
+
             <button class="sidebar-btn" id="btnActivityManagement" onclick="switchTab('activityManagement');">
                 <img src="images/Activity.png" alt="Activity Management" class="nav-icon" onerror="this.src='data:image/svg+xml;utf8,<svg viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\' xmlns=\'http://www.w3.org/2000/svg\'><rect x=\'3\' y=\'4\' width=\'18\' height=\'18\' rx=\'2\'></rect><line x1=\'16\' y1=\'2\' x2=\'16\' y2=\'6\'></line><line x1=\'8\' y1=\'2\' x2=\'8\' y2=\'6\'></line><line x1=\'3\' y1=\'10\' x2=\'21\' y2=\'10\'></line></svg>'">
                 <span class="nav-text">Activity Management</span>
@@ -1219,6 +1309,46 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 </div>
             </div>
 
+
+            <!-- USERS CHAT TAB -->
+            <div id="tabUsersChat" class="hidden">
+                <div class="controls">
+                    <div>
+                        <h2 style="margin:0; color:var(--primary);">Users Chat</h2>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:4px;">Global conversation and private messages between active RHSU users</div>
+                    </div>
+                    <button class="action-btn" onclick="loadChatUsers(); loadChatMessages();" style="margin:0;">↻ Refresh</button>
+                </div>
+
+                <div class="users-chat-layout">
+                    <aside class="users-chat-sidebar">
+                        <div class="chat-mode-tabs">
+                            <button id="chatGlobalTab" class="chat-mode-tab active" onclick="setChatMode('global')">Global Chat</button>
+                            <button id="chatPrivateTab" class="chat-mode-tab" onclick="setChatMode('private')">Private</button>
+                        </div>
+                        <input id="chatUserSearch" class="chat-user-search" type="text" placeholder="Search users..." oninput="renderChatUserList()">
+                        <div id="chatUserList" class="chat-user-list"></div>
+                        <div id="chatUserNote" class="users-chat-note">Global chat is visible to all active users.</div>
+                    </aside>
+
+                    <section class="users-chat-main">
+                        <div class="users-chat-head">
+                            <div>
+                                <h3 id="usersChatTitle">Global Chat</h3>
+                                <p id="usersChatSubtitle">Messages sent here are visible to all active users.</p>
+                            </div>
+                            <button class="action-btn users-chat-refresh" onclick="loadChatMessages()">Refresh</button>
+                        </div>
+                        <div id="usersChatMessages" class="users-chat-messages">
+                            <div style="text-align:center;color:var(--text-muted);font-size:12px;padding:25px;">Loading messages...</div>
+                        </div>
+                        <div class="users-chat-composer">
+                            <textarea id="usersChatInput" placeholder="Write a message..." maxlength="2000" onkeydown="handleUsersChatKeydown(event)"></textarea>
+                            <button class="users-chat-send" onclick="sendUsersChatMessage()">Send</button>
+                        </div>
+                    </section>
+                </div>
+            </div>
 
             <!-- ACTIVITY MANAGEMENT TAB -->
             <div id="tabActivityManagement" class="hidden">
@@ -1728,6 +1858,12 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         let archivedPersonnel = [];
         let personnelEditNo = null;
 
+        let chatMode = 'global';
+        let chatSelectedUser = '';
+        let chatUsers = [];
+        let chatMessagesTimer = null;
+        let chatUsersLoaded = false;
+
         let allActivities = [];
         let filteredActivities = [];
         let archivedActivities = [];
@@ -2121,6 +2257,189 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             activityReminderTimer = setInterval(checkActivityReminders, 30000);
         }
 
+        function chatCredentialPayload() {
+            return {
+                username: localStorage.getItem('loggedInUser') || '',
+                credential: localStorage.getItem('loggedCred') || ''
+            };
+        }
+
+        async function loadChatUsers() {
+            const currentUser = localStorage.getItem('loggedInUser') || '';
+            if (!currentUser) return;
+            try {
+                const auth = chatCredentialPayload();
+                const res = await fetch(API_URL, {
+                    method:'POST', mode:'cors',
+                    headers:{'Content-Type':'text/plain;charset=utf-8'},
+                    body:JSON.stringify({action:'get_chat_users', ...auth})
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Unable to load chat users.');
+                chatUsers = Array.isArray(data.users) ? data.users : [];
+                chatUsersLoaded = true;
+                if (chatSelectedUser && !chatUsers.some(u => String(u.username) === String(chatSelectedUser))) {
+                    chatSelectedUser = '';
+                    chatMode = 'global';
+                }
+                renderChatUserList();
+            } catch (err) {
+                console.error('Chat users:', err);
+                const box = document.getElementById('chatUserList');
+                if (box) box.innerHTML = '<div class="chat-empty-users">Unable to load users.</div>';
+            }
+        }
+
+        function renderChatUserList() {
+            const box = document.getElementById('chatUserList');
+            if (!box) return;
+            if (chatMode !== 'private') {
+                box.innerHTML = '<div class="chat-empty-users">Select <strong>Private</strong> to choose a user.</div>';
+                return;
+            }
+            const q = String(document.getElementById('chatUserSearch')?.value || '').trim().toLowerCase();
+            const currentUser = localStorage.getItem('loggedInUser') || '';
+            const users = chatUsers.filter(u => String(u.username) !== String(currentUser))
+                .filter(u => !q || `${u.name || ''} ${u.username || ''}`.toLowerCase().includes(q));
+            if (!users.length) {
+                box.innerHTML = '<div class="chat-empty-users">No other active users found.</div>';
+                return;
+            }
+            box.innerHTML = users.map(u => {
+                const selected = String(u.username) === String(chatSelectedUser);
+                return `<button type="button" class="chat-user-item${selected ? ' active' : ''}" onclick="selectPrivateChat('${escapeAttr(u.username)}')">
+                    <span class="chat-user-dot"></span>
+                    <span class="chat-user-name">${escapeHtml(u.name || u.username)} <span style="opacity:.6;">(${escapeHtml(u.username)})</span></span>
+                </button>`;
+            }).join('');
+        }
+
+        function setChatMode(mode) {
+            chatMode = mode === 'private' ? 'private' : 'global';
+            if (chatMode === 'global') chatSelectedUser = '';
+            document.getElementById('chatGlobalTab')?.classList.toggle('active', chatMode === 'global');
+            document.getElementById('chatPrivateTab')?.classList.toggle('active', chatMode === 'private');
+            const title = document.getElementById('usersChatTitle');
+            const subtitle = document.getElementById('usersChatSubtitle');
+            const note = document.getElementById('chatUserNote');
+            if (chatMode === 'global') {
+                if (title) title.innerText = 'Global Chat';
+                if (subtitle) subtitle.innerText = 'Messages sent here are visible to all active users.';
+                if (note) note.innerText = 'Global chat is visible to all active users.';
+            } else {
+                if (title) title.innerText = chatSelectedUser ? `Private: ${chatSelectedUser}` : 'Private Chat';
+                if (subtitle) subtitle.innerText = chatSelectedUser ? 'Only you and the selected user can see these messages.' : 'Select a user to start a private conversation.';
+                if (note) note.innerText = 'Private messages are visible only to the two participants.';
+            }
+            renderChatUserList();
+            loadChatMessages();
+        }
+
+        function selectPrivateChat(username) {
+            chatSelectedUser = String(username || '');
+            chatMode = 'private';
+            setChatMode('private');
+        }
+
+        async function loadChatMessages() {
+            if (!localStorage.getItem('loggedInUser')) return;
+            if (!document.getElementById('tabUsersChat') || document.getElementById('tabUsersChat').classList.contains('hidden')) return;
+            if (chatMode === 'private' && !chatSelectedUser) {
+                const box = document.getElementById('usersChatMessages');
+                if (box) box.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:12px;padding:25px;">Select a user to start a private conversation.</div>';
+                return;
+            }
+            try {
+                const auth = chatCredentialPayload();
+                const res = await fetch(API_URL, {
+                    method:'POST', mode:'cors',
+                    headers:{'Content-Type':'text/plain;charset=utf-8'},
+                    body:JSON.stringify({action:'get_chat_messages', ...auth, mode:chatMode, withUser:chatSelectedUser})
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Unable to load chat messages.');
+                renderChatMessages(Array.isArray(data.messages) ? data.messages : []);
+            } catch (err) {
+                console.error('Chat messages:', err);
+                const box = document.getElementById('usersChatMessages');
+                if (box) box.innerHTML = '<div style="text-align:center;color:var(--danger);font-size:12px;padding:25px;">Unable to load messages.</div>';
+            }
+        }
+
+        function renderChatMessages(messages) {
+            const box = document.getElementById('usersChatMessages');
+            if (!box) return;
+            const currentUser = localStorage.getItem('loggedInUser') || '';
+            if (!messages.length) {
+                box.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:12px;padding:25px;">No messages yet. Start the conversation.</div>';
+                return;
+            }
+            box.innerHTML = messages.map(m => {
+                const mine = String(m.sender || '') === String(currentUser);
+                const time = m.timestamp ? new Date(m.timestamp).toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}) : '';
+                return `<div class="user-chat-message${mine ? ' mine' : ''}">
+                    <div class="meta">${escapeHtml(m.sender || '')}${time ? ' · ' + escapeHtml(time) : ''}</div>
+                    <div class="body">${escapeHtml(m.message || '')}</div>
+                </div>`;
+            }).join('');
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function handleUsersChatKeydown(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendUsersChatMessage();
+            }
+        }
+
+        async function sendUsersChatMessage() {
+            const input = document.getElementById('usersChatInput');
+            const message = String(input?.value || '').trim();
+            if (!message) return;
+            if (chatMode === 'private' && !chatSelectedUser) return customAlert('Select a user before sending a private message.', 'Chat');
+            const btn = document.querySelector('.users-chat-send');
+            if (btn) { btn.disabled = true; btn.innerText = 'Sending...'; }
+            try {
+                const auth = chatCredentialPayload();
+                const res = await fetch(API_URL, {
+                    method:'POST', mode:'cors',
+                    headers:{'Content-Type':'text/plain;charset=utf-8'},
+                    body:JSON.stringify({
+                        action:'send_chat_message', ...auth,
+                        recipient:chatMode === 'private' ? chatSelectedUser : '',
+                        message:message,
+                        type:chatMode === 'private' ? 'Private' : 'Global'
+                    })
+                });
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error || 'Unable to send message.');
+                input.value = '';
+                await loadChatMessages();
+            } catch (err) {
+                customAlert(err.message || 'Unable to send message.', 'Chat Error');
+            } finally {
+                if (btn) { btn.disabled = false; btn.innerText = 'Send'; }
+                input?.focus();
+            }
+        }
+
+        function startUsersChat() {
+            if (chatMessagesTimer) clearInterval(chatMessagesTimer);
+            chatUsersLoaded = false;
+            loadChatUsers();
+            loadChatMessages();
+            chatMessagesTimer = setInterval(() => {
+                if (document.getElementById('tabUsersChat')?.classList.contains('hidden')) {
+                    clearInterval(chatMessagesTimer);
+                    chatMessagesTimer = null;
+                    return;
+                }
+                loadChatMessages();
+                if (!chatUsersLoaded) loadChatUsers();
+            }, 5000);
+            document.getElementById('usersChatInput')?.focus();
+        }
+
         function toggleChat() { const window = document.getElementById('chatbot-window'); window.classList.toggle('hidden'); if(!window.classList.contains('hidden')) document.getElementById('chatInput').focus(); }
         function handleChat(e) {
             if (e.key === 'Enter') {
@@ -2172,10 +2491,10 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
         }
 
         function switchTab(tabName) {
-            ['tabDashboard','tabHome','tabProfile','tabAdminMgmt','tabSettings','tabPersonnel','tabActivityManagement'].forEach(id => {
+            ['tabDashboard','tabHome','tabProfile','tabAdminMgmt','tabSettings','tabPersonnel','tabUsersChat','tabActivityManagement'].forEach(id => {
                 const el=document.getElementById(id); if(el) el.classList.add('hidden');
             });
-            ['btnDashboard','btnHome','btnSettings','btnAdminMgmt','btnPersonnel','btnActivityManagement'].forEach(id => {
+            ['btnDashboard','btnHome','btnSettings','btnAdminMgmt','btnPersonnel','btnUsersChat','btnActivityManagement'].forEach(id => {
                 const el=document.getElementById(id); if(el) el.classList.remove('active');
             });
             const settingsMain = document.getElementById('settingsMainPanel');
@@ -2212,6 +2531,10 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                     showAdminMgmtTab();
                 }
 
+            } else if (tabName === 'usersChat') {
+                document.getElementById('tabUsersChat').classList.remove('hidden');
+                document.getElementById('btnUsersChat').classList.add('active');
+                startUsersChat();
             } else if (tabName === 'activityManagement') {
                 document.getElementById('tabActivityManagement').classList.remove('hidden');
                 document.getElementById('btnActivityManagement').classList.add('active');
@@ -2721,7 +3044,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
             const buildTable = (title, dataRows, archived = false) => {
                 if (!dataRows.length) return '';
                 const bodyHtml = dataRows.map((p, index) => {
-                    const action = can && !archived ? `<td style="white-space:nowrap;">
+                    const action = can && !archived ? `<td class="personnel-actions-cell">
                         <button class="action-btn" onclick="editPersonnel(${Number(p.no)})">Edit</button>
                         <button class="action-btn delete-btn" style="color:white;" onclick="archivePersonnel(${Number(p.no)})">Archive</button>
                     </td>` : '';
@@ -2746,7 +3069,7 @@ body.dark-mode .exec-card,body.dark-mode .exec-kpi{background:#111827}
                 const archiveExtra = archived ? '<th>Archived Date</th>' : '';
                 return `<h3 style="margin-top:25px;margin-bottom:10px;color:${archived ? 'var(--danger)' : 'var(--primary)'};font-size:16px;">${escapeHtml(title)}</h3>
                 <div class="table-wrapper" style="margin-bottom:20px;margin-top:0;">
-                    <table>
+                    <table class="personnel-data-table">
                         <thead><tr>
                             <th>No.</th><th>Rank</th><th>Last Name</th><th>First Name</th><th>Middle Name</th>
                             <th>Qualifiers</th><th>Designation</th><th>Section</th><th>Status</th><th>Contact No.</th><th>Remarks</th>
